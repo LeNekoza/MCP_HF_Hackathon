@@ -16,17 +16,15 @@ def main():
     
     # Load configuration
     config = load_config()
-    
-    # Create the main Gradio interface
+      # Create the main Gradio interface
     demo = create_main_interface(config)
-    
-    # Launch the application
+      # Launch the application
     demo.launch(
         server_name=config.get("server_name", "127.0.0.1"),
         server_port=config.get("server_port", 7860),
         share=config.get("share", False),
         debug=config.get("debug", True),
-        mcp_server=True
+        mcp_server=True,
     )
 
 if __name__ == "__main__":

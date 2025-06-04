@@ -1,5 +1,5 @@
 # Core dependencies
-gradio>=4.0.0
+gradio[mcp]==5.32.1
 huggingface-hub>=0.17.0
 transformers>=4.30.0
 torch>=2.0.0
