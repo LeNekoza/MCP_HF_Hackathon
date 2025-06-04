@@ -20,10 +20,7 @@ def main():
     demo = create_main_interface(config)
       # Launch the application
     demo.launch(
-        server_name=config.get("server_name", "127.0.0.1"),
-        server_port=config.get("server_port", 7860),
-        share=config.get("share", False),
-        debug=config.get("debug", True),
+        
         mcp_server=True,
     )
 
