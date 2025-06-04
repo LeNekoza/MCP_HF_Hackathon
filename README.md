@@ -1,4 +1,16 @@
-# MCP HF Hackathon
+---
+title: Hospital AI Helper Aid
+emoji: 🏥
+colorFrom: blue
+colorTo: green
+sdk: gradio
+sdk_version: 4.44.0
+app_file: app.py
+pinned: false
+license: mit
+---
+
+# MCP HF Hackathon - Hospital AI Helper Aid
 
 ## 🚀 Model Context Protocol Integration with Hugging Face
 
