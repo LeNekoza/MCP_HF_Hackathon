@@ -5,9 +5,7 @@ Integration tests for the MCP HF Hackathon application
 import pytest
 import sys
 import os
-import requests
-import time
-from threading import Thread
+
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
@@ -71,6 +69,9 @@ def test_model_configuration():
 @pytest.mark.slow
 def test_application_startup():
     """Test that the application can start without errors"""
+    # Skip test if gradio is not installed
+    pytest.importorskip("gradio")
+
     # This is a basic test to ensure imports work
     try:
         from components.interface import create_main_interface
