@@ -9,10 +9,10 @@ import requests
 import time
 from threading import Thread
 
-# Add src to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
+# Add project root to path for imports
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 
-from utils.config import load_config
+from src.utils.config import load_config
 
 
 @pytest.fixture(scope="module")
@@ -73,9 +73,9 @@ def test_application_startup():
     """Test that the application can start without errors"""
     # This is a basic test to ensure imports work
     try:
-        from components.interface import create_main_interface
-        from models.mcp_handler import MCPHandler
-        from utils.logger import setup_logger
+        from src.components.interface import create_main_interface
+        from src.models.mcp_handler import MCPHandler
+        from src.utils.logger import setup_logger
 
         # Test logger setup
         logger = setup_logger()

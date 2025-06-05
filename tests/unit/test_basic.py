@@ -7,7 +7,7 @@ import sys
 import os
 
 # Add src to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 
 from utils.config import load_config
 from utils.helpers import process_user_input, validate_model_name
