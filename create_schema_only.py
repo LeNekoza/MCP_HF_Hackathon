@@ -7,7 +7,6 @@ This script only creates the database tables without importing data
 import psycopg2
 import json
 from pathlib import Path
-import logging
 
 def load_config():
     """Load configuration from JSON file"""
