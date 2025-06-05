@@ -9,11 +9,13 @@ This project implements secure handling of database credentials to prevent accid
 ### Option 1: Environment Variables (Recommended for Production)
 
 1. Copy the template file:
+
    ```bash
    copy .env.template .env
    ```
 
 2. Edit `.env` and fill in your actual Neon database credentials:
+
    ```env
    NEON_HOST=your-actual-host.aws.neon.tech
    NEON_DATABASE=your-database-name
@@ -35,6 +37,7 @@ This project implements secure handling of database credentials to prevent accid
 ### Option 2: Configuration File (Development Only)
 
 1. Copy the template:
+
    ```bash
    copy neon_config.template.json neon_config.json
    ```
@@ -59,12 +62,14 @@ conn_string = get_connection_string()
 ## Files and Security
 
 ### Tracked Files (Safe to Commit)
+
 - `.env.template` - Template without sensitive data
 - `neon_config.template.json` - Template without sensitive data
 - `secure_config.py` - Configuration loader utility
 - `SECURITY.md` - This documentation
 
 ### Ignored Files (Never Committed)
+
 - `.env` - Contains actual credentials
 - `neon_config.json` - Contains actual credentials
 - Any file with actual passwords or API keys
@@ -94,6 +99,7 @@ If credentials are accidentally committed:
 ## Verification
 
 Test your configuration:
+
 ```bash
 python secure_config.py
 ```
