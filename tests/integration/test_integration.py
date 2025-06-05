@@ -5,9 +5,6 @@ Integration tests for the MCP HF Hackathon application
 import pytest
 import sys
 import os
-import requests
-import time
-from threading import Thread
 
 # Add src to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "src"))
