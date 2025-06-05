@@ -1,184 +1,766 @@
 """
-Main Gradio Interface Components
+Main Gradio Interface Components - ChatGPT-like Interface
 """
 
+import asyncio
+import time
+from turtle import width
+from typing import Any, Dict, List
+
 import gradio as gr
-from typing import Dict, Any
+
 from ..models.mcp_handler import MCPHandler
 from ..utils.helpers import process_user_input
 
+
 def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
     """
-    Create the main Gradio interface for the MCP HF Hackathon application
-    
+    Create a ChatGPT-like Gradio interface for the MCP HF Hackathon application
+
     Args:
         config: Configuration dictionary
-        
+
     Returns:
-        gr.Blocks: The main Gradio interface
-    """
-    
+        gr.Blocks: The ChatGPT-style Gradio interface"""
     # Initialize MCP handler
     mcp_handler = MCPHandler(config)
-    
+
     with gr.Blocks(
-        title="MCP HF Hackathon",
-        theme=gr.themes.Soft(),
-        css=load_custom_css()
-    ) as demo:
-        
-        # Header
-        with gr.Row():
-            gr.Markdown(
-                """
-                # 🤖 MCP HF Hackathon
-                ## Model Context Protocol Integration with Hugging Face
-                
-                Welcome to our innovative application that leverages the power of MCP 
-                for enhanced AI model interactions.
-                """
-            )
-        
-        # Main content area
-        with gr.Row():
-            with gr.Column(scale=2):
-                # Input section
-                with gr.Group():
-                    gr.Markdown("### Input")
-                    user_input = gr.Textbox(
-                        label="Your message",
-                        placeholder="Enter your message here...",
-                        lines=3
-                    )
-                    
-                    # Model selection
-                    model_dropdown = gr.Dropdown(
-                        label="Select Model",
-                        choices=get_available_models(),
-                        value=config.get("default_model", "gpt-3.5-turbo")
-                    )
-                    
-                    submit_btn = gr.Button("Submit", variant="primary")
-                
-                # Settings panel
-                with gr.Accordion("Advanced Settings", open=False):
-                    temperature = gr.Slider(
-                        minimum=0.0,
-                        maximum=2.0,
-                        value=0.7,
-                        step=0.1,
-                        label="Temperature"
-                    )
-                    
-                    max_tokens = gr.Slider(
-                        minimum=1,
-                        maximum=4000,
-                        value=1000,
-                        step=50,
-                        label="Max Tokens"
-                    )
-            
-            with gr.Column(scale=3):
-                # Output section
-                with gr.Group():
-                    gr.Markdown("### Response")
-                    output = gr.Textbox(
-                        label="AI Response",
-                        lines=15,
-                        interactive=False
-                    )
-                
-                # Status and logs
-                with gr.Accordion("Status & Logs", open=False):
-                    status = gr.Textbox(
-                        label="Status",
-                        value="Ready",
-                        interactive=False
-                    )
-                    
-                    logs = gr.Textbox(
-                        label="Logs",
-                        lines=5,
-                        interactive=False
-                    )
-        
-        # Example inputs
-        with gr.Row():
-            gr.Examples(
-                examples=[
-                    ["Hello! Can you help me understand MCP?"],
-                    ["What are the benefits of using Hugging Face models?"],
-                    ["Explain the concept of model context protocols"],
-                ],
-                inputs=user_input,
-                label="Example Prompts"
-            )
-        
+        title="MCP HF Hackathon - AI Assistant",
+        css=load_chatgpt_css(),
+        fill_height=True,
+    ) as demo:  # Header with title and model selection
+        with gr.Row(elem_classes="header-row"):
+            with gr.Column(scale=1, min_width=200):
+                gr.Markdown(
+                    """
+                    # 🤖 MCP AI Assistant
+                    *Powered by Model Context Protocol*
+                    """,
+                    elem_classes="header-title",
+                )
+            with gr.Column(scale=1, min_width=150):
+                model_dropdown = gr.Dropdown(
+                    label="Model",
+                    choices=get_available_models(),
+                    value=config.get("default_model", "gpt-3.5-turbo"),
+                    elem_classes="model-selector",
+                    scale=1,
+                )
+
+        # Main chat interface
+        chatbot = gr.Chatbot(
+            type="messages",
+            height=400,
+            bubble_full_width=False,
+            show_copy_button=True,
+            show_share_button=False,
+            avatar_images=(
+                "./static/images/user-avatar.svg",
+                "./static/images/bot-avatar.svg",
+            ),
+            elem_classes="main-chatbot",
+        )  # Chat input area with improved styling
+        with gr.Row(elem_classes="input-row"):
+            with gr.Column(scale=1, min_width=200):
+                msg = gr.Textbox(
+                    placeholder="Message MCP AI Assistant...",
+                    show_label=False,
+                    lines=1,
+                    max_lines=8,
+                    elem_classes="chat-input",
+                    container=False,
+                )
+            with gr.Column(scale=0, min_width=50):
+                send_btn = gr.Button(
+                    "➤", variant="primary", elem_classes="send-button", size="sm"
+                )
+
+        # Action buttons
+        with gr.Row(elem_classes="action-row"):
+            clear_btn = gr.Button("🗑️ Clear Chat", variant="secondary", size="sm")
+            with gr.Column():
+                gr.Markdown("", elem_classes="spacer")  # Spacer
+            settings_btn = gr.Button("⚙️ Settings", variant="secondary", size="sm")
+
+        # Collapsible settings panel
+        with gr.Accordion(
+            "Advanced Settings", open=False, elem_classes="settings-panel"
+        ):
+            with gr.Row():
+                temperature = gr.Slider(
+                    minimum=0.0,
+                    maximum=2.0,
+                    value=0.7,
+                    step=0.1,
+                    label="Temperature",
+                    elem_classes="setting-slider",
+                )
+                max_tokens = gr.Slider(
+                    minimum=100,
+                    maximum=4000,
+                    value=1000,
+                    step=100,
+                    label="Max Tokens",
+                    elem_classes="setting-slider",
+                )
+
+        # Status indicator
+        status = gr.Textbox(
+            value="Ready",
+            show_label=False,
+            interactive=False,
+            elem_classes="status-indicator",
+        )
+
         # Event handlers
-        submit_btn.click(
-            fn=handle_user_input,
-            inputs=[user_input, model_dropdown, temperature, max_tokens],
-            outputs=[output, status, logs]
+        def respond(
+            message: str, history: List[Dict], model: str, temp: float, max_tok: int
+        ):
+            """Handle user message and generate AI response"""
+            if not message.strip():
+                return history, ""
+
+            # Add user message to history
+            history.append({"role": "user", "content": message})
+
+            # Simulate AI response (replace with actual MCP/AI logic)
+            bot_response = handle_ai_response(message, model, temp, max_tok)
+
+            # Add AI response to history
+            history.append({"role": "assistant", "content": bot_response})
+
+            return history, ""
+
+        def clear_conversation():
+            """Clear the conversation history"""
+            return [], ""
+
+        def stream_response(
+            message: str, history: List[Dict], model: str, temp: float, max_tok: int
+        ):
+            """Stream AI response for real-time effect"""
+            if not message.strip():
+                yield history, ""
+                return
+
+            # Add user message
+            history.append({"role": "user", "content": message})
+            yield history, ""
+
+            # Simulate streaming response
+            response = handle_ai_response(message, model, temp, max_tok)
+            history.append({"role": "assistant", "content": ""})
+            # Stream the response word by word
+            words = response.split()
+            for i, word in enumerate(words):
+                if i == 0:
+                    history[-1]["content"] = word
+                else:
+                    history[-1]["content"] += " " + word
+                time.sleep(0.05)  # Simulate streaming delay
+                yield history, ""
+
+        # Connect events
+        msg.submit(
+            fn=stream_response,
+            inputs=[msg, chatbot, model_dropdown, temperature, max_tokens],
+            outputs=[chatbot, msg],
+            show_progress="hidden",
         )
-        
-        user_input.submit(
-            fn=handle_user_input,
-            inputs=[user_input, model_dropdown, temperature, max_tokens],
-            outputs=[output, status, logs]
+
+        send_btn.click(
+            fn=stream_response,
+            inputs=[msg, chatbot, model_dropdown, temperature, max_tokens],
+            outputs=[chatbot, msg],
+            show_progress="hidden",
         )
-    
+
+        clear_btn.click(fn=clear_conversation, outputs=[chatbot, msg])
+
+        # Add some example conversations on load
+        demo.load(
+            fn=lambda: [
+                {
+                    "role": "assistant",
+                    "content": "Hello! I'm your MCP AI Assistant. How can I help you today?",
+                }
+            ],
+            outputs=chatbot,
+        )
+
     return demo
 
-def handle_user_input(user_msg: str, model: str, temp: float, max_tok: int):
+
+def handle_ai_response(
+    user_message: str, model: str, temperature: float, max_tokens: int
+) -> str:
     """
-    Handle user input and generate response
-    
+    Handle AI response generation (placeholder for actual MCP/AI integration)
+
     Args:
-        user_msg: User's input message
+        user_message: User's input message
         model: Selected model name
-        temp: Temperature setting
-        max_tok: Maximum tokens
-        
+        temperature: Temperature setting
+        max_tokens: Maximum tokens
+
     Returns:
-        Tuple of (response, status, logs)
+        AI response string
     """
-    try:
-        # Process the input (placeholder for actual implementation)
-        response = f"Echo: {user_msg} (Model: {model}, Temp: {temp}, Max Tokens: {max_tok})"
-        status = "Success"
-        logs = f"Processed message with {len(user_msg)} characters"
-        
-        return response, status, logs
-        
-    except Exception as e:
-        return f"Error: {str(e)}", "Error", f"Error occurred: {str(e)}"
+    # This is a placeholder - replace with actual MCP/AI logic
+    import random
+
+    responses = [
+        f"I understand you said: '{user_message}'. I'm processing this using {model} with temperature {temperature}.",
+        f"That's an interesting question about '{user_message}'. Let me think about that using the {model} model.",
+        f"Based on your message '{user_message}', here's what I can tell you using {model}...",
+        f"Thank you for your message: '{user_message}'. I'm using {model} to provide you with the best response.",
+    ]
+
+    return (
+        random.choice(responses)
+        + f"\n\n*Model: {model} | Temperature: {temperature} | Max Tokens: {max_tokens}*"
+    )
+
 
 def get_available_models():
     """Get list of available models"""
-    return [
-        "gpt-3.5-turbo",
-        "gpt-4",
-        "claude-3-sonnet",
-        "llama-2-7b",
-        "mistral-7b"
-    ]
+    return ["gpt-3.5-turbo", "gpt-4", "claude-3-sonnet", "llama-2-7b", "mistral-7b"]
 
-def load_custom_css():
-    """Load custom CSS for the interface"""
-    return """
+
+def load_chatgpt_css():
+    """Load ChatGPT-style CSS for the interface"""
+    return """    /* Main container styling */
     .gradio-container {
-        max-width: 1200px !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        max-height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow-y: scroll !important;
     }
     
-    .group {
-        border-radius: 10px;
-        padding: 15px;
+    /* Ensure full height usage */
+    .gradio-container > div {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
     }
     
-    .submit-btn {
-        background: linear-gradient(45deg, #FF6B35, #F7931E);
-        border: none;
+    /* Header styling - ChatGPT inspired */
+    .header-row {
+        background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
         color: white;
-        font-weight: bold;
+        padding: 20px 30px;
+        margin-bottom: 0;
+        border-radius: 0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .header-title {
+        margin: 0 !important;
+    }
+    
+    .header-title h1 {
+        margin: 0 !important;
+        font-size: 1.8em !important;
+        font-weight: 600 !important;
+        color: white !important;
+    }
+    
+    .model-selector {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 8px !important;
+        color: white !important;
+    }
+    
+    /* Main chatbot styling - clean ChatGPT style */
+    .main-chatbot {
+        border: none !important;
+        border-radius: 0 !important;
+        height: 600px !important;
+        background: #ffffff !important;
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.05) !important;
+        width: 100% !important; 
+        position: relative !important;
+    }
+      /* Input area styling - ChatGPT bottom input */
+    .input-row {
+        padding: 20px !important;
+        background: #ffffff !important;
+        border-top: 1px solid #e5e5e5 !important;
+        margin: 0 !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        z-index: 100 !important;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05) !important;
+        display: flex !important;
+        align-items: flex-end !important;
+        gap: 12px !important;
+    }
+      .chat-input {
+        border-radius: 12px !important;
+        border: 1px solid #d1d5db !important;
+        padding: 12px 16px !important;
+        font-size: 16px !important;
+        background: #ffffff !important;
+        box-shadow: 0 0 0 0 rgba(16, 163, 127, 0) !important;
+        transition: all 0.2s ease !important;
+        resize: none !important;
+        flex: 1 !important;
+        min-height: 44px !important;
+        max-height: 200px !important;
+        overflow-y: auto !important;
+        line-height: 1.5 !important;
+    }
+    
+    .chat-input:focus {
+        border-color: #10a37f !important;
+        box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.2) !important;
+        outline: none !important;
+    }
+      .send-button {
+        background: #10a37f !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 12px 16px !important;
+        font-weight: 600 !important;
+        font-size: 18px !important;
+        color: white !important;
+        transition: all 0.2s ease !important;
+        cursor: pointer !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .send-button:hover {
+        background: #1a7f64 !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+    
+    .send-button:disabled {
+        background: #d1d5db !important;
+        cursor: not-allowed !important;
+    }
+    
+    /* Action buttons styling */
+    .action-row {
+        padding: 10px 20px !important;
+        background: #f9fafb !important;
+        border-top: 1px solid #e5e5e5 !important;
+        justify-content: space-between !important;
+    }
+    
+    /* Settings panel - hidden by default like ChatGPT */
+    .settings-panel {
+        margin: 0 !important;
+        border: none !important;
+        border-top: 1px solid #e5e5e5 !important;
+        border-radius: 0 !important;
+        background: #f9fafb !important;
+    }
+    
+    .setting-slider {
+        margin: 10px 0 !important;
+    }
+    
+    /* Status indicator - minimal like ChatGPT */
+    .status-indicator {
+        display: none !important;
+    }
+    
+    /* Message styling - ChatGPT style bubbles */
+    .message.user {
+        background: #f7f7f8 !important;
+        border: 1px solid #e5e5e5 !important;
+        border-radius: 18px !important;
+        padding: 12px 16px !important;
+        margin: 8px 0 !important;
+        max-width: 80% !important;
+        min-width: 150px !important;
+        margin-left: auto !important;
+    }
+    /* Dark mode user message */
+    .message.user.dark {
+        background: #2d2d2d !important;
+        border-color: #444 !important;
+        color: #f0f0f0 !important;
+        box-shadow: none !important;
+        border-radius: 18px !important;
+        padding: 12px 16px !important;
+        margin: 8px 0 !important;
+        margin-left: auto !important;
+    }
+    
+    .message.bot {
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 12px 16px !important;
+        margin: 8px 0 !important;
+        max-width: 100% !important;
+    }
+    
+    /* Chat message styling */
+    .chatbot .message-wrap {
+        padding: 16px 24px !important;
+        border-bottom: 1px solid #f0f0f0 !important;
+    }
+    
+    .chatbot .message-wrap:last-child {
+        border-bottom: none !important;
+    }
+    
+    /* User message styling */
+    .chatbot .user-message {
+        background: #f7f7f8 !important;
+        border-radius: 18px !important;
+        padding: 12px 16px !important;
+        margin-left: auto !important;
+        max-width: 70% !important;
+        display: inline-block !important;
+    }
+    
+    /* Assistant message styling */
+    .chatbot .assistant-message {
+        background: transparent !important;
+        padding: 12px 0 !important;
+        max-width: 100% !important;
+    }
+    
+    /* Improved button styling */
+    button {
+        transition: all 0.2s ease !important;
+        border-radius: 6px !important;
+    }
+    
+    button:hover {
+        transform: none !important;
+        opacity: 0.9 !important;
+    }
+      /* Responsive design */
+    @media (max-width: 768px) {
+        .gradio-container {
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .header-row {
+            padding: 15px 20px !important;
+            flex-direction: column !important;
+            gap: 15px !important;
+        }
+        
+        .header-title h1 {
+            font-size: 1.5em !important;
+        }
+        
+        .model-selector {
+            width: 100% !important;
+        }
+        
+        .main-chatbot {
+            height: calc(100vh - 280px) !important;
+            border-radius: 0 !important;
+        }
+        
+        .input-row {
+            padding: 15px !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+        }
+        
+        .chat-input {
+            font-size: 16px !important;
+            width: 100% !important;
+            min-height: 44px !important;
+        }
+        
+        .send-button {
+            width: 100% !important;
+            min-height: 44px !important;
+            font-size: 16px !important;
+        }
+        
+        .action-row {
+            padding: 10px 15px !important;
+            flex-wrap: wrap !important;
+            gap: 10px !important;
+        }
+        
+        .settings-panel {
+            margin: 0 !important;
+        }
+        
+        .setting-slider {
+            margin: 15px 0 !important;
+        }
+    }
+    
+    /* Tablet responsive design */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .gradio-container {
+            max-width: 95% !important;
+            padding: 0 10px !important;
+        }
+        
+        .header-row {
+            padding: 20px 25px !important;
+        }
+        
+        .main-chatbot {
+            height: calc(100vh - 250px) !important;
+        }
+        
+        .input-row {
+            padding: 18px !important;
+        }
+        
+        .chat-input {
+            font-size: 15px !important;
+        }
+    }
+    
+    /* Large screen optimization */
+    @media (min-width: 1400px) {
+        .gradio-container {
+            max-width: 1400px !important;
+        }
+        
+        .main-chatbot {
+            height: 700px !important;
+        }
+        
+        .chat-input {
+            font-size: 17px !important;
+        }
+    }
+    
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+        .chat-input {
+            font-size: 16px !important;
+            min-height: 44px !important;
+            padding: 15px 18px !important;
+        }
+        
+        .send-button {
+            min-height: 48px !important;
+            min-width: 48px !important;
+            font-size: 20px !important;
+        }
+        
+        button {
+            min-height: 44px !important;
+            padding: 12px 16px !important;
+        }
+        
+        .setting-slider {
+            margin: 20px 0 !important;
+        }
+    }
+    
+    /* Landscape mobile optimization */
+    @media (max-width: 768px) and (orientation: landscape) {
+        .main-chatbot {
+            height: calc(100vh - 200px) !important;
+        }
+        
+        .header-row {
+            padding: 10px 15px !important;
+        }
+        
+        .header-title h1 {
+            font-size: 1.3em !important;
+        }
+        
+        .input-row {
+            padding: 10px !important;
+        }
+    }
+    
+    /* Small mobile devices */
+    @media (max-width: 480px) {
+        .header-row {
+            padding: 12px 15px !important;
+        }
+        
+        .header-title h1 {
+            font-size: 1.4em !important;
+        }
+        
+        .main-chatbot {
+            height: calc(100vh - 300px) !important;
+        }
+        
+        .input-row {
+            padding: 12px !important;
+        }
+        
+        .action-row {
+            padding: 8px 12px !important;
+        }
+        
+        .chatbot .message-wrap {
+            padding: 12px 16px !important;
+        }
+        
+        .chatbot .user-message {
+            max-width: 85% !important;
+            padding: 10px 14px !important;
+        }
+    }
+      /* Flexible grid system for settings */
+    .settings-panel .gradio-row {
+        flex-wrap: wrap !important;
+        gap: 15px !important;
+    }
+    
+    @media (max-width: 768px) {
+        .settings-panel .gradio-row {
+            flex-direction: column !important;
+        }
+        
+        .settings-panel .gradio-column {
+            width: 100% !important;
+            min-width: unset !important;
+        }
+    }
+    
+    /* Improved focus states for accessibility */
+    .chat-input:focus,
+    .send-button:focus,
+    .model-selector:focus {
+        outline: 2px solid #10a37f !important;
+        outline-offset: 2px !important;
+    }
+    
+    /* Better button states */
+    .send-button:active {
+        transform: scale(0.98) !important;
+    }
+    
+    /* Smooth transitions for responsive changes */
+    .gradio-container,
+    .header-row,
+    .main-chatbot,
+    .input-row {
+        transition: all 0.3s ease !important;
+    }
+    
+    /* Loading states */
+    .chatbot.loading {
+        opacity: 0.7 !important;
+    }
+    
+    .chatbot.loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border: 2px solid #10a37f;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+    
+    /* High DPI display optimization */
+    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        .chat-input,
+        .send-button {
+            border-width: 0.5px !important;
+        }
+    }
+    
+    /* Dark mode support (optional) */
+    @media (prefers-color-scheme: dark) {
+        .gradio-container {
+            background: #1a1a1a !important;
+            color: white !important;
+        }
+        
+        .main-chatbot {
+            background: #2d2d2d !important;
+        }
+        
+        .chat-input {
+            background: #3a3a3a !important;
+            border-color: #555 !important;
+            color: white !important;
+        }
+        
+        .input-row {
+            background: #2d2d2d !important;
+            border-color: #555 !important;
+        }
+    }
+    
+    /* Animation for message loading */
+    @keyframes messageSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .message {
+        animation: messageSlideIn 0.3s ease-out !important;
+    }
+    
+    /* Hide Gradio branding */
+    .footer {
+        display: none !important;
+    }
+    
+    .gr-button-secondary {
+        background: transparent !important;
+        border: 1px solid #d1d5db !important;
+        color: #374151 !important;
+    }
+    
+    .gr-button-secondary:hover {
+        background: #f9fafb !important;
+        border-color: #9ca3af !important;
+    }
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
     }
     """

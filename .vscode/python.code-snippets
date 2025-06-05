@@ -1,0 +1,173 @@
+{
+    // Gradio Interface Snippets
+    "Gradio Basic Interface": {
+        "prefix": "gr-interface",
+        "body": [
+            "import gradio as gr",
+            "",
+            "def ${1:function_name}(${2:input_param}):",
+            "    \"\"\"${3:Function description}\"\"\"",
+            "    # Process input",
+            "    result = ${2:input_param}",
+            "    return result",
+            "",
+            "# Create interface",
+            "demo = gr.Interface(",
+            "    fn=${1:function_name},",
+            "    inputs=gr.Textbox(label=\"${4:Input}\"),",
+            "    outputs=gr.Textbox(label=\"${5:Output}\"),",
+            "    title=\"${6:App Title}\",",
+            "    description=\"${7:App Description}\"",
+            ")",
+            "",
+            "if __name__ == \"__main__\":",
+            "    demo.launch()$0"
+        ],
+        "description": "Create a basic Gradio interface"
+    },
+    
+    "Gradio Blocks Interface": {
+        "prefix": "gr-blocks",
+        "body": [
+            "import gradio as gr",
+            "",
+            "def ${1:function_name}(${2:input_param}):",
+            "    \"\"\"${3:Function description}\"\"\"",
+            "    return ${2:input_param}",
+            "",
+            "with gr.Blocks(title=\"${4:App Title}\") as demo:",
+            "    gr.Markdown(\"# ${5:Header}\")",
+            "    ",
+            "    with gr.Row():",
+            "        with gr.Column():",
+            "            ${6:input_component} = gr.Textbox(label=\"${7:Input Label}\")",
+            "            ${8:submit_btn} = gr.Button(\"Submit\")",
+            "        ",
+            "        with gr.Column():",
+            "            ${9:output_component} = gr.Textbox(label=\"${10:Output Label}\")",
+            "    ",
+            "    ${8:submit_btn}.click(",
+            "        fn=${1:function_name},",
+            "        inputs=${6:input_component},",
+            "        outputs=${9:output_component}",
+            "    )",
+            "",
+            "if __name__ == \"__main__\":",
+            "    demo.launch()$0"
+        ],
+        "description": "Create a Gradio Blocks interface"
+    },
+    
+    "MCP Handler Class": {
+        "prefix": "mcp-handler",
+        "body": [
+            "class MCPHandler:",
+            "    \"\"\"Handler for Model Context Protocol operations\"\"\"",
+            "    ",
+            "    def __init__(self, config: Dict[str, Any]):",
+            "        self.config = config",
+            "        self.${1:model} = None",
+            "        self._initialize()",
+            "    ",
+            "    def _initialize(self):",
+            "        \"\"\"Initialize the MCP handler\"\"\"",
+            "        # Initialize your model/handler here",
+            "        pass",
+            "    ",
+            "    def process(self, ${2:input_data}) -> str:",
+            "        \"\"\"Process input through MCP\"\"\"",
+            "        try:",
+            "            # Process the input",
+            "            result = self._handle_request(${2:input_data})",
+            "            return result",
+            "        except Exception as e:",
+            "            return f\"Error: {str(e)}\"",
+            "    ",
+            "    def _handle_request(self, ${2:input_data}):",
+            "        \"\"\"Handle the actual request processing\"\"\"",
+            "        # Your processing logic here",
+            "        return ${2:input_data}$0"
+        ],
+        "description": "Create an MCP handler class"
+    },
+    
+    "Gradio Event Handler": {
+        "prefix": "gr-event",
+        "body": [
+            "def ${1:handle_function}(${2:inputs}):",
+            "    \"\"\"${3:Event handler description}\"\"\"",
+            "    try:",
+            "        # Process the inputs",
+            "        ${4:result} = ${2:inputs}",
+            "        ${5:status} = \"Success\"",
+            "        ${6:logs} = f\"Processed: {${2:inputs}}\"",
+            "        ",
+            "        return ${4:result}, ${5:status}, ${6:logs}",
+            "        ",
+            "    except Exception as e:",
+            "        error_msg = f\"Error: {str(e)}\"",
+            "        return error_msg, \"Error\", f\"Error occurred: {str(e)}\"$0"
+        ],
+        "description": "Create a Gradio event handler function"
+    },
+    
+    "Python Logger Setup": {
+        "prefix": "py-logger",
+        "body": [
+            "import logging",
+            "from typing import Optional",
+            "",
+            "def setup_logger(name: str = \"${1:app}\", level: str = \"INFO\") -> logging.Logger:",
+            "    \"\"\"Setup and configure logger\"\"\"",
+            "    logger = logging.getLogger(name)",
+            "    logger.setLevel(getattr(logging, level.upper()))",
+            "    ",
+            "    # Create handler if not exists",
+            "    if not logger.handlers:",
+            "        handler = logging.StreamHandler()",
+            "        formatter = logging.Formatter(",
+            "            '%(asctime)s - %(name)s - %(levelname)s - %(message)s'",
+            "        )",
+            "        handler.setFormatter(formatter)",
+            "        logger.addHandler(handler)",
+            "    ",
+            "    return logger$0"
+        ],
+        "description": "Setup Python logger"
+    },
+    
+    "Config Loader": {
+        "prefix": "py-config",
+        "body": [
+            "import json",
+            "import os",
+            "from typing import Dict, Any",
+            "",
+            "def load_config(config_path: str = \"config/app_config.json\") -> Dict[str, Any]:",
+            "    \"\"\"Load configuration from JSON file\"\"\"",
+            "    try:",
+            "        if not os.path.exists(config_path):",
+            "            raise FileNotFoundError(f\"Config file not found: {config_path}\")",
+            "        ",
+            "        with open(config_path, 'r') as f:",
+            "            config = json.load(f)",
+            "        ",
+            "        # Apply environment variable overrides",
+            "        ${1:apply_env_overrides}(config)",
+            "        ",
+            "        return config",
+            "        ",
+            "    except Exception as e:",
+            "        raise RuntimeError(f\"Failed to load config: {e}\")",
+            "",
+            "def ${1:apply_env_overrides}(config: Dict[str, Any]):",
+            "    \"\"\"Apply environment variable overrides\"\"\"",
+            "    # Override with environment variables if available",
+            "    for key, value in config.items():",
+            "        env_key = f\"${2:APP}_{key.upper()}\"",
+            "        if env_key in os.environ:",
+            "            config[key] = os.environ[env_key]$0"
+        ],
+        "description": "Create config loader function"
+    }
+}

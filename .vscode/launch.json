@@ -1,0 +1,106 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Gradio App",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/app.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "args": [],
+      "justMyCode": false,
+      "stopOnEntry": false,
+      "autoReload": {
+        "enable": true,
+        "include": ["**/*.py"],
+        "exclude": ["**/venv/**", "**/__pycache__/**"]
+      }
+    },
+    {
+      "name": "Debug Gradio App (Detailed)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/app.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+        "GRADIO_DEBUG": "1",
+        "DEBUG": "1"
+      },
+      "args": [],
+      "justMyCode": false,
+      "stopOnEntry": false,
+      "logToFile": true,
+      "subProcess": true
+    },
+    {
+      "name": "Run Development Server",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/dev_server.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "args": [],
+      "justMyCode": false
+    },
+    {
+      "name": "Debug Tests",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["tests/", "-v", "--tb=short"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "justMyCode": false
+    },
+    {
+      "name": "Debug Specific Test",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["${file}", "-v", "--tb=long"],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "justMyCode": false
+    },
+    {
+      "name": "Debug Interface Component",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/components/interface.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "args": [],
+      "justMyCode": false
+    },
+    {
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/src"
+      },
+      "justMyCode": false
+    }
+  ]
+}

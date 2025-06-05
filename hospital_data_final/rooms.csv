@@ -1,151 +1,151 @@
-id,room_number,room_type,bed_capacity,table_count,has_oxygen_outlet,floor_number,notes,created_at,updated_at
-1,R001,Pediatric,1,1,TRUE,1,Pediatric room,58:58.8,58:58.8
-2,R002,Surgery,1,1,TRUE,1,Surgery room,58:58.8,58:58.8
-3,R003,Emergency,1,1,TRUE,1,Emergency room,58:58.8,58:58.8
-4,R004,Pediatric,2,1,TRUE,1,Pediatric room,58:58.8,58:58.8
-5,R005,General Ward,1,1,FALSE,1,General Ward room,58:58.8,58:58.8
-6,R006,Emergency,1,1,FALSE,1,Emergency room,58:58.8,58:58.8
-7,R007,Surgery,1,1,TRUE,1,Surgery room,58:58.8,58:58.8
-8,R008,ICU,1,1,TRUE,1,ICU room,58:58.8,58:58.8
-9,R009,Surgery,1,1,TRUE,1,Surgery room,58:58.8,58:58.8
-10,R010,Pediatric,1,1,FALSE,1,Pediatric room,58:58.8,58:58.8
-11,R011,Maternity,1,1,FALSE,1,Maternity room,58:58.8,58:58.8
-12,R012,Emergency,1,1,FALSE,1,Emergency room,58:58.8,58:58.8
-13,R013,Surgery,1,1,TRUE,1,Surgery room,58:58.8,58:58.8
-14,R014,Pediatric,2,1,TRUE,1,Pediatric room,58:58.8,58:58.8
-15,R015,General Ward,1,1,FALSE,1,General Ward room,58:58.8,58:58.8
-16,R016,General Ward,2,1,FALSE,1,General Ward room,58:58.8,58:58.8
-17,R017,Surgery,1,1,FALSE,1,Surgery room,58:58.8,58:58.8
-18,R018,Surgery,1,1,TRUE,1,Surgery room,58:58.8,58:58.8
-19,R019,Emergency,1,1,FALSE,1,Emergency room,58:58.8,58:58.8
-20,R020,ICU,1,1,FALSE,1,ICU room,58:58.8,58:58.8
-21,R021,Pediatric,1,1,TRUE,1,Pediatric room,58:58.8,58:58.8
-22,R022,ICU,1,1,TRUE,1,ICU room,58:58.8,58:58.8
-23,R023,Pediatric,2,1,FALSE,1,Pediatric room,58:58.8,58:58.8
-24,R024,ICU,1,1,FALSE,1,ICU room,58:58.8,58:58.8
-25,R025,General Ward,1,1,TRUE,1,General Ward room,58:58.8,58:58.8
-26,R026,General Ward,2,1,TRUE,1,General Ward room,58:58.8,58:58.8
-27,R027,ICU,1,1,FALSE,1,ICU room,58:58.8,58:58.8
-28,R028,General Ward,2,1,TRUE,1,General Ward room,58:58.8,58:58.8
-29,R029,Surgery,1,1,FALSE,1,Surgery room,58:58.8,58:58.8
-30,R030,Maternity,1,1,FALSE,1,Maternity room,58:58.8,58:58.8
-31,R031,Surgery,1,1,TRUE,2,Surgery room,58:58.8,58:58.8
-32,R032,ICU,1,1,FALSE,2,ICU room,58:58.8,58:58.8
-33,R033,Maternity,2,1,FALSE,2,Maternity room,58:58.8,58:58.8
-34,R034,Surgery,1,1,FALSE,2,Surgery room,58:58.8,58:58.8
-35,R035,Emergency,1,1,TRUE,2,Emergency room,58:58.8,58:58.8
-36,R036,ICU,1,1,FALSE,2,ICU room,58:58.8,58:58.8
-37,R037,General Ward,2,1,FALSE,2,General Ward room,58:58.8,58:58.8
-38,R038,Maternity,1,1,FALSE,2,Maternity room,58:58.8,58:58.8
-39,R039,Pediatric,2,1,FALSE,2,Pediatric room,58:58.8,58:58.8
-40,R040,General Ward,2,1,TRUE,2,General Ward room,58:58.8,58:58.8
-41,R041,General Ward,2,1,FALSE,2,General Ward room,58:58.8,58:58.8
-42,R042,Maternity,1,1,TRUE,2,Maternity room,58:58.8,58:58.8
-43,R043,Emergency,1,1,FALSE,2,Emergency room,58:58.8,58:58.8
-44,R044,Emergency,1,1,TRUE,2,Emergency room,58:58.8,58:58.8
-45,R045,Pediatric,2,1,TRUE,2,Pediatric room,58:58.8,58:58.8
-46,R046,Emergency,1,1,FALSE,2,Emergency room,58:58.8,58:58.8
-47,R047,Emergency,1,1,FALSE,2,Emergency room,58:58.8,58:58.8
-48,R048,Surgery,1,1,TRUE,2,Surgery room,58:58.8,58:58.8
-49,R049,Maternity,1,1,FALSE,2,Maternity room,58:58.8,58:58.8
-50,R050,Pediatric,2,1,FALSE,2,Pediatric room,58:58.8,58:58.8
-51,R051,Surgery,1,1,TRUE,2,Surgery room,58:58.8,58:58.8
-52,R052,Pediatric,2,1,TRUE,2,Pediatric room,58:58.8,58:58.8
-53,R053,Pediatric,1,1,TRUE,2,Pediatric room,58:58.8,58:58.8
-54,R054,General Ward,2,1,TRUE,2,General Ward room,58:58.8,58:58.8
-55,R055,Pediatric,1,1,TRUE,2,Pediatric room,58:58.8,58:58.8
-56,R056,Pediatric,1,1,FALSE,2,Pediatric room,58:58.8,58:58.8
-57,R057,Surgery,1,1,FALSE,2,Surgery room,58:58.8,58:58.8
-58,R058,Pediatric,2,1,TRUE,2,Pediatric room,58:58.8,58:58.8
-59,R059,General Ward,1,1,TRUE,2,General Ward room,58:58.8,58:58.8
-60,R060,Emergency,1,1,TRUE,2,Emergency room,58:58.8,58:58.8
-61,R061,General Ward,1,1,FALSE,3,General Ward room,58:58.8,58:58.8
-62,R062,General Ward,2,1,FALSE,3,General Ward room,58:58.8,58:58.8
-63,R063,Surgery,1,1,FALSE,3,Surgery room,58:58.8,58:58.8
-64,R064,General Ward,2,1,FALSE,3,General Ward room,58:58.8,58:58.8
-65,R065,Surgery,1,1,TRUE,3,Surgery room,58:58.8,58:58.8
-66,R066,Surgery,1,1,FALSE,3,Surgery room,58:58.8,58:58.8
-67,R067,ICU,1,1,FALSE,3,ICU room,58:58.8,58:58.8
-68,R068,Maternity,2,1,TRUE,3,Maternity room,58:58.8,58:58.8
-69,R069,Maternity,1,1,TRUE,3,Maternity room,58:58.8,58:58.8
-70,R070,ICU,1,1,FALSE,3,ICU room,58:58.8,58:58.8
-71,R071,Pediatric,2,1,FALSE,3,Pediatric room,58:58.8,58:58.8
-72,R072,General Ward,2,1,FALSE,3,General Ward room,58:58.8,58:58.8
-73,R073,Emergency,1,1,TRUE,3,Emergency room,58:58.8,58:58.8
-74,R074,Pediatric,1,1,TRUE,3,Pediatric room,58:58.8,58:58.8
-75,R075,General Ward,2,1,TRUE,3,General Ward room,58:58.8,58:58.8
-76,R076,Surgery,1,1,FALSE,3,Surgery room,58:58.8,58:58.8
-77,R077,Pediatric,2,1,TRUE,3,Pediatric room,58:58.8,58:58.8
-78,R078,Pediatric,1,1,FALSE,3,Pediatric room,58:58.8,58:58.8
-79,R079,ICU,1,1,TRUE,3,ICU room,58:58.8,58:58.8
-80,R080,Pediatric,1,1,FALSE,3,Pediatric room,58:58.8,58:58.8
-81,R081,Emergency,1,1,FALSE,3,Emergency room,58:58.8,58:58.8
-82,R082,General Ward,2,1,FALSE,3,General Ward room,58:58.8,58:58.8
-83,R083,Emergency,1,1,FALSE,3,Emergency room,58:58.8,58:58.8
-84,R084,Emergency,1,1,FALSE,3,Emergency room,58:58.8,58:58.8
-85,R085,General Ward,2,1,FALSE,3,General Ward room,58:58.8,58:58.8
-86,R086,Surgery,1,1,FALSE,3,Surgery room,58:58.8,58:58.8
-87,R087,ICU,1,1,FALSE,3,ICU room,58:58.8,58:58.8
-88,R088,Emergency,1,1,FALSE,3,Emergency room,58:58.8,58:58.8
-89,R089,Pediatric,1,1,FALSE,3,Pediatric room,58:58.8,58:58.8
-90,R090,Surgery,1,1,FALSE,3,Surgery room,58:58.8,58:58.8
-91,R091,Maternity,2,1,TRUE,4,Maternity room,58:58.8,58:58.8
-92,R092,ICU,1,1,FALSE,4,ICU room,58:58.8,58:58.8
-93,R093,Emergency,1,1,FALSE,4,Emergency room,58:58.8,58:58.8
-94,R094,Pediatric,2,1,TRUE,4,Pediatric room,58:58.8,58:58.8
-95,R095,Maternity,2,1,FALSE,4,Maternity room,58:58.8,58:58.8
-96,R096,Emergency,1,1,FALSE,4,Emergency room,58:58.8,58:58.8
-97,R097,General Ward,2,1,FALSE,4,General Ward room,58:58.8,58:58.8
-98,R098,Pediatric,2,1,FALSE,4,Pediatric room,58:58.8,58:58.8
-99,R099,Pediatric,2,1,FALSE,4,Pediatric room,58:58.8,58:58.8
-100,R100,Maternity,2,1,FALSE,4,Maternity room,58:58.8,58:58.8
-101,R101,Pediatric,1,1,TRUE,4,Pediatric room,58:58.8,58:58.8
-102,R102,Maternity,1,1,TRUE,4,Maternity room,58:58.8,58:58.8
-103,R103,Surgery,1,1,TRUE,4,Surgery room,58:58.8,58:58.8
-104,R104,Surgery,1,1,TRUE,4,Surgery room,58:58.8,58:58.8
-105,R105,ICU,1,1,FALSE,4,ICU room,58:58.8,58:58.8
-106,R106,Emergency,1,1,TRUE,4,Emergency room,58:58.8,58:58.8
-107,R107,Maternity,2,1,TRUE,4,Maternity room,58:58.8,58:58.8
-108,R108,Emergency,1,1,TRUE,4,Emergency room,58:58.8,58:58.8
-109,R109,ICU,1,1,FALSE,4,ICU room,58:58.8,58:58.8
-110,R110,Maternity,1,1,TRUE,4,Maternity room,58:58.8,58:58.8
-111,R111,General Ward,2,1,TRUE,4,General Ward room,58:58.8,58:58.8
-112,R112,Surgery,1,1,TRUE,4,Surgery room,58:58.8,58:58.8
-113,R113,ICU,1,1,FALSE,4,ICU room,58:58.8,58:58.8
-114,R114,Pediatric,1,1,FALSE,4,Pediatric room,58:58.8,58:58.8
-115,R115,Maternity,1,1,TRUE,4,Maternity room,58:58.8,58:58.8
-116,R116,ICU,1,1,TRUE,4,ICU room,58:58.8,58:58.8
-117,R117,Pediatric,1,1,FALSE,4,Pediatric room,58:58.8,58:58.8
-118,R118,Pediatric,1,1,TRUE,4,Pediatric room,58:58.8,58:58.8
-119,R119,Emergency,1,1,TRUE,4,Emergency room,58:58.8,58:58.8
-120,R120,Maternity,2,1,TRUE,4,Maternity room,58:58.8,58:58.8
-121,R121,Maternity,2,1,TRUE,5,Maternity room,58:58.8,58:58.8
-122,R122,General Ward,2,1,TRUE,5,General Ward room,58:58.8,58:58.8
-123,R123,ICU,1,1,FALSE,5,ICU room,58:58.8,58:58.8
-124,R124,General Ward,2,1,FALSE,5,General Ward room,58:58.8,58:58.8
-125,R125,Pediatric,2,1,FALSE,5,Pediatric room,58:58.8,58:58.8
-126,R126,ICU,1,1,TRUE,5,ICU room,58:58.8,58:58.8
-127,R127,ICU,1,1,TRUE,5,ICU room,58:58.8,58:58.8
-128,R128,Emergency,1,1,TRUE,5,Emergency room,58:58.8,58:58.8
-129,R129,ICU,1,1,FALSE,5,ICU room,58:58.8,58:58.8
-130,R130,ICU,1,1,TRUE,5,ICU room,58:58.8,58:58.8
-131,R131,Surgery,1,1,FALSE,5,Surgery room,58:58.8,58:58.8
-132,R132,Pediatric,1,1,FALSE,5,Pediatric room,58:58.8,58:58.8
-133,R133,Surgery,1,1,TRUE,5,Surgery room,58:58.8,58:58.8
-134,R134,Emergency,1,1,FALSE,5,Emergency room,58:58.8,58:58.8
-135,R135,Maternity,1,1,TRUE,5,Maternity room,58:58.8,58:58.8
-136,R136,General Ward,2,1,TRUE,5,General Ward room,58:58.8,58:58.8
-137,R137,Maternity,2,1,FALSE,5,Maternity room,58:58.8,58:58.8
-138,R138,General Ward,2,1,TRUE,5,General Ward room,58:58.8,58:58.8
-139,R139,ICU,1,1,TRUE,5,ICU room,58:58.8,58:58.8
-140,R140,ICU,1,1,FALSE,5,ICU room,58:58.8,58:58.8
-141,R141,Maternity,1,1,TRUE,5,Maternity room,58:58.8,58:58.8
-142,R142,Emergency,1,1,TRUE,5,Emergency room,58:58.8,58:58.8
-143,R143,Maternity,1,1,FALSE,5,Maternity room,58:58.8,58:58.8
-144,R144,Emergency,1,1,FALSE,5,Emergency room,58:58.8,58:58.8
-145,R145,General Ward,1,1,FALSE,5,General Ward room,58:58.8,58:58.8
-146,R146,Pediatric,1,1,TRUE,5,Pediatric room,58:58.8,58:58.8
-147,R147,ICU,1,1,TRUE,5,ICU room,58:58.8,58:58.8
-148,R148,Emergency,1,1,FALSE,5,Emergency room,58:58.8,58:58.8
-149,R149,Emergency,1,1,FALSE,5,Emergency room,58:58.8,58:58.8
-150,R150,General Ward,2,1,TRUE,5,General Ward room,58:58.8,58:58.8
+id,room_number,room_type,bed_capacity,table_count,has_oxygen_outlet,floor_number,notes,,
+1,R001,Pediatric,1,1,TRUE,1,Pediatric room,,
+2,R002,Surgery,1,1,TRUE,1,Surgery room,,
+3,R003,Emergency,1,1,TRUE,1,Emergency room,,
+4,R004,Pediatric,2,1,TRUE,1,Pediatric room,,
+5,R005,General Ward,1,1,FALSE,1,General Ward room,,
+6,R006,Emergency,1,1,FALSE,1,Emergency room,,
+7,R007,Surgery,1,1,TRUE,1,Surgery room,,
+8,R008,ICU,1,1,TRUE,1,ICU room,,
+9,R009,Surgery,1,1,TRUE,1,Surgery room,,
+10,R010,Pediatric,1,1,FALSE,1,Pediatric room,,
+11,R011,Maternity,1,1,FALSE,1,Maternity room,,
+12,R012,Emergency,1,1,FALSE,1,Emergency room,,
+13,R013,Surgery,1,1,TRUE,1,Surgery room,,
+14,R014,Pediatric,2,1,TRUE,1,Pediatric room,,
+15,R015,General Ward,1,1,FALSE,1,General Ward room,,
+16,R016,General Ward,2,1,FALSE,1,General Ward room,,
+17,R017,Surgery,1,1,FALSE,1,Surgery room,,
+18,R018,Surgery,1,1,TRUE,1,Surgery room,,
+19,R019,Emergency,1,1,FALSE,1,Emergency room,,
+20,R020,ICU,1,1,FALSE,1,ICU room,,
+21,R021,Pediatric,1,1,TRUE,1,Pediatric room,,
+22,R022,ICU,1,1,TRUE,1,ICU room,,
+23,R023,Pediatric,2,1,FALSE,1,Pediatric room,,
+24,R024,ICU,1,1,FALSE,1,ICU room,,
+25,R025,General Ward,1,1,TRUE,1,General Ward room,,
+26,R026,General Ward,2,1,TRUE,1,General Ward room,,
+27,R027,ICU,1,1,FALSE,1,ICU room,,
+28,R028,General Ward,2,1,TRUE,1,General Ward room,,
+29,R029,Surgery,1,1,FALSE,1,Surgery room,,
+30,R030,Maternity,1,1,FALSE,1,Maternity room,,
+31,R031,Surgery,1,1,TRUE,2,Surgery room,,
+32,R032,ICU,1,1,FALSE,2,ICU room,,
+33,R033,Maternity,2,1,FALSE,2,Maternity room,,
+34,R034,Surgery,1,1,FALSE,2,Surgery room,,
+35,R035,Emergency,1,1,TRUE,2,Emergency room,,
+36,R036,ICU,1,1,FALSE,2,ICU room,,
+37,R037,General Ward,2,1,FALSE,2,General Ward room,,
+38,R038,Maternity,1,1,FALSE,2,Maternity room,,
+39,R039,Pediatric,2,1,FALSE,2,Pediatric room,,
+40,R040,General Ward,2,1,TRUE,2,General Ward room,,
+41,R041,General Ward,2,1,FALSE,2,General Ward room,,
+42,R042,Maternity,1,1,TRUE,2,Maternity room,,
+43,R043,Emergency,1,1,FALSE,2,Emergency room,,
+44,R044,Emergency,1,1,TRUE,2,Emergency room,,
+45,R045,Pediatric,2,1,TRUE,2,Pediatric room,,
+46,R046,Emergency,1,1,FALSE,2,Emergency room,,
+47,R047,Emergency,1,1,FALSE,2,Emergency room,,
+48,R048,Surgery,1,1,TRUE,2,Surgery room,,
+49,R049,Maternity,1,1,FALSE,2,Maternity room,,
+50,R050,Pediatric,2,1,FALSE,2,Pediatric room,,
+51,R051,Surgery,1,1,TRUE,2,Surgery room,,
+52,R052,Pediatric,2,1,TRUE,2,Pediatric room,,
+53,R053,Pediatric,1,1,TRUE,2,Pediatric room,,
+54,R054,General Ward,2,1,TRUE,2,General Ward room,,
+55,R055,Pediatric,1,1,TRUE,2,Pediatric room,,
+56,R056,Pediatric,1,1,FALSE,2,Pediatric room,,
+57,R057,Surgery,1,1,FALSE,2,Surgery room,,
+58,R058,Pediatric,2,1,TRUE,2,Pediatric room,,
+59,R059,General Ward,1,1,TRUE,2,General Ward room,,
+60,R060,Emergency,1,1,TRUE,2,Emergency room,,
+61,R061,General Ward,1,1,FALSE,3,General Ward room,,
+62,R062,General Ward,2,1,FALSE,3,General Ward room,,
+63,R063,Surgery,1,1,FALSE,3,Surgery room,,
+64,R064,General Ward,2,1,FALSE,3,General Ward room,,
+65,R065,Surgery,1,1,TRUE,3,Surgery room,,
+66,R066,Surgery,1,1,FALSE,3,Surgery room,,
+67,R067,ICU,1,1,FALSE,3,ICU room,,
+68,R068,Maternity,2,1,TRUE,3,Maternity room,,
+69,R069,Maternity,1,1,TRUE,3,Maternity room,,
+70,R070,ICU,1,1,FALSE,3,ICU room,,
+71,R071,Pediatric,2,1,FALSE,3,Pediatric room,,
+72,R072,General Ward,2,1,FALSE,3,General Ward room,,
+73,R073,Emergency,1,1,TRUE,3,Emergency room,,
+74,R074,Pediatric,1,1,TRUE,3,Pediatric room,,
+75,R075,General Ward,2,1,TRUE,3,General Ward room,,
+76,R076,Surgery,1,1,FALSE,3,Surgery room,,
+77,R077,Pediatric,2,1,TRUE,3,Pediatric room,,
+78,R078,Pediatric,1,1,FALSE,3,Pediatric room,,
+79,R079,ICU,1,1,TRUE,3,ICU room,,
+80,R080,Pediatric,1,1,FALSE,3,Pediatric room,,
+81,R081,Emergency,1,1,FALSE,3,Emergency room,,
+82,R082,General Ward,2,1,FALSE,3,General Ward room,,
+83,R083,Emergency,1,1,FALSE,3,Emergency room,,
+84,R084,Emergency,1,1,FALSE,3,Emergency room,,
+85,R085,General Ward,2,1,FALSE,3,General Ward room,,
+86,R086,Surgery,1,1,FALSE,3,Surgery room,,
+87,R087,ICU,1,1,FALSE,3,ICU room,,
+88,R088,Emergency,1,1,FALSE,3,Emergency room,,
+89,R089,Pediatric,1,1,FALSE,3,Pediatric room,,
+90,R090,Surgery,1,1,FALSE,3,Surgery room,,
+91,R091,Maternity,2,1,TRUE,4,Maternity room,,
+92,R092,ICU,1,1,FALSE,4,ICU room,,
+93,R093,Emergency,1,1,FALSE,4,Emergency room,,
+94,R094,Pediatric,2,1,TRUE,4,Pediatric room,,
+95,R095,Maternity,2,1,FALSE,4,Maternity room,,
+96,R096,Emergency,1,1,FALSE,4,Emergency room,,
+97,R097,General Ward,2,1,FALSE,4,General Ward room,,
+98,R098,Pediatric,2,1,FALSE,4,Pediatric room,,
+99,R099,Pediatric,2,1,FALSE,4,Pediatric room,,
+100,R100,Maternity,2,1,FALSE,4,Maternity room,,
+101,R101,Pediatric,1,1,TRUE,4,Pediatric room,,
+102,R102,Maternity,1,1,TRUE,4,Maternity room,,
+103,R103,Surgery,1,1,TRUE,4,Surgery room,,
+104,R104,Surgery,1,1,TRUE,4,Surgery room,,
+105,R105,ICU,1,1,FALSE,4,ICU room,,
+106,R106,Emergency,1,1,TRUE,4,Emergency room,,
+107,R107,Maternity,2,1,TRUE,4,Maternity room,,
+108,R108,Emergency,1,1,TRUE,4,Emergency room,,
+109,R109,ICU,1,1,FALSE,4,ICU room,,
+110,R110,Maternity,1,1,TRUE,4,Maternity room,,
+111,R111,General Ward,2,1,TRUE,4,General Ward room,,
+112,R112,Surgery,1,1,TRUE,4,Surgery room,,
+113,R113,ICU,1,1,FALSE,4,ICU room,,
+114,R114,Pediatric,1,1,FALSE,4,Pediatric room,,
+115,R115,Maternity,1,1,TRUE,4,Maternity room,,
+116,R116,ICU,1,1,TRUE,4,ICU room,,
+117,R117,Pediatric,1,1,FALSE,4,Pediatric room,,
+118,R118,Pediatric,1,1,TRUE,4,Pediatric room,,
+119,R119,Emergency,1,1,TRUE,4,Emergency room,,
+120,R120,Maternity,2,1,TRUE,4,Maternity room,,
+121,R121,Maternity,2,1,TRUE,5,Maternity room,,
+122,R122,General Ward,2,1,TRUE,5,General Ward room,,
+123,R123,ICU,1,1,FALSE,5,ICU room,,
+124,R124,General Ward,2,1,FALSE,5,General Ward room,,
+125,R125,Pediatric,2,1,FALSE,5,Pediatric room,,
+126,R126,ICU,1,1,TRUE,5,ICU room,,
+127,R127,ICU,1,1,TRUE,5,ICU room,,
+128,R128,Emergency,1,1,TRUE,5,Emergency room,,
+129,R129,ICU,1,1,FALSE,5,ICU room,,
+130,R130,ICU,1,1,TRUE,5,ICU room,,
+131,R131,Surgery,1,1,FALSE,5,Surgery room,,
+132,R132,Pediatric,1,1,FALSE,5,Pediatric room,,
+133,R133,Surgery,1,1,TRUE,5,Surgery room,,
+134,R134,Emergency,1,1,FALSE,5,Emergency room,,
+135,R135,Maternity,1,1,TRUE,5,Maternity room,,
+136,R136,General Ward,2,1,TRUE,5,General Ward room,,
+137,R137,Maternity,2,1,FALSE,5,Maternity room,,
+138,R138,General Ward,2,1,TRUE,5,General Ward room,,
+139,R139,ICU,1,1,TRUE,5,ICU room,,
+140,R140,ICU,1,1,FALSE,5,ICU room,,
+141,R141,Maternity,1,1,TRUE,5,Maternity room,,
+142,R142,Emergency,1,1,TRUE,5,Emergency room,,
+143,R143,Maternity,1,1,FALSE,5,Maternity room,,
+144,R144,Emergency,1,1,FALSE,5,Emergency room,,
+145,R145,General Ward,1,1,FALSE,5,General Ward room,,
+146,R146,Pediatric,1,1,TRUE,5,Pediatric room,,
+147,R147,ICU,1,1,TRUE,5,ICU room,,
+148,R148,Emergency,1,1,FALSE,5,Emergency room,,
+149,R149,Emergency,1,1,FALSE,5,Emergency room,,
+150,R150,General Ward,2,1,TRUE,5,General Ward room,,

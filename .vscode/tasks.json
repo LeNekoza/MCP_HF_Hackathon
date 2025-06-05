@@ -1,0 +1,214 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Setup Project",
+      "type": "shell",
+      "command": "python",
+      "args": ["setup.py"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Install Dependencies",
+      "type": "shell",
+      "command": ".\\venv\\Scripts\\pip",
+      "args": ["install", "-r", "requirements.txt"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Gradio App",
+      "type": "shell",
+      "command": ".\\venv\\Scripts\\python",
+      "args": ["app.py"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": [],
+      "isBackground": true,
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    },
+    {
+      "label": "Run Development Server (Auto-reload)",
+      "type": "shell",
+      "command": ".\\venv\\Scripts\\python",
+      "args": ["dev_server.py"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      },
+      "problemMatcher": [],
+      "isBackground": true,
+      "options": {
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}\\src"
+        }
+      }
+    },
+    {
+      "label": "Run Tests",
+      "type": "shell",
+      "command": ".\\venv\\Scripts\\python",
+      "args": ["-m", "pytest", "tests/", "-v"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Tests with Coverage",
+      "type": "shell",
+      "command": ".\\venv\\Scripts\\python",
+      "args": ["-m", "pytest", "tests/", "--cov=src", "--cov-report=html"],
+      "group": "test",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Format Code (Black)",
+      "type": "shell",
+      "command": ".\\venv\\Scripts\\python",
+      "args": ["-m", "black", "src/", "tests/", "app.py"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint Code (Flake8)",
+      "type": "shell",
+      "command": ".\\venv\\Scripts\\python",
+      "args": ["-m", "flake8", "src/", "tests/", "app.py"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": [
+        {
+          "owner": "python",
+          "fileLocation": ["relative", "${workspaceFolder}"],
+          "pattern": {
+            "regexp": "^(.*):(\\d+):(\\d+):\\s+(\\w\\d+)\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "column": 3,
+            "code": 4,
+            "message": 5
+          }
+        }
+      ]
+    },
+    {
+      "label": "Type Check (MyPy)",
+      "type": "shell",
+      "command": ".\\venv\\Scripts\\python",
+      "args": ["-m", "mypy", "src/"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": [
+        {
+          "owner": "python",
+          "fileLocation": ["relative", "${workspaceFolder}"],
+          "pattern": {
+            "regexp": "^(.*):(\\d+):\\s+(\\w+):\\s+(.*)$",
+            "file": 1,
+            "line": 2,
+            "severity": 3,
+            "message": 4
+          }
+        }
+      ]
+    },
+    {
+      "label": "Clean Cache",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "Get-ChildItem -Path . -Recurse -Name '__pycache__' | Remove-Item -Recurse -Force; Get-ChildItem -Path . -Recurse -Name '*.pyc' | Remove-Item -Force"
+      ],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate Requirements",
+      "type": "shell",
+      "command": ".\\venv\\Scripts\\pip",
+      "args": ["freeze", ">", "requirements_generated.txt"],
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Open Logs Directory",
+      "type": "shell",
+      "command": "explorer",
+      "args": ["logs"],
+      "group": "build",
+      "presentation": {
+        "echo": false,
+        "reveal": "never",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

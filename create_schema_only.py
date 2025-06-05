@@ -47,24 +47,18 @@ def get_create_table_sql():
                 emergency_contact JSONB,
                 password_hash VARCHAR(255) NOT NULL,
                 role VARCHAR(50) NOT NULL,
-                created_at TIMESTAMP,
-                updated_at TIMESTAMP,
                 staff_type VARCHAR(100)
             );
-        """,
-        'storage_rooms': """
+        """,        'storage_rooms': """
             CREATE TABLE IF NOT EXISTS storage_rooms (
                 id INTEGER PRIMARY KEY,
                 storage_number VARCHAR(50) NOT NULL,
                 storage_type VARCHAR(100) NOT NULL,
                 floor_number INTEGER,
                 capacity INTEGER,
-                notes TEXT,
-                created_at TIMESTAMP,
-                updated_at TIMESTAMP
+                notes TEXT
             );
-        """,
-        'patient_records': """
+        """,        'patient_records': """
             CREATE TABLE IF NOT EXISTS patient_records (
                 id INTEGER PRIMARY KEY,
                 user_id INTEGER REFERENCES users(id),
@@ -74,12 +68,9 @@ def get_create_table_sql():
                 allergies TEXT,
                 medical_history TEXT,
                 emergency_contact JSONB,
-                contact_phone JSONB,
-                date_created TIMESTAMP,
-                date_updated TIMESTAMP
+                contact_phone JSONB
             );
-        """,
-        'rooms': """
+        """,        'rooms': """
             CREATE TABLE IF NOT EXISTS rooms (
                 id INTEGER PRIMARY KEY,
                 room_number VARCHAR(50) NOT NULL,
@@ -88,12 +79,9 @@ def get_create_table_sql():
                 table_count INTEGER,
                 has_oxygen_outlet BOOLEAN,
                 floor_number INTEGER,
-                notes TEXT,
-                created_at TIMESTAMP,
-                updated_at TIMESTAMP
+                notes TEXT
             );
-        """,
-        'tools': """
+        """,        'tools': """
             CREATE TABLE IF NOT EXISTS tools (
                 id INTEGER PRIMARY KEY,
                 tool_name VARCHAR(255) NOT NULL,
@@ -104,9 +92,7 @@ def get_create_table_sql():
                 location_storage_id INTEGER REFERENCES storage_rooms(id),
                 location_description VARCHAR(255),
                 purchase_date DATE,
-                last_maintenance_date DATE,
-                created_at TIMESTAMP,
-                updated_at TIMESTAMP
+                last_maintenance_date DATE
             );
         """,
         'hospital_inventory': """
@@ -118,12 +104,10 @@ def get_create_table_sql():
                 quantity_available INTEGER,
                 location_storage_id INTEGER REFERENCES storage_rooms(id),
                 location_description VARCHAR(255),
-                last_updated TIMESTAMP,
                 details TEXT,
                 expiry_date DATE
             );
-        """,
-        'occupancy': """
+        """,        'occupancy': """
             CREATE TABLE IF NOT EXISTS occupancy (
                 id INTEGER PRIMARY KEY,
                 room_id INTEGER REFERENCES rooms(id),
@@ -133,9 +117,7 @@ def get_create_table_sql():
                 assigned_at TIMESTAMP,
                 discharged_at TIMESTAMP,
                 tools JSONB,
-                hospital_inventory JSONB,
-                created_at TIMESTAMP,
-                updated_at TIMESTAMP
+                hospital_inventory JSONB
             );
         """
     }

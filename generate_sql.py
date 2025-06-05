@@ -22,8 +22,6 @@ CREATE TABLE IF NOT EXISTS users (
     emergency_contact JSONB,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
     staff_type VARCHAR(100)
 );""")
 
@@ -36,8 +34,6 @@ CREATE TABLE IF NOT EXISTS storage_rooms (
     floor_number INTEGER,
     capacity INTEGER,
     notes TEXT,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
 );""")
 
     # Patient records table
@@ -52,8 +48,6 @@ CREATE TABLE IF NOT EXISTS patient_records (
     medical_history TEXT,
     emergency_contact JSONB,
     contact_phone JSONB,
-    date_created TIMESTAMP,
-    date_updated TIMESTAMP
 );""")
 
     # Rooms table
@@ -66,9 +60,7 @@ CREATE TABLE IF NOT EXISTS rooms (
     table_count INTEGER,
     has_oxygen_outlet BOOLEAN,
     floor_number INTEGER,
-    notes TEXT,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
+    notes TEXT
 );""")
 
     # Tools table
@@ -83,9 +75,7 @@ CREATE TABLE IF NOT EXISTS tools (
     location_storage_id INTEGER REFERENCES storage_rooms(id),
     location_description VARCHAR(255),
     purchase_date DATE,
-    last_maintenance_date DATE,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
+    last_maintenance_date DATE
 );""")
 
     # Hospital inventory table
@@ -98,7 +88,6 @@ CREATE TABLE IF NOT EXISTS hospital_inventory (
     quantity_available INTEGER,
     location_storage_id INTEGER REFERENCES storage_rooms(id),
     location_description VARCHAR(255),
-    last_updated TIMESTAMP,
     details TEXT,
     expiry_date DATE
 );""")
@@ -115,8 +104,6 @@ CREATE TABLE IF NOT EXISTS occupancy (
     discharged_at TIMESTAMP,
     tools JSONB,
     hospital_inventory JSONB,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
 );""")
 
     return statements
