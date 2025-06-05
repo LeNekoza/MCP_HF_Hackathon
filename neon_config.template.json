@@ -1,0 +1,15 @@
+{
+  "database": {
+    "host": "your-neon-host.aws.neon.tech",
+    "database": "your-database-name",
+    "user": "your-username",
+    "password": "your-password-here",
+    "port": 5432,
+    "sslmode": "require"
+  },
+  "upload_settings": {
+    "clear_existing_data": true,
+    "batch_size": 1000,
+    "log_level": "INFO"
+  }
+}

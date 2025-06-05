@@ -122,6 +122,26 @@ config/secrets.json
 .env.local
 .gradio/
 
+# Database configuration with sensitive credentials
+neon_config.json
+*.config.json
+*_config.json
+
+# Environment files with credentials
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+
+# Security and credentials
+secrets/
+credentials/
+*.key
+*.pem
+*.p12
+*.pfx
+
 # OS specific
 .DS_Store
 Thumbs.db
