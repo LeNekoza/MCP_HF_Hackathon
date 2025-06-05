@@ -3,7 +3,6 @@
 Simple script to create SQL statements for uploading hospital CSV data
 """
 
-import pandas as pd
 import json
 from pathlib import Path
 
