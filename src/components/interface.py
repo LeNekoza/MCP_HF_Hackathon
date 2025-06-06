@@ -4,7 +4,6 @@ Main Gradio Interface Components - ChatGPT-like Interface
 
 import asyncio
 import time
-from turtle import width
 from typing import Any, Dict, List
 
 import gradio as gr
@@ -192,6 +191,35 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
             # Add user message
             history.append({"role": "user", "content": message})
             yield history, ""
+            
+            # Check if this is a database query first
+            try:
+                from ..services.database_mcp import database_mcp
+                
+                if database_mcp.is_database_query(message):
+                    # Process database query
+                    db_response = database_mcp.process_user_query(message)
+                    
+                    # If we got real data from the database, use it
+                    if "I couldn't find any matching information" not in db_response and "error" not in db_response.lower():
+                        # Stream the database response
+                        full_response = db_response + "\n\n*Data retrieved from hospital database*"
+                        history.append({"role": "assistant", "content": ""})
+                        
+                        # Stream the response word by word
+                        words = full_response.split()
+                        for i, word in enumerate(words):
+                            if i == 0:
+                                history[-1]["content"] = word
+                            else:
+                                history[-1]["content"] += " " + word
+                            time.sleep(0.02)  # Fast streaming for database results
+                            yield history, ""
+                        return
+                        
+            except Exception as e:
+                # If database integration fails, continue with regular AI response
+                pass
 
             # Check if using Nebius model and if it's available
             if model == "nebius-llama-3.3-70b" and nebius_model.is_available():
@@ -287,6 +315,22 @@ def handle_ai_response(
     """
     # Medical disclaimer
     disclaimer = "\n\n⚠️ **Medical Disclaimer**: This is for informational purposes only and should not replace professional medical advice. Please consult with a healthcare provider for medical concerns."
+    
+    # First, check if this is a database query
+    try:
+        from ..services.database_mcp import database_mcp
+        
+        if database_mcp.is_database_query(user_message):
+            # Process database query
+            db_response = database_mcp.process_user_query(user_message)
+            
+            # If we got real data from the database, use it
+            if "I couldn't find any matching information" not in db_response and "error" not in db_response.lower():
+                return db_response + "\n\n*Data retrieved from hospital database*" + disclaimer
+            
+    except Exception as e:
+        # If database integration fails, continue with regular AI response
+        pass
     
     if model == "nebius-llama-3.3-70b":
         # Try to use Nebius model first
