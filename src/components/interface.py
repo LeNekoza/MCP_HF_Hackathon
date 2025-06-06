@@ -10,6 +10,7 @@ from typing import Any, Dict, List
 import gradio as gr
 
 from ..models.mcp_handler import MCPHandler
+from ..models.nebius_model import NebiusModel
 from ..utils.helpers import process_user_input
 
 
@@ -22,11 +23,12 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
 
     Returns:
         gr.Blocks: The ChatGPT-style Gradio interface"""
-    # Initialize MCP handler
+    # Initialize MCP handler and Nebius model
     mcp_handler = MCPHandler(config)
+    nebius_model = NebiusModel()
 
     with gr.Blocks(
-        title="MCP HF Hackathon - AI Assistant",
+        title="Hospital AI Helper - Medical Assistant",
         css=load_chatgpt_css(),
         fill_height=True,
     ) as demo:  # Header with title and model selection
@@ -34,16 +36,16 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
             with gr.Column(scale=1, min_width=200):
                 gr.Markdown(
                     """
-                    # 🤖 MCP AI Assistant
-                    *Powered by Model Context Protocol*
+                    # 🏥 Hospital AI Helper
+                    *Powered by MCP & Nebius Studio*
                     """,
                     elem_classes="header-title",
                 )
             with gr.Column(scale=1, min_width=150):
                 model_dropdown = gr.Dropdown(
-                    label="Model",
+                    label="AI Model",
                     choices=get_available_models(),
-                    value=config.get("default_model", "gpt-3.5-turbo"),
+                    value=config.get("default_model", "nebius-llama-3.3-70b"),
                     elem_classes="model-selector",
                     scale=1,
                 )
@@ -64,7 +66,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
         with gr.Row(elem_classes="input-row"):
             with gr.Column(scale=1, min_width=200):
                 msg = gr.Textbox(
-                    placeholder="Message MCP AI Assistant...",
+                    placeholder="Ask about medical symptoms, health questions, or general assistance...",
                     show_label=False,
                     lines=1,
                     max_lines=8,
@@ -83,6 +85,35 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                 gr.Markdown("", elem_classes="spacer")  # Spacer
             settings_btn = gr.Button("⚙️ Settings", variant="secondary", size="sm")
 
+        # Medical specialty selector
+        with gr.Row(elem_classes="specialty-row"):
+            medical_specialty = gr.Dropdown(
+                label="Medical Specialty",
+                choices=[
+                    "General Medicine",
+                    "Cardiology",
+                    "Neurology",
+                    "Orthopedics", 
+                    "Psychiatry",
+                    "Gastroenterology",
+                    "Pulmonology",
+                    "Endocrinology",
+                    "Emergency Medicine",
+                    "Pediatrics"
+                ],
+                value="General Medicine",
+                elem_classes="specialty-selector",
+                scale=1,
+            )
+            context_input = gr.Textbox(
+                label="Medical Context (Optional)",
+                placeholder="Medical history, symptoms, medications, etc...",
+                lines=2,
+                max_lines=4,
+                elem_classes="context-input",
+                scale=2,
+            )
+
         # Collapsible settings panel
         with gr.Accordion(
             "Advanced Settings", open=False, elem_classes="settings-panel"
@@ -91,7 +122,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                 temperature = gr.Slider(
                     minimum=0.0,
                     maximum=2.0,
-                    value=0.7,
+                    value=0.4,  # Lower default for medical accuracy
                     step=0.1,
                     label="Temperature",
                     elem_classes="setting-slider",
@@ -115,7 +146,13 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
 
         # Event handlers
         def respond(
-            message: str, history: List[Dict], model: str, temp: float, max_tok: int
+            message: str, 
+            history: List[Dict], 
+            model: str, 
+            temp: float, 
+            max_tok: int,
+            specialty: str,
+            context: str
         ):
             """Handle user message and generate AI response"""
             if not message.strip():
@@ -124,8 +161,10 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
             # Add user message to history
             history.append({"role": "user", "content": message})
 
-            # Simulate AI response (replace with actual MCP/AI logic)
-            bot_response = handle_ai_response(message, model, temp, max_tok)
+            # Generate AI response using the selected model
+            bot_response = handle_ai_response(
+                message, model, temp, max_tok, specialty, context
+            )
 
             # Add AI response to history
             history.append({"role": "assistant", "content": bot_response})
@@ -134,10 +173,16 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
 
         def clear_conversation():
             """Clear the conversation history"""
-            return [], ""
+            return [], "", ""  # Clear message and context too
 
         def stream_response(
-            message: str, history: List[Dict], model: str, temp: float, max_tok: int
+            message: str, 
+            history: List[Dict], 
+            model: str, 
+            temp: float, 
+            max_tok: int,
+            specialty: str,
+            context: str
         ):
             """Stream AI response for real-time effect"""
             if not message.strip():
@@ -148,42 +193,68 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
             history.append({"role": "user", "content": message})
             yield history, ""
 
-            # Simulate streaming response
-            response = handle_ai_response(message, model, temp, max_tok)
-            history.append({"role": "assistant", "content": ""})
-            # Stream the response word by word
-            words = response.split()
-            for i, word in enumerate(words):
-                if i == 0:
-                    history[-1]["content"] = word
-                else:
-                    history[-1]["content"] += " " + word
-                time.sleep(0.05)  # Simulate streaming delay
-                yield history, ""
+            # Check if using Nebius model and if it's available
+            if model == "nebius-llama-3.3-70b" and nebius_model.is_available():
+                # Stream response using Nebius
+                history.append({"role": "assistant", "content": ""})
+                
+                try:
+                    response_generator = nebius_model.generate_response(
+                        prompt=message,
+                        context=context if context.strip() else None,
+                        specialty=specialty,
+                        max_tokens=max_tok,
+                        temperature=temp,
+                        stream=True
+                    )
+                    
+                    for chunk in response_generator:
+                        if chunk:
+                            history[-1]["content"] += chunk
+                            yield history, ""
+                            
+                except Exception as e:
+                    error_msg = f"❌ Nebius API Error: {str(e)}\n\nPlease check your API key configuration."
+                    history[-1]["content"] = error_msg
+                    yield history, ""
+            else:
+                # Use fallback response (simulate streaming)
+                response = handle_ai_response(message, model, temp, max_tok, specialty, context)
+                history.append({"role": "assistant", "content": ""})
+                
+                # Stream the response word by word
+                words = response.split()
+                for i, word in enumerate(words):
+                    if i == 0:
+                        history[-1]["content"] = word
+                    else:
+                        history[-1]["content"] += " " + word
+                    time.sleep(0.05)  # Simulate streaming delay
+                    yield history, ""
 
         # Connect events
         msg.submit(
             fn=stream_response,
-            inputs=[msg, chatbot, model_dropdown, temperature, max_tokens],
+            inputs=[msg, chatbot, model_dropdown, temperature, max_tokens, medical_specialty, context_input],
             outputs=[chatbot, msg],
             show_progress="hidden",
         )
 
         send_btn.click(
             fn=stream_response,
-            inputs=[msg, chatbot, model_dropdown, temperature, max_tokens],
+            inputs=[msg, chatbot, model_dropdown, temperature, max_tokens, medical_specialty, context_input],
             outputs=[chatbot, msg],
             show_progress="hidden",
         )
 
-        clear_btn.click(fn=clear_conversation, outputs=[chatbot, msg])
+        clear_btn.click(fn=clear_conversation, outputs=[chatbot, msg, context_input])
 
         # Add some example conversations on load
         demo.load(
             fn=lambda: [
                 {
                     "role": "assistant",
-                    "content": "Hello! I'm your MCP AI Assistant. How can I help you today?",
+                    "content": "🏥 Hello! I'm your Hospital AI Helper powered by Nebius Studio and the Llama 3.3 70B model.\n\nI can help you with:\n• Medical consultations and symptom analysis\n• Health-related questions and advice\n• Medical information and explanations\n• General healthcare guidance\n\nPlease select a medical specialty above and describe your symptoms or questions. Remember: I provide information for educational purposes only and cannot replace professional medical advice.",
                 }
             ],
             outputs=chatbot,
@@ -193,39 +264,92 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
 
 
 def handle_ai_response(
-    user_message: str, model: str, temperature: float, max_tokens: int
+    user_message: str, 
+    model: str, 
+    temperature: float, 
+    max_tokens: int,
+    specialty: str,
+    context: str
 ) -> str:
     """
-    Handle AI response generation (placeholder for actual MCP/AI integration)
+    Handle AI response generation with model routing
 
     Args:
         user_message: User's input message
         model: Selected model name
         temperature: Temperature setting
         max_tokens: Maximum tokens
+        specialty: Medical specialty
+        context: Medical context
 
     Returns:
         AI response string
     """
-    # This is a placeholder - replace with actual MCP/AI logic
+    # Medical disclaimer
+    disclaimer = "\n\n⚠️ **Medical Disclaimer**: This is for informational purposes only and should not replace professional medical advice. Please consult with a healthcare provider for medical concerns."
+    
+    if model == "nebius-llama-3.3-70b":
+        # Try to use Nebius model first
+        try:
+            from ..models.nebius_model import NebiusModel
+            nebius_model = NebiusModel()
+            
+            if nebius_model.is_available():
+                response = nebius_model.generate_response(
+                    prompt=user_message,
+                    context=context if context.strip() else None,
+                    specialty=specialty,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                    stream=False
+                )
+                return response + disclaimer
+            else:
+                return "❌ Nebius API is not available. Please check your API key configuration." + disclaimer
+                
+        except Exception as e:
+            return f"❌ Error using Nebius model: {str(e)}" + disclaimer
+    
+    # Fallback responses for other models
     import random
-
-    responses = [
-        f"I understand you said: '{user_message}'. I'm processing this using {model} with temperature {temperature}.",
-        f"That's an interesting question about '{user_message}'. Let me think about that using the {model} model.",
-        f"Based on your message '{user_message}', here's what I can tell you using {model}...",
-        f"Thank you for your message: '{user_message}'. I'm using {model} to provide you with the best response.",
+    
+    medical_responses = [
+        f"Based on your {specialty.lower()} inquiry about '{user_message}', I need to provide information carefully.",
+        f"In {specialty}, regarding '{user_message}', here's what I can share based on general medical knowledge.",
+        f"For your {specialty.lower()} question about '{user_message}', let me provide some general guidance.",
+        f"Considering the {specialty.lower()} context and your question '{user_message}', here's some information.",
     ]
-
+    
+    if context.strip():
+        medical_responses.append(f"Given the medical context you provided and your {specialty.lower()} question about '{user_message}', here's what I can tell you.")
+    
+    base_response = random.choice(medical_responses)
+    
+    # Add some medical content based on specialty
+    if "pain" in user_message.lower() or "hurt" in user_message.lower():
+        base_response += f"\n\nPain can have various causes and should be evaluated by a {specialty.lower()} specialist if persistent."
+    elif "fever" in user_message.lower():
+        base_response += "\n\nFever is often a sign that your body is fighting an infection. Monitor your temperature and seek medical attention if it's high or persistent."
+    elif "medication" in user_message.lower() or "drug" in user_message.lower():
+        base_response += "\n\nMedication questions should always be discussed with your healthcare provider or pharmacist who has access to your complete medical history."
+    
     return (
-        random.choice(responses)
-        + f"\n\n*Model: {model} | Temperature: {temperature} | Max Tokens: {max_tokens}*"
+        base_response
+        + f"\n\n*Using {model} | Specialty: {specialty} | Temperature: {temperature}*"
+        + disclaimer
     )
 
 
 def get_available_models():
     """Get list of available models"""
-    return ["gpt-3.5-turbo", "gpt-4", "claude-3-sonnet", "llama-2-7b", "mistral-7b"]
+    return [
+        "nebius-llama-3.3-70b",  # Nebius Studio model (primary)
+        "gpt-3.5-turbo", 
+        "gpt-4", 
+        "claude-3-sonnet", 
+        "llama-2-7b", 
+        "mistral-7b"
+    ]
 
 
 def load_chatgpt_css():
@@ -250,9 +374,9 @@ def load_chatgpt_css():
         flex-direction: column !important;
     }
     
-    /* Header styling - ChatGPT inspired */
+    /* Header styling - Medical theme */
     .header-row {
-        background: linear-gradient(135deg, #10a37f 0%, #1a7f64 100%);
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
         color: white;
         padding: 20px 30px;
         margin-bottom: 0;
@@ -319,12 +443,40 @@ def load_chatgpt_css():
     }
     
     .chat-input:focus {
-        border-color: #10a37f !important;
-        box-shadow: 0 0 0 2px rgba(16, 163, 127, 0.2) !important;
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
         outline: none !important;
     }
+    
+    /* Medical specialty row styling */
+    .specialty-row {
+        padding: 15px 20px !important;
+        background: #f8fafc !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        gap: 15px !important;
+    }
+    
+    .specialty-selector {
+        border-radius: 8px !important;
+        border: 1px solid #d1d5db !important;
+        background: white !important;
+    }
+    
+    .context-input {
+        border-radius: 8px !important;
+        border: 1px solid #d1d5db !important;
+        background: white !important;
+        resize: vertical !important;
+    }
+    
+    .context-input:focus {
+        border-color: #2563eb !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+        outline: none !important;
+    }
+    
       .send-button {
-        background: #10a37f !important;
+        background: #2563eb !important;
         border: none !important;
         border-radius: 8px !important;
         padding: 12px 16px !important;
@@ -342,7 +494,7 @@ def load_chatgpt_css():
     }
     
     .send-button:hover {
-        background: #1a7f64 !important;
+        background: #1d4ed8 !important;
         transform: none !important;
         box-shadow: none !important;
     }
@@ -640,8 +792,10 @@ def load_chatgpt_css():
     /* Improved focus states for accessibility */
     .chat-input:focus,
     .send-button:focus,
-    .model-selector:focus {
-        outline: 2px solid #10a37f !important;
+    .model-selector:focus,
+    .specialty-selector:focus,
+    .context-input:focus {
+        outline: 2px solid #2563eb !important;
         outline-offset: 2px !important;
     }
     
@@ -671,7 +825,7 @@ def load_chatgpt_css():
         width: 20px;
         height: 20px;
         margin: -10px 0 0 -10px;
-        border: 2px solid #10a37f;
+        border: 2px solid #2563eb;
         border-radius: 50%;
         border-top-color: transparent;
         animation: spin 1s linear infinite;

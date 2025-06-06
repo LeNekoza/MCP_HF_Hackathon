@@ -1,6 +1,6 @@
 {
   "server_name": "127.0.0.1",
-  "server_port": 7860,
+  "server_port": 7862,
   "share": false,
   "debug": true,
   "default_model": "gpt-3.5-turbo",
@@ -14,11 +14,17 @@
       "gpt-4",
       "claude-3-sonnet",
       "llama-2-7b",
-      "mistral-7b"
+      "mistral-7b",
+      "nebius-llama-3.3-70b"
     ],
     "huggingface": {
       "api_url": "https://api-inference.huggingface.co/models/",
       "cache_dir": "./data/models"
+    },
+    "nebius": {
+      "model": "meta-llama/Llama-3.3-70B-Instruct",
+      "api_url": "https://api.studio.nebius.ai/v1",
+      "enabled": true
     }
   },
   "mcp": {
