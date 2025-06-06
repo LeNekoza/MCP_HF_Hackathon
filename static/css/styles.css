@@ -739,3 +739,66 @@ button:hover {
 ::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
+
+/* LaTeX/MathJax Support Styles */
+.MathJax {
+  color: inherit !important;
+  font-size: inherit !important;
+}
+
+.MathJax_Display {
+  margin: 1em 0 !important;
+  text-align: center !important;
+}
+
+.tex2jax_process {
+  overflow-x: auto !important;
+}
+
+/* Medical formula highlighting */
+.chatbot .message .MathJax {
+  background-color: rgba(59, 130, 246, 0.05) !important;
+  padding: 2px 4px !important;
+  border-radius: 4px !important;
+  border: 1px solid rgba(59, 130, 246, 0.1) !important;
+}
+
+.chatbot .message .MathJax_Display {
+  background-color: rgba(59, 130, 246, 0.05) !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(59, 130, 246, 0.1) !important;
+  margin: 12px 0 !important;
+}
+
+/* LaTeX processing indicator */
+.latex-processing::after {
+  content: " [Processing LaTeX...]";
+  color: #666;
+  font-style: italic;
+  font-size: 0.8em;
+}
+
+/* Improved readability for medical formulas */
+.medical-formula {
+  font-family: 'Times New Roman', serif !important;
+  font-size: 1.1em !important;
+  line-height: 1.4 !important;
+}
+
+/* MathJax styling for dark mode */
+@media (prefers-color-scheme: dark) {
+  .MathJax {
+    color: #e5e7eb !important;
+  }
+  
+  .chatbot .message .MathJax {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border-color: rgba(59, 130, 246, 0.2) !important;
+  }
+  
+  .chatbot .message .MathJax_Display {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border-color: rgba(59, 130, 246, 0.2) !important;
+  }
+}

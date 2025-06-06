@@ -11,6 +11,7 @@ import gradio as gr
 from ..models.mcp_handler import MCPHandler
 from ..models.nebius_model import NebiusModel
 from ..utils.helpers import process_user_input
+from ..utils.latex_formatter import format_medical_response
 
 
 def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
@@ -30,6 +31,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
         title="Hospital AI Helper - Medical Assistant",
         css=load_chatgpt_css(),
         fill_height=True,
+        head=load_latex_scripts(),
     ) as demo:  # Header with title and model selection
         with gr.Row(elem_classes="header-row"):
             with gr.Column(scale=1, min_width=200):
@@ -205,21 +207,67 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                     # Process with advanced database capabilities
                     db_response = advanced_database_mcp.process_advanced_query(message)
                     
-                    # If we got real data from the database, use it
+                    # If we got real data from the database, pass it through AI for analysis
                     if "Error processing" not in db_response and "Use more specific queries" not in db_response:
-                        # Stream the database response
-                        full_response = db_response + "\n\n*Data retrieved from hospital database using advanced SQL*"
-                        history.append({"role": "assistant", "content": ""})
+                        # Create enhanced prompt for AI analysis
+                        enhanced_prompt = f"""
+User Question: {message}
+
+Database Results: 
+{db_response}
+
+IMPORTANT: The user specifically requested details/information. Please provide:
+
+1. FIRST: Present the complete data the user requested in a well-formatted, easy-to-read manner
+   - Include ALL patient details in a structured format
+   - Use proper formatting with line breaks, headers, and organization
+   - Format medical values with LaTeX (ages, blood pressure, dosages, etc.)
+
+2. SECOND: After presenting the complete data, provide your professional medical analysis including:
+   - Key insights and patterns
+   - Medical observations and recommendations
+   - Data quality issues or notable findings
+
+Make sure the user gets both the complete information they requested AND your professional analysis.
+"""
                         
-                        # Stream the response word by word
-                        words = full_response.split()
-                        for i, word in enumerate(words):
-                            if i == 0:
-                                history[-1]["content"] = word
-                            else:
-                                history[-1]["content"] += " " + word
-                            time.sleep(0.02)  # Fast streaming for database results
-                            yield history, ""
+                        # Use AI to analyze the database results instead of returning raw data
+                        if model == "nebius-llama-3.3-70b" and nebius_model.is_available():
+                            history.append({"role": "assistant", "content": ""})
+                            
+                            try:
+                                response_generator = nebius_model.generate_response(
+                                    prompt=enhanced_prompt,
+                                    context=f"Database query results included in the analysis",
+                                    specialty=specialty,
+                                    max_tokens=max(max_tok, 2000),  # Ensure enough space for complete data + analysis
+                                    temperature=temp,
+                                    stream=True
+                                )
+                                
+                                for chunk in response_generator:
+                                    if chunk:
+                                        history[-1]["content"] += chunk
+                                        yield history, ""
+                                        
+                            except Exception as e:
+                                error_msg = f"❌ Error analyzing database results: {str(e)}"
+                                history[-1]["content"] = error_msg
+                                yield history, ""
+                        else:
+                            # Fallback: use handle_ai_response for analysis
+                            analyzed_response = handle_ai_response(enhanced_prompt, model, temp, max(max_tok, 2000), specialty, f"Database query results included in the analysis")
+                            history.append({"role": "assistant", "content": ""})
+                            
+                            # Stream the analyzed response
+                            words = analyzed_response.split()
+                            for i, word in enumerate(words):
+                                if i == 0:
+                                    history[-1]["content"] = word
+                                else:
+                                    history[-1]["content"] += " " + word
+                                time.sleep(0.02)
+                                yield history, ""
                         return
                         
             except Exception as e:
@@ -305,7 +353,7 @@ def handle_ai_response(
     context: str
 ) -> str:
     """
-    Handle AI response generation with model routing
+    Handle AI response generation with model routing and LaTeX support
 
     Args:
         user_message: User's input message
@@ -316,7 +364,7 @@ def handle_ai_response(
         context: Medical context
 
     Returns:
-        AI response string
+        AI response string with LaTeX formatting
     """
     # Medical disclaimer
     disclaimer = "\n\n⚠️ **Medical Disclaimer**: This is for informational purposes only and should not replace professional medical advice. Please consult with a healthcare provider for medical concerns."
@@ -326,12 +374,36 @@ def handle_ai_response(
         from ..services.advanced_database_mcp import advanced_database_mcp
         
         if advanced_database_mcp.is_database_query(user_message):
-            # Process database query
+            # Process database query to get raw data
             db_response = advanced_database_mcp.process_advanced_query(user_message)
             
-            # If we got real data from the database, use it
+            # If we got real data from the database, pass it through AI for analysis
             if "Error processing" not in db_response and "Use more specific queries" not in db_response:
-                return db_response + "\n\n*Data retrieved from hospital database using advanced SQL*" + disclaimer
+                # Create enhanced prompt combining user question with database data
+                enhanced_prompt = f"""
+User Question: {user_message}
+
+Database Results: 
+{db_response}
+
+IMPORTANT: The user specifically requested details/information. Please provide:
+
+1. FIRST: Present the complete data the user requested in a well-formatted, easy-to-read manner
+   - Include ALL patient details in a structured format
+   - Use proper formatting with line breaks, headers, and organization
+   - Format medical values with LaTeX (ages, blood pressure, dosages, etc.)
+
+2. SECOND: After presenting the complete data, provide your professional medical analysis including:
+   - Key insights and patterns
+   - Medical observations and recommendations
+   - Data quality issues or notable findings
+
+Make sure the user gets both the complete information they requested AND your professional analysis.
+"""
+                
+                # Continue to AI processing with enhanced prompt
+                user_message = enhanced_prompt
+                context = f"Database query results included in the analysis"
             
     except Exception as e:
         # If advanced database integration fails, continue with regular AI response
@@ -344,15 +416,22 @@ def handle_ai_response(
             nebius_model = NebiusModel()
             
             if nebius_model.is_available():
+                # Use higher token limit for database analysis if needed
+                analysis_max_tokens = max_tokens
+                if "Database Results:" in user_message:
+                    analysis_max_tokens = max(max_tokens, 2000)  # Ensure enough space for complete data + analysis
+                    
                 response = nebius_model.generate_response(
                     prompt=user_message,
                     context=context if context.strip() else None,
                     specialty=specialty,
-                    max_tokens=max_tokens,
+                    max_tokens=analysis_max_tokens,
                     temperature=temperature,
                     stream=False
                 )
-                return response + disclaimer
+                # Apply LaTeX formatting to the response
+                formatted_response = format_medical_response(response, specialty)
+                return formatted_response + disclaimer
             else:
                 return "❌ Nebius API is not available. Please check your API key configuration." + disclaimer
                 
@@ -382,8 +461,11 @@ def handle_ai_response(
     elif "medication" in user_message.lower() or "drug" in user_message.lower():
         base_response += "\n\nMedication questions should always be discussed with your healthcare provider or pharmacist who has access to your complete medical history."
     
+    # Apply LaTeX formatting to fallback response
+    formatted_base_response = format_medical_response(base_response, specialty)
+    
     return (
-        base_response
+        formatted_base_response
         + f"\n\n*Using {model} | Specialty: {specialty} | Temperature: {temperature}*"
         + disclaimer
     )
@@ -400,6 +482,13 @@ def get_available_models():
         "mistral-7b"
     ]
 
+
+def load_latex_scripts():
+    """Load LaTeX rendering scripts for mathematical content"""
+    return """
+    <script src="static/js/latex-renderer.js"></script>
+    <script src="static/js/app.js"></script>
+    """
 
 def load_chatgpt_css():
     """Load ChatGPT-style CSS for the interface"""
