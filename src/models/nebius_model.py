@@ -216,28 +216,92 @@ class NebiusModel:
 
     def analyze_symptoms(self, symptoms: List[str], specialty: Optional[str] = None) -> str:
         """
-        Analyze a list of symptoms and provide medical insights
+        Analyze symptoms and provide medical insights
         
         Args:
-            symptoms: List of symptom descriptions
-            specialty: Optional medical specialty focus
+            symptoms: List of symptoms to analyze
+            specialty: Medical specialty to focus on
             
         Returns:
-            Medical analysis of symptoms
+            Analysis of symptoms
         """
         if not self.nebius:
             raise RuntimeError("Nebius model not initialized")
 
         symptoms_text = ", ".join(symptoms)
-        prompt = f"Please analyze these symptoms and provide general medical insights: {symptoms_text}"
+        
+        prompt = f"Analyze these symptoms: {symptoms_text}"
+        if specialty:
+            prompt += f" from a {specialty} perspective"
+        
+        prompt += ". Provide possible conditions and recommendations."
+
+        return self.nebius.medical_consultation(
+            patient_query=prompt,
+            specialty=specialty
+        )
+
+    def generate_sql_query(
+        self,
+        user_request: str,
+        database_schema: str,
+        max_tokens: int = 1000,
+        temperature: float = 0.1
+    ) -> str:
+        """
+        Generate SQL queries based on user requests and database schema
+        
+        Args:
+            user_request: Natural language request for data
+            database_schema: Description of database schema
+            max_tokens: Maximum tokens for the response
+            temperature: Temperature for generation (low for deterministic SQL)
+            
+        Returns:
+            Generated SQL query
+        """
+        if not self.nebius:
+            raise RuntimeError("Nebius model not initialized")
+        
+        # Build a specialized prompt for SQL generation
+        system_prompt = """
+        You are an expert SQL developer. Generate precise, syntactically correct PostgreSQL queries based on user requests.
+        
+        IMPORTANT GUIDELINES:
+        1. Always use proper JOIN syntax when data spans multiple tables
+        2. Use meaningful table aliases (u for users, pr for patient_records, etc.)
+        3. Include appropriate WHERE clauses for filtering
+        4. Use LIMIT clauses to prevent overwhelming results
+        5. Order results logically
+        6. Return ONLY the SQL query, no explanations
+        7. Wrap the SQL query in ```sql blocks for easy extraction
+        
+        DATABASE SCHEMA PROVIDED: The user will provide the schema information.
+        """
+        
+        user_prompt = f"""
+        {database_schema}
+        
+        USER REQUEST: {user_request}
+        
+        Generate a complete PostgreSQL query that fulfills this request. Consider all table relationships and use appropriate JOINs.
+        Return only the SQL query wrapped in ```sql blocks.
+        """
         
         try:
-            return self.nebius.medical_consultation(
-                patient_query=prompt,
-                specialty=specialty or "General Medicine"
+            response = self.generate_response(
+                prompt=user_prompt,
+                context=system_prompt,
+                specialty="Database",
+                max_tokens=max_tokens,
+                temperature=temperature,
+                stream=False
             )
+            
+            return response
+            
         except Exception as e:
-            logger.error(f"Symptom analysis failed: {e}")
+            logger.error(f"SQL generation failed: {e}")
             raise
 
 

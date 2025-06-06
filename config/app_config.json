@@ -1,6 +1,6 @@
 {
   "server_name": "127.0.0.1",
-  "server_port": 8062,
+  "server_port": 8060,
   "share": false,
   "debug": true,
   "default_model": "gpt-3.5-turbo",

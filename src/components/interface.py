@@ -35,13 +35,8 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
             with gr.Column(scale=1, min_width=200):
                 gr.Markdown(
                     """
-<<<<<<< Updated upstream
                     # 🏥 Hospital AI Helper
                     *Powered by MCP & Nebius Studio*
-=======
-                    # 🤖 MCP AIs Assistant
-                    *Powered by Model Context Protocol*
->>>>>>> Stashed changes
                     """,
                     elem_classes="header-title",
                 )
@@ -199,16 +194,21 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
             
             # Check if this is a database query first
             try:
-                from ..services.database_mcp import database_mcp
+                from ..services.advanced_database_mcp import advanced_database_mcp
                 
-                if database_mcp.is_database_query(message):
-                    # Process database query
-                    db_response = database_mcp.process_user_query(message)
+                # First check if it's a database-related query
+                if any(keyword in message.lower() for keyword in [
+                    'patient', 'room', 'nurse', 'doctor', 'staff', 'equipment', 
+                    'medical', 'hospital', 'bed', 'top', 'list', 'statistics',
+                    'occupancy', 'inventory', 'history', 'admission'
+                ]):
+                    # Process with advanced database capabilities
+                    db_response = advanced_database_mcp.process_advanced_query(message)
                     
                     # If we got real data from the database, use it
-                    if "I couldn't find any matching information" not in db_response and "error" not in db_response.lower():
+                    if "Error processing" not in db_response and "Use more specific queries" not in db_response:
                         # Stream the database response
-                        full_response = db_response + "\n\n*Data retrieved from hospital database*"
+                        full_response = db_response + "\n\n*Data retrieved from hospital database using advanced SQL*"
                         history.append({"role": "assistant", "content": ""})
                         
                         # Stream the response word by word
@@ -223,7 +223,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                         return
                         
             except Exception as e:
-                # If database integration fails, continue with regular AI response
+                # If advanced database integration fails, continue with regular AI response
                 pass
 
             # Check if using Nebius model and if it's available
@@ -323,18 +323,18 @@ def handle_ai_response(
     
     # First, check if this is a database query
     try:
-        from ..services.database_mcp import database_mcp
+        from ..services.advanced_database_mcp import advanced_database_mcp
         
-        if database_mcp.is_database_query(user_message):
+        if advanced_database_mcp.is_database_query(user_message):
             # Process database query
-            db_response = database_mcp.process_user_query(user_message)
+            db_response = advanced_database_mcp.process_advanced_query(user_message)
             
             # If we got real data from the database, use it
-            if "I couldn't find any matching information" not in db_response and "error" not in db_response.lower():
-                return db_response + "\n\n*Data retrieved from hospital database*" + disclaimer
+            if "Error processing" not in db_response and "Use more specific queries" not in db_response:
+                return db_response + "\n\n*Data retrieved from hospital database using advanced SQL*" + disclaimer
             
     except Exception as e:
-        # If database integration fails, continue with regular AI response
+        # If advanced database integration fails, continue with regular AI response
         pass
     
     if model == "nebius-llama-3.3-70b":
