@@ -35,8 +35,13 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
             with gr.Column(scale=1, min_width=200):
                 gr.Markdown(
                     """
+<<<<<<< Updated upstream
                     # 🏥 Hospital AI Helper
                     *Powered by MCP & Nebius Studio*
+=======
+                    # 🤖 MCP AIs Assistant
+                    *Powered by Model Context Protocol*
+>>>>>>> Stashed changes
                     """,
                     elem_classes="header-title",
                 )

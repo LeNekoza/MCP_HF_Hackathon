@@ -6,6 +6,10 @@ torch>=2.0.0
 numpy>=1.24.0
 pandas>=2.0.0
 
+# Database dependencies
+psycopg2-binary>=2.9.0
+SQLAlchemy>=2.0.0
+
 # MCP (Model Context Protocol) related
 mcp>=0.1.0
 
