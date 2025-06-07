@@ -157,3 +157,6 @@ Thumbs.db
 temp/
 tmp/
 *.tmp
+
+#cursor rules
+.cursorrules
