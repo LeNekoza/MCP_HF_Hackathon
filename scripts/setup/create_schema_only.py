@@ -9,25 +9,27 @@ import json
 from pathlib import Path
 import logging
 
+
 def load_config():
     """Load configuration from JSON file"""
-    config_file = Path("neon_config.json")
+    config_file = Path("config/neon_config.json")
     if not config_file.exists():
-        print("❌ ERROR: neon_config.json not found!")
+        print("❌ ERROR: config/neon_config.json not found!")
         return None
-    
+
     try:
-        with open(config_file, 'r') as f:
+        with open(config_file, "r") as f:
             config = json.load(f)
         return config
     except Exception as e:
         print(f"❌ ERROR: Failed to load configuration: {e}")
         return None
 
+
 def create_connection(config):
     """Create database connection using config"""
-    db_config = config['database']
-    
+    db_config = config["database"]
+
     try:
         conn = psycopg2.connect(**db_config)
         return conn
@@ -35,10 +37,11 @@ def create_connection(config):
         print(f"❌ ERROR: Failed to connect to database: {e}")
         return None
 
+
 def get_create_table_sql():
     """Get CREATE TABLE SQL for all tables"""
     return {
-        'users': """
+        "users": """
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY,
                 full_name VARCHAR(255) NOT NULL,
@@ -49,7 +52,8 @@ def get_create_table_sql():
                 role VARCHAR(50) NOT NULL,
                 staff_type VARCHAR(100)
             );
-        """,        'storage_rooms': """
+        """,
+        "storage_rooms": """
             CREATE TABLE IF NOT EXISTS storage_rooms (
                 id INTEGER PRIMARY KEY,
                 storage_number VARCHAR(50) NOT NULL,
@@ -58,7 +62,8 @@ def get_create_table_sql():
                 capacity INTEGER,
                 notes TEXT
             );
-        """,        'patient_records': """
+        """,
+        "patient_records": """
             CREATE TABLE IF NOT EXISTS patient_records (
                 id INTEGER PRIMARY KEY,
                 user_id INTEGER REFERENCES users(id),
@@ -70,7 +75,8 @@ def get_create_table_sql():
                 emergency_contact JSONB,
                 contact_phone JSONB
             );
-        """,        'rooms': """
+        """,
+        "rooms": """
             CREATE TABLE IF NOT EXISTS rooms (
                 id INTEGER PRIMARY KEY,
                 room_number VARCHAR(50) NOT NULL,
@@ -81,7 +87,8 @@ def get_create_table_sql():
                 floor_number INTEGER,
                 notes TEXT
             );
-        """,        'tools': """
+        """,
+        "tools": """
             CREATE TABLE IF NOT EXISTS tools (
                 id INTEGER PRIMARY KEY,
                 tool_name VARCHAR(255) NOT NULL,
@@ -95,7 +102,7 @@ def get_create_table_sql():
                 last_maintenance_date DATE
             );
         """,
-        'hospital_inventory': """
+        "hospital_inventory": """
             CREATE TABLE IF NOT EXISTS hospital_inventory (
                 id INTEGER PRIMARY KEY,
                 item_name VARCHAR(255) NOT NULL,
@@ -107,7 +114,8 @@ def get_create_table_sql():
                 details TEXT,
                 expiry_date DATE
             );
-        """,        'occupancy': """
+        """,
+        "occupancy": """
             CREATE TABLE IF NOT EXISTS occupancy (
                 id INTEGER PRIMARY KEY,
                 room_id INTEGER REFERENCES rooms(id),
@@ -119,35 +127,36 @@ def get_create_table_sql():
                 tools JSONB,
                 hospital_inventory JSONB
             );
-        """
+        """,
     }
+
 
 def create_all_tables(conn):
     """Create all tables in correct order"""
     cursor = conn.cursor()
     tables_sql = get_create_table_sql()
-    
+
     # Create tables in dependency order
     table_order = [
-        'users',
-        'storage_rooms', 
-        'patient_records',
-        'rooms',
-        'tools',
-        'hospital_inventory',
-        'occupancy'
+        "users",
+        "storage_rooms",
+        "patient_records",
+        "rooms",
+        "tools",
+        "hospital_inventory",
+        "occupancy",
     ]
-    
+
     try:
         for table_name in table_order:
             sql = tables_sql[table_name]
             cursor.execute(sql)
             print(f"✓ Created/verified table: {table_name}")
-        
+
         conn.commit()
         print("✅ All tables created successfully!")
         return True
-        
+
     except Exception as e:
         print(f"✗ Error creating tables: {e}")
         conn.rollback()
@@ -155,23 +164,24 @@ def create_all_tables(conn):
     finally:
         cursor.close()
 
+
 def main():
     """Main execution function"""
     print("🏥 Hospital Database Schema Creation")
     print("=" * 40)
-    
+
     # Load configuration
     config = load_config()
     if not config:
         return False
-    
+
     # Connect to database
     conn = create_connection(config)
     if not conn:
         return False
-    
+
     print("✅ Connected to Neon database")
-    
+
     try:
         # Create tables
         if create_all_tables(conn):
@@ -179,16 +189,19 @@ def main():
             print("\nNext steps:")
             print("1. Use psql to connect to your Neon database")
             print("2. Use \\copy commands to import CSV data")
-            print("3. Example: \\copy users FROM 'hospital_data_final/users.csv' DELIMITER ',' CSV HEADER")
+            print(
+                "3. Example: \\copy users FROM 'hospital_data_final/users.csv' DELIMITER ',' CSV HEADER"
+            )
             return True
         else:
             return False
-        
+
     except Exception as e:
         print(f"❌ Unexpected error: {e}")
         return False
     finally:
         conn.close()
+
 
 if __name__ == "__main__":
     main()

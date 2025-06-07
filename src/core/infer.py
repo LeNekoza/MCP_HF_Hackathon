@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class NebiusConfig:
     """Configuration for Nebius API"""
+
     api_key: str
     base_url: str = "https://api.studio.nebius.ai/v1"
     model: str = "meta-llama/Llama-3.3-70B-Instruct"
@@ -41,18 +42,18 @@ class NebiusInference:
         """Load configuration from environment variables or config file"""
         # Try to load API key from environment
         api_key = os.getenv("NEBIUS_API_KEY")
-        
+
         if not api_key:
             # Try to load from config file
             config_path = Path("config/nebius_config.json")
             if config_path.exists():
                 try:
-                    with open(config_path, 'r') as f:
+                    with open(config_path, "r") as f:
                         config_data = json.load(f)
                         api_key = config_data.get("api_key")
                 except Exception as e:
                     logger.warning(f"Failed to load config file: {e}")
-        
+
         if not api_key:
             raise ValueError(
                 "Nebius API key not found. Please set NEBIUS_API_KEY environment variable "
@@ -65,16 +66,18 @@ class NebiusInference:
             max_tokens=int(os.getenv("NEBIUS_MAX_TOKENS", "2048")),
             temperature=float(os.getenv("NEBIUS_TEMPERATURE", "0.7")),
             top_p=float(os.getenv("NEBIUS_TOP_P", "0.9")),
-            timeout=int(os.getenv("NEBIUS_TIMEOUT", "30"))
+            timeout=int(os.getenv("NEBIUS_TIMEOUT", "30")),
         )
 
     def _setup_session(self):
         """Setup the HTTP session with appropriate headers"""
-        self.session.headers.update({
-            "Authorization": f"Bearer {self.config.api_key}",
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-        })
+        self.session.headers.update(
+            {
+                "Authorization": f"Bearer {self.config.api_key}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            }
+        )
 
     def chat_completion(
         self,
@@ -82,30 +85,30 @@ class NebiusInference:
         max_tokens: Optional[int] = None,
         temperature: Optional[float] = None,
         top_p: Optional[float] = None,
-        stream: bool = False
+        stream: bool = False,
     ) -> Union[Dict, Generator[Dict, None, None]]:
         """
         Create a chat completion using Nebius API
-        
+
         Args:
             messages: List of message dictionaries with 'role' and 'content'
             max_tokens: Maximum tokens to generate
             temperature: Sampling temperature (0.0 to 2.0)
             top_p: Nucleus sampling parameter
             stream: Whether to stream the response
-            
+
         Returns:
             Response dictionary or generator for streaming
         """
         url = f"{self.config.base_url}/chat/completions"
-        
+
         payload = {
             "model": self.config.model,
             "messages": messages,
             "max_tokens": max_tokens or self.config.max_tokens,
             "temperature": temperature or self.config.temperature,
             "top_p": top_p or self.config.top_p,
-            "stream": stream
+            "stream": stream,
         }
 
         try:
@@ -113,13 +116,11 @@ class NebiusInference:
                 return self._stream_completion(url, payload)
             else:
                 response = self.session.post(
-                    url, 
-                    json=payload, 
-                    timeout=self.config.timeout
+                    url, json=payload, timeout=self.config.timeout
                 )
                 response.raise_for_status()
                 return response.json()
-                
+
         except requests.exceptions.RequestException as e:
             logger.error(f"Nebius API request failed: {e}")
             raise
@@ -127,29 +128,28 @@ class NebiusInference:
             logger.error(f"Failed to parse Nebius API response: {e}")
             raise
 
-    def _stream_completion(self, url: str, payload: Dict) -> Generator[Dict, None, None]:
+    def _stream_completion(
+        self, url: str, payload: Dict
+    ) -> Generator[Dict, None, None]:
         """Handle streaming responses from Nebius API"""
         try:
             response = self.session.post(
-                url,
-                json=payload,
-                timeout=self.config.timeout,
-                stream=True
+                url, json=payload, timeout=self.config.timeout, stream=True
             )
             response.raise_for_status()
-            
+
             for line in response.iter_lines():
                 if line:
-                    line_str = line.decode('utf-8')
-                    if line_str.startswith('data: '):
+                    line_str = line.decode("utf-8")
+                    if line_str.startswith("data: "):
                         data_str = line_str[6:]  # Remove 'data: ' prefix
-                        if data_str.strip() == '[DONE]':
+                        if data_str.strip() == "[DONE]":
                             break
                         try:
                             yield json.loads(data_str)
                         except json.JSONDecodeError:
                             continue
-                            
+
         except requests.exceptions.RequestException as e:
             logger.error(f"Streaming request failed: {e}")
             raise
@@ -157,64 +157,63 @@ class NebiusInference:
     def simple_completion(self, prompt: str, **kwargs) -> str:
         """
         Simple text completion interface
-        
+
         Args:
             prompt: Input prompt
             **kwargs: Additional parameters for chat_completion
-            
+
         Returns:
             Generated text response
         """
         messages = [{"role": "user", "content": prompt}]
         response = self.chat_completion(messages, **kwargs)
-        
+
         if "choices" in response and response["choices"]:
             return response["choices"][0]["message"]["content"]
         else:
             raise ValueError("Invalid response format from Nebius API")
 
     def medical_consultation(
-        self, 
-        patient_query: str, 
+        self,
+        patient_query: str,
         context: Optional[str] = None,
-        specialty: Optional[str] = None
+        specialty: Optional[str] = None,
     ) -> str:
         """
         Specialized method for medical consultations
-        
+
         Args:
             patient_query: Patient's question or concern
             context: Additional medical context
             specialty: Medical specialty focus
-            
+
         Returns:
             Medical guidance response
         """
         system_prompt = self._build_medical_system_prompt(specialty)
-        
+
         messages = [{"role": "system", "content": system_prompt}]
-        
+
         if context:
-            messages.append({
-                "role": "assistant", 
-                "content": f"Medical Context: {context}"
-            })
-        
+            messages.append(
+                {"role": "assistant", "content": f"Medical Context: {context}"}
+            )
+
         messages.append({"role": "user", "content": patient_query})
-        
+
         response = self.chat_completion(
             messages,
             temperature=0.3,  # Lower temperature for medical accuracy
-            max_tokens=1024
+            max_tokens=1024,
         )
-        
+
         if "choices" in response and response["choices"]:
             return response["choices"][0]["message"]["content"]
         else:
             raise ValueError("Invalid response format from Nebius API")
 
     def _build_medical_system_prompt(self, specialty: Optional[str] = None) -> str:
-        """Build system prompt for medical consultations with LaTeX formatting support"""
+        """Build system prompt for medical consultations with LaTeX formatting support and hospital context"""
         base_prompt = """You are a helpful medical AI assistant designed to provide general health information and guidance. 
 
 IMPORTANT DISCLAIMERS:
@@ -247,6 +246,26 @@ When provided with database results:
 
 Please provide helpful, accurate, and safe medical information while emphasizing the importance of professional medical care. Use LaTeX formatting when presenting any mathematical content, formulas, calculations, or precise medical measurements."""
 
+        # Try to inject hospital schema context for better understanding
+        try:
+            from pathlib import Path
+            import sys
+
+            # Add project root to path for imports
+            project_root = Path(__file__).parent.parent.parent
+            sys.path.insert(0, str(project_root))
+
+            from src.utils.schema_loader import hospital_schema_loader
+
+            # Get interpretation rules and add to prompt
+            interpretation_rules = hospital_schema_loader.get_interpretation_rules()
+            if interpretation_rules and interpretation_rules.strip():
+                base_prompt += f"\n\nHOSPITAL CONTEXT:\n{interpretation_rules}"
+
+        except (ImportError, Exception) as e:
+            # Continue without hospital context if not available
+            pass
+
         if specialty:
             base_prompt += f"\n\nSpecialty Focus: {specialty}"
             base_prompt += f"\nProvide information relevant to {specialty} while maintaining general medical safety guidelines. Use appropriate LaTeX formatting for any {specialty.lower()}-specific calculations, formulas, or measurements."
@@ -256,7 +275,7 @@ Please provide helpful, accurate, and safe medical information while emphasizing
     def get_model_info(self) -> Dict:
         """Get information about available models"""
         url = f"{self.config.base_url}/models"
-        
+
         try:
             response = self.session.get(url, timeout=self.config.timeout)
             response.raise_for_status()
@@ -279,7 +298,7 @@ def create_nebius_config_template():
     """Create a template configuration file for Nebius API"""
     config_path = Path("config/nebius_config.json")
     config_path.parent.mkdir(exist_ok=True)
-    
+
     if not config_path.exists():
         template_config = {
             "api_key": "your-nebius-api-key-here",
@@ -288,12 +307,12 @@ def create_nebius_config_template():
             "temperature": 0.7,
             "top_p": 0.9,
             "timeout": 30,
-            "description": "Nebius API configuration for Hospital AI Helper"
+            "description": "Nebius API configuration for Hospital AI Helper",
         }
-        
-        with open(config_path, 'w') as f:
+
+        with open(config_path, "w") as f:
             json.dump(template_config, f, indent=2)
-        
+
         print(f"Created Nebius config template at: {config_path}")
         print("Please add your Nebius API key to the configuration file.")
 
@@ -302,41 +321,44 @@ def main():
     """Demo/test function for Nebius integration"""
     # Create config template if it doesn't exist
     create_nebius_config_template()
-    
+
     try:
         # Initialize the inference client
         nebius = NebiusInference()
-        
+
         # Health check
         if not nebius.health_check():
             print("❌ Nebius API health check failed")
             return
-        
+
         print("✅ Nebius API health check passed")
-        
+
         # Test simple completion
         print("\n🔬 Testing simple completion...")
         response = nebius.simple_completion(
             "What are the common symptoms of influenza?",
             max_tokens=512,
-            temperature=0.5
+            temperature=0.5,
         )
         print(f"Response: {response}")
-        
+
         # Test medical consultation
         print("\n🏥 Testing medical consultation...")
         medical_response = nebius.medical_consultation(
             patient_query="I have a persistent cough for 3 days. Should I be concerned?",
-            specialty="General Medicine"
+            specialty="General Medicine",
         )
         print(f"Medical Response: {medical_response}")
-        
+
         # Test streaming
         print("\n🌊 Testing streaming response...")
         messages = [
-            {"role": "user", "content": "Explain the importance of hand hygiene in hospitals in 3 key points."}
+            {
+                "role": "user",
+                "content": "Explain the importance of hand hygiene in hospitals in 3 key points.",
+            }
         ]
-        
+
         print("Streaming response:")
         for chunk in nebius.chat_completion(messages, stream=True, max_tokens=300):
             if "choices" in chunk and chunk["choices"]:
@@ -344,11 +366,13 @@ def main():
                 if "content" in delta:
                     print(delta["content"], end="", flush=True)
         print("\n")
-        
+
     except Exception as e:
         print(f"❌ Error during testing: {e}")
-        print("Make sure you have set your NEBIUS_API_KEY environment variable or configured config/nebius_config.json")
+        print(
+            "Make sure you have set your NEBIUS_API_KEY environment variable or configured config/nebius_config.json"
+        )
 
 
 if __name__ == "__main__":
-    main() 
+    main()

@@ -1,0 +1,407 @@
+/**
+ * Dashboard UI Enhancements - Additional Interactive Styles
+ * Complements the existing styles.css with dashboard-specific enhancements
+ */
+
+/* Navigation Enhancements */
+.nav-buttons-container {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 0 32px;
+    background: white;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 16px;
+}
+
+.nav-btn {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 14px;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-btn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #475569;
+    transform: translateY(-1px);
+}
+
+.nav-btn.active {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border-color: #3b82f6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.nav-btn.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.nav-btn.active:hover::before {
+    left: 100%;
+}
+
+/* Enhanced Metric Cards */
+.metric-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: left;
+}
+
+.metric-card:hover::before {
+    transform: scaleX(1);
+}
+
+.metric-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Progress Circle Enhancements */
+.progress-circle {
+    position: relative;
+    display: inline-block;
+}
+
+.progress-circle-fill {
+    transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-text {
+    font-family: 'SF Pro Display', -apple-system, sans-serif;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover .progress-text {
+    transform: scale(1.1);
+    color: #3b82f6;
+}
+
+/* Staff Progress Bars Enhanced */
+.staff-metrics {
+    width: 100%;
+    max-width: 240px;
+}
+
+.staff-item {
+    margin-bottom: 16px;
+}
+
+.staff-label {
+    font-weight: 600;
+    color: #374151;
+    min-width: 70px;
+}
+
+.progress-bar {
+    position: relative;
+    background: #f3f4f6;
+    overflow: visible;
+}
+
+.progress-fill {
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 0 4px 4px 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.staff-item:hover .progress-fill::after {
+    opacity: 1;
+}
+
+.staff-percentage {
+    font-weight: 600;
+    color: #3b82f6;
+    min-width: 45px;
+    text-align: right;
+    transition: all 0.3s ease;
+}
+
+.staff-item:hover .staff-percentage {
+    transform: scale(1.1);
+    color: #1d4ed8;
+}
+
+/* Tool Usage Chart Enhancements */
+.usage-chart {
+    background: linear-gradient(180deg, transparent 0%, rgba(59, 130, 246, 0.05) 100%);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.bar {
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    cursor: pointer;
+    position: relative;
+}
+
+.bar:hover {
+    background: linear-gradient(180deg, #1d4ed8, #3b82f6);
+    transform: scaleY(1.1);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.bar::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background: #3b82f6;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.bar:hover::before {
+    opacity: 1;
+}
+
+/* Emergency Load Chart Enhancements */
+.load-chart {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.load-path {
+    filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.2));
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover .load-path {
+    stroke: #1d4ed8;
+    stroke-width: 4;
+    filter: drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3));
+}
+
+/* Button Enhancements */
+.header-action-btn, .quick-action-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.header-action-btn::before, .quick-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s;
+}
+
+.header-action-btn:hover::before, .quick-action-btn:hover::before {
+    left: 100%;
+}
+
+.header-action-btn:hover, .quick-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Loading States */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.loading-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #f3f4f6;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Notification Styles */
+.notification {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification::before {
+    content: '✓';
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.notification-error::before {
+    content: '✕';
+}
+
+.notification-info::before {
+    content: 'ℹ';
+}
+
+/* Responsive Enhancements */
+@media (max-width: 1200px) {
+    .metrics-row {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .metric-card {
+        min-height: 150px;
+    }
+    
+    .nav-buttons-container {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    
+    .nav-btn {
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 768px) {
+    .metrics-container {
+        padding: 16px;
+    }
+    
+    .dashboard-header {
+        padding: 16px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .nav-buttons-container {
+        padding: 0 16px;
+        margin-bottom: 16px;
+    }
+}
+
+/* Dashboard Header Enhancements */
+.dashboard-title h1 {
+    background: linear-gradient(135deg, #1e293b, #475569);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+}
+
+.dashboard-title h1::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    border-radius: 2px;
+}
+
+/* Accessibility Enhancements */
+.metric-card:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.nav-btn:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    .metric-card {
+        background: #1f2937;
+        border-color: #374151;
+        color: #f9fafb;
+    }
+    
+    .nav-btn {
+        background: #1f2937;
+        border-color: #374151;
+        color: #d1d5db;
+    }
+    
+    .nav-btn:hover {
+        background: #374151;
+        color: #f9fafb;
+    }
+} 

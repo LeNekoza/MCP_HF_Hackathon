@@ -18,12 +18,13 @@ sys.path.insert(0, str(project_root))
 try:
     import psycopg2
     from psycopg2.extras import RealDictCursor
+
     DB_AVAILABLE = True
 except ImportError:
     DB_AVAILABLE = False
     logging.warning("psycopg2 not available. Database integration disabled.")
 
-from secure_config import load_database_config, get_connection_string
+from config.secure_config import load_database_config, get_connection_string
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +32,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class QueryResult:
     """Structure for database query results"""
+
     success: bool
     data: List[Dict[str, Any]]
     query: str
@@ -41,6 +43,7 @@ class QueryResult:
 @dataclass
 class QueryIntent:
     """Structure for parsed user query intent"""
+
     intent_type: str  # 'patient_lookup', 'room_status', 'equipment', 'occupancy', etc.
     entities: Dict[str, Any]  # Extracted entities like names, room numbers, etc.
     confidence: float
@@ -52,91 +55,91 @@ class DatabaseMCP:
     Model Context Protocol Database Integration
     Intelligently maps user queries to database operations
     """
-    
+
     def __init__(self):
         """Initialize the MCP database service"""
         self.db_config = None
         self.connection = None
         self.schema_info = {}
         self._initialize_connection()
-    
+
     def _initialize_connection(self):
         """Initialize database connection"""
         if not DB_AVAILABLE:
             logger.error("Database libraries not available")
             return
-            
+
         try:
             self.db_config = load_database_config()
             logger.info("Database configuration loaded successfully")
         except Exception as e:
             logger.error(f"Failed to load database configuration: {e}")
-    
+
     def _get_connection(self):
         """Get database connection with automatic retry"""
         if not DB_AVAILABLE or not self.db_config:
             raise RuntimeError("Database not available")
-            
+
         try:
             if self.connection and not self.connection.closed:
                 return self.connection
-                
-            db_config = self.db_config['database']
+
+            db_config = self.db_config["database"]
             self.connection = psycopg2.connect(**db_config)
             return self.connection
         except Exception as e:
             logger.error(f"Database connection failed: {e}")
             raise
-    
+
     def parse_user_intent(self, user_query: str) -> QueryIntent:
         """
         Parse user query to understand intent and extract entities
         """
         user_query_lower = user_query.lower()
-        
+
         # Intent patterns
         intent_patterns = {
-            'patient_lookup': [
-                r'patient.*(?:named?|called)\s+(\w+)',
-                r'find.*patient.*(\w+)',
-                r'(?:who is|show me).*patient.*(\w+)',
-                r'medical record.*for.*(\w+)',
-                r'patient.*(\w+).*(?:information|details|record)'
+            "patient_lookup": [
+                r"patient.*(?:named?|called)\s+(\w+)",
+                r"find.*patient.*(\w+)",
+                r"(?:who is|show me).*patient.*(\w+)",
+                r"medical record.*for.*(\w+)",
+                r"patient.*(\w+).*(?:information|details|record)",
             ],
-            'room_status': [
-                r'room\s+([A-Z]?\d+)',
-                r'show.*me.*room\s+([A-Z]?\d+)',
-                r'(?:what|which).*room.*(?:available|empty|occupied)',
-                r'room.*(?:status|occupancy)',
-                r'available.*rooms?',
-                r'empty.*rooms?'
+            "room_status": [
+                r"room\s+([A-Z]?\d+)",
+                r"show.*me.*room\s+([A-Z]?\d+)",
+                r"(?:what|which).*room.*(?:available|empty|occupied)",
+                r"room.*(?:status|occupancy)",
+                r"available.*rooms?",
+                r"empty.*rooms?",
             ],
-            'equipment_inventory': [
-                r'(?:equipment|tools?).*(?:available|inventory)',
-                r'(?:what|how many).*(?:equipment|tools?)',
-                r'medical.*(?:equipment|tools?)',
-                r'inventory.*(?:equipment|tools?)',
-                r'(?:find|show).*(?:equipment|tools?)'
+            "equipment_inventory": [
+                r"(?:equipment|tools?).*(?:available|inventory)",
+                r"(?:what|how many).*(?:equipment|tools?)",
+                r"medical.*(?:equipment|tools?)",
+                r"inventory.*(?:equipment|tools?)",
+                r"(?:find|show).*(?:equipment|tools?)",
             ],
-            'hospital_stats': [
-                r'(?:how many|total).*patients?',
-                r'(?:hospital|statistics|stats)',
-                r'occupancy.*rate',
-                r'total.*(?:rooms?|beds?)',
-                r'hospital.*(?:capacity|overview)'
+            "hospital_stats": [
+                r"(?:how many|total).*patients?",
+                r"(?:hospital|statistics|stats)",
+                r"occupancy.*rate",
+                r"total.*(?:rooms?|beds?)",
+                r"hospital.*(?:capacity|overview)",
             ],
-            'staff_lookup': [
-                r'staff.*(?:named?|called)\s+(\w+)',
-                r'(?:doctor|nurse|staff).*(\w+)',
-                r'find.*(?:doctor|nurse|staff).*(\w+)'
-            ]
+            "staff_lookup": [
+                r"staff.*(?:named?|called)\s+(\w+)",
+                r"(?:doctor|nurse|staff).*(\w+)",
+                r"find.*(?:doctor|nurse|staff).*(\w+)",
+            ],
         }
-        
+
         # Find matching intent
-        best_intent = 'general_query'
+        best_intent = "general_query"
         entities = {}
         confidence = 0.5
-        
+
         for intent_type, patterns in intent_patterns.items():
             for pattern in patterns:
                 match = re.search(pattern, user_query_lower)
@@ -144,35 +147,35 @@ class DatabaseMCP:
                     best_intent = intent_type
                     confidence = 0.8
                     if match.groups():
-                        entities['search_term'] = match.group(1)
+                        entities["search_term"] = match.group(1)
                     break
             if confidence > 0.7:
                 break
-        
+
         # Determine suggested tables based on intent
         table_mapping = {
-            'patient_lookup': ['users', 'patient_records'],
-            'room_status': ['rooms', 'occupancy'],
-            'equipment_inventory': ['tools', 'hospital_inventory', 'storage_rooms'],
-            'hospital_stats': ['users', 'rooms', 'occupancy', 'patient_records'],
-            'staff_lookup': ['users']
+            "patient_lookup": ["users", "patient_records"],
+            "room_status": ["rooms", "occupancy"],
+            "equipment_inventory": ["tools", "hospital_inventory", "storage_rooms"],
+            "hospital_stats": ["users", "rooms", "occupancy", "patient_records"],
+            "staff_lookup": ["users"],
         }
-        
-        suggested_tables = table_mapping.get(best_intent, ['users'])
-        
+
+        suggested_tables = table_mapping.get(best_intent, ["users"])
+
         return QueryIntent(
             intent_type=best_intent,
             entities=entities,
             confidence=confidence,
-            suggested_tables=suggested_tables
+            suggested_tables=suggested_tables,
         )
-    
+
     def generate_sql_query(self, intent: QueryIntent) -> str:
         """
         Generate SQL query based on parsed intent
         """
-        if intent.intent_type == 'patient_lookup':
-            if 'search_term' in intent.entities:
+        if intent.intent_type == "patient_lookup":
+            if "search_term" in intent.entities:
                 return f"""
                 SELECT u.id, u.full_name, u.role, pr.date_of_birth, pr.gender, 
                        pr.blood_group, pr.medical_history, pr.allergies
@@ -190,9 +193,9 @@ class DatabaseMCP:
                 WHERE u.role = 'patient'
                 LIMIT 10
                 """
-        
-        elif intent.intent_type == 'room_status':
-            if 'search_term' in intent.entities:
+
+        elif intent.intent_type == "room_status":
+            if "search_term" in intent.entities:
                 return f"""
                 SELECT r.room_number, r.room_type, r.bed_capacity, 
                        CASE 
@@ -219,8 +222,8 @@ class DatabaseMCP:
                 ORDER BY r.room_number
                 LIMIT 20
                 """
-        
-        elif intent.intent_type == 'equipment_inventory':
+
+        elif intent.intent_type == "equipment_inventory":
             return """
             SELECT t.tool_name, t.category, t.quantity_total, t.quantity_available,
                    sr.storage_number, sr.storage_type
@@ -230,8 +233,8 @@ class DatabaseMCP:
             ORDER BY t.category, t.tool_name
             LIMIT 20
             """
-        
-        elif intent.intent_type == 'hospital_stats':
+
+        elif intent.intent_type == "hospital_stats":
             return """
             SELECT 
                 'Total Patients' as metric,
@@ -253,9 +256,9 @@ class DatabaseMCP:
                 SUM(quantity_available) as value
             FROM tools
             """
-        
-        elif intent.intent_type == 'staff_lookup':
-            if 'search_term' in intent.entities:
+
+        elif intent.intent_type == "staff_lookup":
+            if "search_term" in intent.entities:
                 return f"""
                 SELECT id, full_name, role, staff_type, email
                 FROM users
@@ -270,13 +273,13 @@ class DatabaseMCP:
                 WHERE role IN ('staff', 'admin')
                 LIMIT 10
                 """
-        
+
         # Default general query
         return """
         SELECT 'Hospital Overview' as info,
                'Use more specific queries like: patient John, room R001, available equipment, hospital stats' as suggestion
         """
-    
+
     def execute_query(self, sql_query: str) -> QueryResult:
         """
         Execute SQL query and return structured results
@@ -284,27 +287,24 @@ class DatabaseMCP:
         try:
             conn = self._get_connection()
             cursor = conn.cursor(cursor_factory=RealDictCursor)
-            
+
             # Clean and validate query
             sql_query = sql_query.strip()
-            if not sql_query.upper().startswith('SELECT'):
+            if not sql_query.upper().startswith("SELECT"):
                 raise ValueError("Only SELECT queries are allowed")
-            
+
             cursor.execute(sql_query)
             results = cursor.fetchall()
-            
+
             # Convert to list of dictionaries
             data = [dict(row) for row in results]
-            
+
             cursor.close()
-            
+
             return QueryResult(
-                success=True,
-                data=data,
-                query=sql_query,
-                row_count=len(data)
+                success=True, data=data, query=sql_query, row_count=len(data)
             )
-            
+
         except Exception as e:
             logger.error(f"Query execution failed: {e}")
             return QueryResult(
@@ -312,23 +312,23 @@ class DatabaseMCP:
                 data=[],
                 query=sql_query,
                 row_count=0,
-                error_message=str(e)
+                error_message=str(e),
             )
-    
+
     def format_response(self, query_result: QueryResult, intent: QueryIntent) -> str:
         """
         Format database results into a coherent, contextually appropriate response
         """
         if not query_result.success:
             return f"I encountered an error while searching the database: {query_result.error_message}"
-        
+
         if query_result.row_count == 0:
             return "I couldn't find any matching information in the hospital database."
-        
+
         data = query_result.data
-        
+
         # Format based on intent type
-        if intent.intent_type == 'patient_lookup':
+        if intent.intent_type == "patient_lookup":
             if query_result.row_count == 1:
                 patient = data[0]
                 response = f"**Patient Information:**\n"
@@ -336,73 +336,83 @@ class DatabaseMCP:
                 response += f"• Date of Birth: {patient.get('date_of_birth', 'N/A')}\n"
                 response += f"• Gender: {patient.get('gender', 'N/A')}\n"
                 response += f"• Blood Group: {patient.get('blood_group', 'N/A')}\n"
-                if patient.get('medical_history'):
+                if patient.get("medical_history"):
                     response += f"• Medical History: {patient.get('medical_history')}\n"
-                if patient.get('allergies'):
+                if patient.get("allergies"):
                     response += f"• Allergies: {patient.get('allergies')}\n"
             else:
                 response = f"**Found {query_result.row_count} patients:**\n"
                 for i, patient in enumerate(data[:5], 1):
                     response += f"{i}. {patient.get('full_name', 'N/A')} - {patient.get('blood_group', 'N/A')}\n"
-        
-        elif intent.intent_type == 'room_status':
-            if 'search_term' in intent.entities:
+
+        elif intent.intent_type == "room_status":
+            if "search_term" in intent.entities:
                 if data:
                     room = data[0]
                     response = f"**Room {room.get('room_number')} Status:**\n"
                     response += f"• Type: {room.get('room_type', 'N/A')}\n"
                     response += f"• Capacity: {room.get('bed_capacity', 'N/A')} beds\n"
                     response += f"• Status: {room.get('status', 'N/A')}\n"
-                    if room.get('patient_name'):
+                    if room.get("patient_name"):
                         response += f"• Current Patient: {room.get('patient_name')}\n"
                         response += f"• Admitted: {room.get('assigned_at', 'N/A')}\n"
                 else:
-                    response = f"Room {intent.entities['search_term'].upper()} not found."
+                    response = (
+                        f"Room {intent.entities['search_term'].upper()} not found."
+                    )
             else:
-                available_rooms = [r for r in data if r.get('status') == 'Available']
-                occupied_rooms = [r for r in data if r.get('status') == 'Occupied']
-                
+                available_rooms = [r for r in data if r.get("status") == "Available"]
+                occupied_rooms = [r for r in data if r.get("status") == "Occupied"]
+
                 response = f"**Room Status Summary:**\n"
                 response += f"• Available Rooms: {len(available_rooms)}\n"
                 response += f"• Occupied Rooms: {len(occupied_rooms)}\n\n"
-                
+
                 if available_rooms:
                     response += "**Available Rooms:**\n"
                     for room in available_rooms[:5]:
-                        response += f"• {room.get('room_number')} ({room.get('room_type')})\n"
-        
-        elif intent.intent_type == 'equipment_inventory':
-            response = f"**Medical Equipment Inventory ({query_result.row_count} items):**\n"
+                        response += (
+                            f"• {room.get('room_number')} ({room.get('room_type')})\n"
+                        )
+
+        elif intent.intent_type == "equipment_inventory":
+            response = (
+                f"**Medical Equipment Inventory ({query_result.row_count} items):**\n"
+            )
             by_category = {}
             for item in data:
-                category = item.get('category', 'Other')
+                category = item.get("category", "Other")
                 if category not in by_category:
                     by_category[category] = []
                 by_category[category].append(item)
-            
+
             for category, items in by_category.items():
                 response += f"\n**{category}:**\n"
                 for item in items[:3]:
                     response += f"• {item.get('tool_name', 'N/A')}: {item.get('quantity_available', 0)} available\n"
-        
-        elif intent.intent_type == 'hospital_stats':
+
+        elif intent.intent_type == "hospital_stats":
             response = "**Hospital Statistics:**\n"
             for stat in data:
-                response += f"• {stat.get('metric', 'N/A')}: {stat.get('value', 'N/A')}\n"
-        
-        elif intent.intent_type == 'staff_lookup':
+                response += (
+                    f"• {stat.get('metric', 'N/A')}: {stat.get('value', 'N/A')}\n"
+                )
+
+        elif intent.intent_type == "staff_lookup":
             response = f"**Staff Information ({query_result.row_count} found):**\n"
             for i, staff in enumerate(data[:5], 1):
                 response += f"{i}. {staff.get('full_name', 'N/A')} - {staff.get('staff_type', staff.get('role', 'N/A'))}\n"
-        
+
         else:
             # Generic formatting
-            response = f"**Database Results ({query_result.row_count} records found):**\n"
+            response = (
+                f"**Database Results ({query_result.row_count} records found):**\n"
+            )
             for i, record in enumerate(data[:5], 1):
                 response += f"{i}. {dict(record)}\n"
-        
+
         return response
-    
+
     def process_user_query(self, user_query: str) -> str:
         """
         Main MCP function: Process user query and return intelligent response
@@ -410,38 +420,58 @@ class DatabaseMCP:
         try:
             # Step 1: Parse user intent
             intent = self.parse_user_intent(user_query)
-            logger.info(f"Parsed intent: {intent.intent_type} (confidence: {intent.confidence})")
-            
+            logger.info(
+                f"Parsed intent: {intent.intent_type} (confidence: {intent.confidence})"
+            )
+
             # Step 2: Generate SQL query
             sql_query = self.generate_sql_query(intent)
             logger.debug(f"Generated SQL: {sql_query}")
-            
+
             # Step 3: Execute query
             result = self.execute_query(sql_query)
-            
+
             # Step 4: Format response
             formatted_response = self.format_response(result, intent)
-            
+
             return formatted_response
-            
+
         except Exception as e:
             logger.error(f"MCP processing failed: {e}")
             return f"I'm sorry, I encountered an error while processing your request: {str(e)}"
-    
+
     def is_database_query(self, user_query: str) -> bool:
         """
         Determine if a user query requires database information
         """
         database_keywords = [
-            'patient', 'room', 'equipment', 'staff', 'doctor', 'nurse',
-            'medical', 'hospital', 'inventory', 'occupancy', 'available',
-            'find', 'show', 'search', 'how many', 'total', 'statistics',
-            'record', 'history', 'allergies', 'blood', 'bed'
+            "patient",
+            "room",
+            "equipment",
+            "staff",
+            "doctor",
+            "nurse",
+            "medical",
+            "hospital",
+            "inventory",
+            "occupancy",
+            "available",
+            "find",
+            "show",
+            "search",
+            "how many",
+            "total",
+            "statistics",
+            "record",
+            "history",
+            "allergies",
+            "blood",
+            "bed",
         ]
-        
+
         user_query_lower = user_query.lower()
         return any(keyword in user_query_lower for keyword in database_keywords)
 
 
 # Global instance
-database_mcp = DatabaseMCP() 
+database_mcp = DatabaseMCP()

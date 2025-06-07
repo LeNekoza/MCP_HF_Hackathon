@@ -9,26 +9,27 @@ from typing import Dict, List, Any, Optional
 import logging
 from contextlib import contextmanager
 
-from .logger import setup_logger
+from logger import setup_logger
 
 # Import from root directory secure_config
 import sys
 import os
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from secure_config import load_database_config, get_connection_string
+from config.secure_config import load_database_config, get_connection_string
 
 logger = setup_logger()
 
 
 class DatabaseConnection:
     """Database connection manager for NeonDB PostgreSQL"""
-    
+
     def __init__(self):
         """Initialize database connection with configuration"""
         self.config = load_database_config()
         self.connection_string = get_connection_string()
         logger.info("Database connection initialized")
-    
+
     @contextmanager
     def get_connection(self):
         """Get a database connection with automatic cleanup"""
@@ -44,7 +45,7 @@ class DatabaseConnection:
         finally:
             if conn:
                 conn.close()
-    
+
     def test_connection(self) -> bool:
         """Test database connectivity"""
         try:
@@ -62,17 +63,17 @@ class DatabaseConnection:
 
 class HospitalDataRetriever:
     """Data retrieval operations for hospital database"""
-    
+
     def __init__(self):
         """Initialize data retriever with database connection"""
         self.db = DatabaseConnection()
-    
+
     def get_all_users(self, limit: Optional[int] = None) -> pd.DataFrame:
         """Retrieve all users from the database"""
         query = "SELECT * FROM users"
         if limit:
             query += f" LIMIT {limit}"
-        
+
         try:
             with self.db.get_connection() as conn:
                 df = pd.read_sql_query(query, conn)
@@ -81,7 +82,7 @@ class HospitalDataRetriever:
         except Exception as e:
             logger.error(f"Error retrieving users: {e}")
             return pd.DataFrame()
-    
+
     def get_patients(self, limit: Optional[int] = None) -> pd.DataFrame:
         """Retrieve patient records with user information"""
         query = """
@@ -95,7 +96,7 @@ class HospitalDataRetriever:
         """
         if limit:
             query += f" LIMIT {limit}"
-        
+
         try:
             with self.db.get_connection() as conn:
                 df = pd.read_sql_query(query, conn)
@@ -104,21 +105,23 @@ class HospitalDataRetriever:
         except Exception as e:
             logger.error(f"Error retrieving patients: {e}")
             return pd.DataFrame()
-    
-    def get_staff(self, staff_type: Optional[str] = None, limit: Optional[int] = None) -> pd.DataFrame:
+
+    def get_staff(
+        self, staff_type: Optional[str] = None, limit: Optional[int] = None
+    ) -> pd.DataFrame:
         """Retrieve staff members, optionally filtered by staff type"""
         query = """
         SELECT id, full_name, email, phone_number, role, staff_type
         FROM users 
         WHERE role IN ('staff', 'doctor', 'nurse', 'admin')
         """
-        
+
         if staff_type:
             query += f" AND staff_type = '{staff_type}'"
-        
+
         if limit:
             query += f" LIMIT {limit}"
-        
+
         try:
             with self.db.get_connection() as conn:
                 df = pd.read_sql_query(query, conn)
@@ -127,8 +130,13 @@ class HospitalDataRetriever:
         except Exception as e:
             logger.error(f"Error retrieving staff: {e}")
             return pd.DataFrame()
-    
-    def get_rooms(self, room_type: Optional[str] = None, available_only: bool = False, limit: Optional[int] = None) -> pd.DataFrame:
+
+    def get_rooms(
+        self,
+        room_type: Optional[str] = None,
+        available_only: bool = False,
+        limit: Optional[int] = None,
+    ) -> pd.DataFrame:
         """Retrieve room information, optionally filtered by type and availability"""
         if available_only:
             query = """
@@ -145,13 +153,13 @@ class HospitalDataRetriever:
             FROM rooms r
             LEFT JOIN occupancy o ON r.id = o.room_id AND o.discharged_at IS NULL
             """
-        
+
         if room_type:
             query += f" AND r.room_type = '{room_type}'"
-        
+
         if limit:
             query += f" LIMIT {limit}"
-        
+
         try:
             with self.db.get_connection() as conn:
                 df = pd.read_sql_query(query, conn)
@@ -160,7 +168,7 @@ class HospitalDataRetriever:
         except Exception as e:
             logger.error(f"Error retrieving rooms: {e}")
             return pd.DataFrame()
-    
+
     def get_occupancy(self, active_only: bool = True) -> pd.DataFrame:
         """Retrieve occupancy information with patient and room details"""
         query = """
@@ -173,10 +181,10 @@ class HospitalDataRetriever:
         JOIN users u ON pr.user_id = u.id
         JOIN rooms r ON o.room_id = r.id
         """
-        
+
         if active_only:
             query += " WHERE o.discharged_at IS NULL"
-        
+
         try:
             with self.db.get_connection() as conn:
                 df = pd.read_sql_query(query, conn)
@@ -185,8 +193,13 @@ class HospitalDataRetriever:
         except Exception as e:
             logger.error(f"Error retrieving occupancy: {e}")
             return pd.DataFrame()
-    
-    def get_medical_equipment(self, location_id: Optional[int] = None, available_only: bool = False, limit: Optional[int] = None) -> pd.DataFrame:
+
+    def get_medical_equipment(
+        self,
+        location_id: Optional[int] = None,
+        available_only: bool = False,
+        limit: Optional[int] = None,
+    ) -> pd.DataFrame:
         """Retrieve medical tools and equipment"""
         query = """
         SELECT 
@@ -196,29 +209,33 @@ class HospitalDataRetriever:
         FROM tools t
         LEFT JOIN storage_rooms sr ON t.location_storage_id = sr.id
         """
-        
+
         conditions = []
         if location_id:
             conditions.append(f"t.location_storage_id = {location_id}")
         if available_only:
             conditions.append("t.quantity_available > 0")
-        
+
         if conditions:
             query += " WHERE " + " AND ".join(conditions)
-        
+
         if limit:
             query += f" LIMIT {limit}"
-        
+
         try:
             with self.db.get_connection() as conn:
                 df = pd.read_sql_query(query, conn)
-                logger.info(f"Retrieved {len(df)} medical equipment records from database")
+                logger.info(
+                    f"Retrieved {len(df)} medical equipment records from database"
+                )
                 return df
         except Exception as e:
             logger.error(f"Error retrieving medical equipment: {e}")
             return pd.DataFrame()
-    
-    def get_hospital_inventory(self, location_id: Optional[int] = None, item_type: Optional[str] = None) -> pd.DataFrame:
+
+    def get_hospital_inventory(
+        self, location_id: Optional[int] = None, item_type: Optional[str] = None
+    ) -> pd.DataFrame:
         """Retrieve hospital inventory"""
         query = """
         SELECT 
@@ -228,16 +245,16 @@ class HospitalDataRetriever:
         FROM hospital_inventory hi
         LEFT JOIN storage_rooms sr ON hi.location_storage_id = sr.id
         """
-        
+
         conditions = []
         if location_id:
             conditions.append(f"hi.location_storage_id = {location_id}")
         if item_type:
             conditions.append(f"hi.item_type = '{item_type}'")
-        
+
         if conditions:
             query += " WHERE " + " AND ".join(conditions)
-        
+
         try:
             with self.db.get_connection() as conn:
                 df = pd.read_sql_query(query, conn)
@@ -246,14 +263,14 @@ class HospitalDataRetriever:
         except Exception as e:
             logger.error(f"Error retrieving inventory: {e}")
             return pd.DataFrame()
-    
+
     def get_storage_rooms(self, floor_number: Optional[int] = None) -> pd.DataFrame:
         """Retrieve storage room information"""
         query = "SELECT * FROM storage_rooms"
-        
+
         if floor_number:
             query += f" WHERE floor_number = {floor_number}"
-        
+
         try:
             with self.db.get_connection() as conn:
                 df = pd.read_sql_query(query, conn)
@@ -262,7 +279,7 @@ class HospitalDataRetriever:
         except Exception as e:
             logger.error(f"Error retrieving storage rooms: {e}")
             return pd.DataFrame()
-    
+
     def search_patients_by_name(self, name_pattern: str) -> pd.DataFrame:
         """Search patients by name pattern"""
         query = """
@@ -273,7 +290,7 @@ class HospitalDataRetriever:
         JOIN patient_records pr ON u.id = pr.user_id
         WHERE u.role = 'patient' AND u.full_name ILIKE %s
         """
-        
+
         try:
             with self.db.get_connection() as conn:
                 df = pd.read_sql_query(query, conn, params=[f"%{name_pattern}%"])
@@ -282,13 +299,20 @@ class HospitalDataRetriever:
         except Exception as e:
             logger.error(f"Error searching patients: {e}")
             return pd.DataFrame()
-    
+
     def get_database_stats(self) -> Dict[str, int]:
         """Get database statistics (record counts for each table)"""
-        tables = ['users', 'patient_records', 'rooms', 'occupancy', 
-                 'tools', 'hospital_inventory', 'storage_rooms']
+        tables = [
+            "users",
+            "patient_records",
+            "rooms",
+            "occupancy",
+            "tools",
+            "hospital_inventory",
+            "storage_rooms",
+        ]
         stats = {}
-        
+
         try:
             with self.db.get_connection() as conn:
                 cursor = conn.cursor()
@@ -309,7 +333,8 @@ def get_data_retriever() -> HospitalDataRetriever:
     """Get a configured data retriever instance"""
     return HospitalDataRetriever()
 
+
 def test_database_connection() -> bool:
     """Test database connectivity"""
     db = DatabaseConnection()
-    return db.test_connection() 
+    return db.test_connection()
