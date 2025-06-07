@@ -8,6 +8,12 @@ document.addEventListener("DOMContentLoaded", function () {
   initializeInterface();
   setupKeyboardShortcuts();
   addStatusIndicators();
+  setupEnhancedChatbotObserver();
+  
+  // Initialize LaTeX rendering if available
+  if (window.LatexRenderer) {
+    window.LatexRenderer.initializeLatexSupport();
+  }
 });
 
 // Initialize the interface with custom functionality
@@ -172,9 +178,50 @@ function showNotification(message, type = "info") {
   }, 3000);
 }
 
+// Process LaTeX in chatbot messages
+function processLatexInChatbot() {
+  if (window.LatexRenderer && window.LatexRenderer.processAllLatex) {
+    console.log("Processing LaTeX in chatbot messages");
+    window.LatexRenderer.processAllLatex();
+  }
+}
+
+// Enhanced observer for chatbot content changes
+function setupEnhancedChatbotObserver() {
+  const chatbotContainer = document.querySelector('[data-testid="chatbot"], .main-chatbot, .gradio-chatbot');
+  
+  if (!chatbotContainer) {
+    setTimeout(setupEnhancedChatbotObserver, 1000);
+    return;
+  }
+  
+  const observer = new MutationObserver((mutations) => {
+    let hasNewContent = false;
+    
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+        hasNewContent = true;
+      }
+    });
+    
+    if (hasNewContent) {
+      // Delay to ensure content is fully rendered
+      setTimeout(() => {
+        processLatexInChatbot();
+      }, 200);
+    }
+  });
+  
+  observer.observe(chatbotContainer, {
+    childList: true,
+    subtree: true
+  });
+}
+
 // Export functions for use in other scripts
 window.MCPInterface = {
   copyToClipboard,
   showNotification,
   showLoadingState,
+  processLatexInChatbot,
 };

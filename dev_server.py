@@ -150,7 +150,7 @@ def main():
 
     # Configuration
     script_path = "app.py"
-    watch_paths = ["src/", "config/", "static/"]
+    watch_paths = ["src/", "config/", "static/", "scripts/"]
 
     print("=" * 60)
     print("🤖 MCP HF Hackathon - Development Server")

@@ -1,10 +1,9 @@
 """
-Main Gradio Interface Components - ChatGPT-like Interface
+Main Gradio Interface Components - Modern Hospital Dashboard Interface
 """
 
 import asyncio
 import time
-from turtle import width
 from typing import Any, Dict, List
 
 import gradio as gr
@@ -12,147 +11,419 @@ import gradio as gr
 from ..models.mcp_handler import MCPHandler
 from ..models.nebius_model import NebiusModel
 from ..utils.helpers import process_user_input
+from ..utils.latex_formatter import format_medical_response
 
 
 def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
     """
-    Create a ChatGPT-like Gradio interface for the MCP HF Hackathon application
+    Create a modern hospital dashboard Gradio interface for the MCP HF Hackathon application
 
     Args:
         config: Configuration dictionary
 
     Returns:
-        gr.Blocks: The ChatGPT-style Gradio interface"""
+        gr.Blocks: The modern hospital dashboard Gradio interface
+    """
     # Initialize MCP handler and Nebius model
     mcp_handler = MCPHandler(config)
     nebius_model = NebiusModel()
 
     with gr.Blocks(
-        title="Hospital AI Helper - Medical Assistant",
-        css=load_chatgpt_css(),
+        title="Smart Hospital - Department Assistant",
+        css=load_modern_hospital_css(),
         fill_height=True,
-    ) as demo:  # Header with title and model selection
-        with gr.Row(elem_classes="header-row"):
-            with gr.Column(scale=1, min_width=200):
-                gr.Markdown(
+        head=load_latex_scripts(),
+    ) as demo:
+
+        # Main container with fixed layout
+        with gr.Row(elem_classes="main-container", equal_height=True):
+
+            # Left Sidebar - Chat Panel
+            with gr.Column(scale=1, min_width=350, elem_classes="sidebar-container"):
+
+                # Assistant Header - Compact
+                gr.HTML(
                     """
-                    # 🏥 Hospital AI Helper
-                    *Powered by MCP & Nebius Studio*
-                    """,
-                    elem_classes="header-title",
+                <div class="assistant-header">
+                    <div class="avatar-circle">👨‍⚕️</div>
+                    <div class="assistant-text">
+                        <h3>Medical Assistant</h3>
+                        <p>How can I help you?</p>
+                    </div>
+                </div>
+                """
                 )
-            with gr.Column(scale=1, min_width=150):
+
+                # Model Selection in Chat Panel
                 model_dropdown = gr.Dropdown(
-                    label="AI Model",
                     choices=get_available_models(),
+                    label="Model",
                     value=config.get("default_model", "nebius-llama-3.3-70b"),
-                    elem_classes="model-selector",
-                    scale=1,
-                )
-
-        # Main chat interface
-        chatbot = gr.Chatbot(
-            type="messages",
-            height=400,
-            bubble_full_width=False,
-            show_copy_button=True,
-            show_share_button=False,
-            avatar_images=(
-                "./static/images/user-avatar.svg",
-                "./static/images/bot-avatar.svg",
-            ),
-            elem_classes="main-chatbot",
-        )  # Chat input area with improved styling
-        with gr.Row(elem_classes="input-row"):
-            with gr.Column(scale=1, min_width=200):
-                msg = gr.Textbox(
-                    placeholder="Ask about medical symptoms, health questions, or general assistance...",
-                    show_label=False,
-                    lines=1,
-                    max_lines=8,
-                    elem_classes="chat-input",
                     container=False,
-                )
-            with gr.Column(scale=0, min_width=50):
-                send_btn = gr.Button(
-                    "➤", variant="primary", elem_classes="send-button", size="sm"
+                    scale=0.05,
+                    elem_classes="model-gr-dropdown",
                 )
 
-        # Action buttons
-        with gr.Row(elem_classes="action-row"):
-            clear_btn = gr.Button("🗑️ Clear Chat", variant="secondary", size="sm")
-            with gr.Column():
-                gr.Markdown("", elem_classes="spacer")  # Spacer
-            settings_btn = gr.Button("⚙️ Settings", variant="secondary", size="sm")
-
-        # Medical specialty selector
-        with gr.Row(elem_classes="specialty-row"):
-            medical_specialty = gr.Dropdown(
-                label="Medical Specialty",
-                choices=[
-                    "General Medicine",
-                    "Cardiology",
-                    "Neurology",
-                    "Orthopedics", 
-                    "Psychiatry",
-                    "Gastroenterology",
-                    "Pulmonology",
-                    "Endocrinology",
-                    "Emergency Medicine",
-                    "Pediatrics"
-                ],
-                value="General Medicine",
-                elem_classes="specialty-selector",
-                scale=1,
-            )
-            context_input = gr.Textbox(
-                label="Medical Context (Optional)",
-                placeholder="Medical history, symptoms, medications, etc...",
-                lines=2,
-                max_lines=4,
-                elem_classes="context-input",
-                scale=2,
-            )
-
-        # Collapsible settings panel
-        with gr.Accordion(
-            "Advanced Settings", open=False, elem_classes="settings-panel"
-        ):
-            with gr.Row():
-                temperature = gr.Slider(
-                    minimum=0.0,
-                    maximum=2.0,
-                    value=0.4,  # Lower default for medical accuracy
-                    step=0.1,
-                    label="Temperature",
-                    elem_classes="setting-slider",
-                )
-                max_tokens = gr.Slider(
-                    minimum=100,
-                    maximum=4000,
-                    value=1000,
-                    step=100,
-                    label="Max Tokens",
-                    elem_classes="setting-slider",
+                # Chat Interface - Normal Chat
+                chatbot = gr.Chatbot(
+                    type="messages",
+                    height=350,
+                    show_copy_button=False,
+                    show_share_button=True,
+                    container=False,
+                    layout="bubble",
+                    elem_classes="chatbot-gr-chatbot",
                 )
 
-        # Status indicator
-        status = gr.Textbox(
-            value="Ready",
-            show_label=False,
-            interactive=False,
-            elem_classes="status-indicator",
-        )
+                # Chat Input Area - Standard
+                with gr.Row():
+                    msg = gr.Textbox(
+                        placeholder="Ask about hospital status, patients, or medical queries...",
+                        show_label=False,
+                        lines=1,
+                        max_lines=3,
+                        container=False,
+                        scale=4,
+                    )
+                    send_btn = gr.Button("→", size="sm", scale=0, min_width=40)
+
+            # Right Side - Dashboard
+            with gr.Column(scale=2, elem_classes="dashboard-container"):
+
+                # Dashboard Header - Clean without Model Selection
+                with gr.Row(elem_classes="dashboard-header-row"):
+                    with gr.Column(scale=2):
+                        gr.HTML(
+                            """
+                        <div class="dashboard-title">
+                            <h1>SMART HOSPITAL</h1>
+                            <p>Department Assistant</p>
+                        </div>
+                        """
+                        )
+
+                    with gr.Column(scale=1, elem_classes="dashboard-controls"):
+                        # Quick Controls
+                        status_btn = gr.Button(
+                            "Hospital Status",
+                            elem_classes="header-action-btn",
+                            size="sm",
+                            scale=1,
+                        )
+
+                # Navigation Buttons Row
+                gr.HTML(
+                    """
+                <div class="nav-buttons-container">
+                    <button class="nav-btn active" data-section="dashboard">Dashboard</button>
+                    <button class="nav-btn" data-section="forecasting">Forecasting</button>
+                    <button class="nav-btn" data-section="alerts">Alerts</button>
+                    <button class="nav-btn" data-section="resources">Resources</button>
+                </div>
+                """
+                )
+
+                # Dynamic Content Container - Changes based on navigation
+                gr.HTML(
+                    """
+                <div class="content-container">
+                    <!-- DASHBOARD SECTION -->
+                    <div id="dashboard-section" class="content-section active">
+                        <div class="metrics-container">
+                            <!-- First Row: ICU Occupancy and Emergency Room Load -->
+                            <div class="metrics-row">
+                                <div class="metric-card">
+                                    <div class="progress-circle">
+                                        <svg width="120" height="120">
+                                            <circle class="progress-circle-bg" cx="60" cy="60" r="54"></circle>
+                                            <circle class="progress-circle-fill" cx="60" cy="60" r="54" 
+                                                    style="stroke-dasharray: 339.292; stroke-dashoffset: 98.195;"></circle>
+                                        </svg>
+                                        <div class="progress-text">71%</div>
+                                    </div>
+                                    <h3>ICU Occupancy</h3>
+                                    <p class="card-subtitle">Current Capacity</p>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <svg class="load-chart" width="200" height="80">
+                                        <defs>
+                                            <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.3" />
+                                                <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:0.05" />
+                                            </linearGradient>
+                                        </defs>
+                                        <path class="load-path" d="M 10 70 Q 30 50 50 45 T 90 40 T 130 35 T 170 30 T 190 25" 
+                                              stroke="#3B82F6" stroke-width="3" fill="none"></path>
+                                        <path class="load-area" d="M 10 70 Q 30 50 50 45 T 90 40 T 130 35 T 170 30 T 190 25 L 190 70 L 10 70 Z" 
+                                              fill="url(#gradient)"></path>
+                                    </svg>
+                                    <h3>Emergency Room Load</h3>
+                                    <p class="card-subtitle">Patients in Queue: 12</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Second Row: Staff Availability and Tool Usage -->
+                            <div class="metrics-row">
+                                <div class="metric-card">
+                                    <h3>Staff Availability</h3>
+                                    <div class="staff-metrics">
+                                        <div class="staff-item">
+                                            <span class="staff-label">Doctors</span>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill doctors-progress"></div>
+                                            </div>
+                                            <span class="staff-percentage">75%</span>
+                                        </div>
+                                        <div class="staff-item">
+                                            <span class="staff-label">Nurses</span>
+                                            <div class="progress-bar">
+                                                <div class="progress-fill nurses-progress"></div>
+                                            </div>
+                                            <span class="staff-percentage">60%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-card">
+                                    <div class="usage-chart">
+                                        <div class="bar" style="height: 60%;"></div>
+                                        <div class="bar" style="height: 40%;"></div>
+                                        <div class="bar" style="height: 70%;"></div>
+                                        <div class="bar" style="height: 35%;"></div>
+                                        <div class="bar" style="height: 85%;"></div>
+                                    </div>
+                                    <h3>Equipment Usage</h3>
+                                    <p class="card-subtitle">Ventilators, Monitors, Beds</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FORECASTING SECTION -->
+                    <div id="forecasting-section" class="content-section">
+                        <div class="metrics-container">
+                            <div class="section-header">
+                                <h2>📊 Predictive Analytics & Forecasting</h2>
+                            </div>
+                            <div class="metrics-row">
+                                <div class="metric-card forecast-card">
+                                    <h3>24-Hour Forecast</h3>
+                                    <div class="forecast-chart">
+                                        <svg width="200" height="100">
+                                            <defs>
+                                                <linearGradient id="forecast-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                                    <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.3" />
+                                                    <stop offset="100%" style="stop-color:#10b981;stop-opacity:0.05" />
+                                                </linearGradient>
+                                            </defs>
+                                            <path d="M 10 80 Q 40 70 70 60 T 130 45 T 190 50" 
+                                                  stroke="#10b981" stroke-width="3" fill="none"></path>
+                                            <path d="M 10 80 Q 40 70 70 60 T 130 45 T 190 50 L 190 80 L 10 80 Z" 
+                                                  fill="url(#forecast-gradient)"></path>
+                                        </svg>
+                                    </div>
+                                    <p class="card-subtitle">Expected Admission Rate</p>
+                                </div>
+                                
+                                <div class="metric-card forecast-card">
+                                    <h3>Capacity Planning</h3>
+                                    <div class="capacity-indicators">
+                                        <div class="capacity-item">
+                                            <span class="capacity-label">ICU Beds</span>
+                                            <span class="capacity-value">85% Full</span>
+                                            <div class="capacity-trend up">↗ +5%</div>
+                                        </div>
+                                        <div class="capacity-item">
+                                            <span class="capacity-label">General Beds</span>
+                                            <span class="capacity-value">67% Full</span>
+                                            <div class="capacity-trend down">↘ -2%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ALERTS SECTION -->
+                    <div id="alerts-section" class="content-section">
+                        <div class="metrics-container">
+                            <div class="alerts-header">
+                                <h2 style="color: black;">🚨 Critical Alerts & Notifications</h2>
+                                <div class="alert-summary">
+                                    <span class="alert-count critical">3 Critical</span>
+                                    <span class="alert-count warning">7 Warnings</span>
+                                    <span class="alert-count info">12 Info</span>
+                                </div>
+                            </div>
+                            
+                            <div class="alerts-list">
+                                <div class="alert-item critical">
+                                    <div class="alert-icon">🚨</div>
+                                    <div class="alert-content">
+                                        <h4>ICU Capacity Critical</h4>
+                                        <p>ICU occupancy at 95% - Consider patient transfer</p>
+                                        <span class="alert-time">2 minutes ago</span>
+                                    </div>
+                                    <div class="alert-actions">
+                                        <button class="alert-btn primary">Acknowledge</button>
+                                        <button class="alert-btn">Escalate</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert-item warning">
+                                    <div class="alert-icon">⚠️</div>
+                                    <div class="alert-content">
+                                        <h4>Equipment Malfunction</h4>
+                                        <p>Ventilator #3 in Room 205 requires attention</p>
+                                        <span class="alert-time">5 minutes ago</span>
+                                    </div>
+                                    <div class="alert-actions">
+                                        <button class="alert-btn primary">Dispatch</button>
+                                        <button class="alert-btn">Details</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert-item info">
+                                    <div class="alert-icon">📋</div>
+                                    <div class="alert-content">
+                                        <h4>Inventory Low</h4>
+                                        <p>Surgical masks below 20% threshold</p>
+                                        <span class="alert-time">1 hour ago</span>
+                                    </div>
+                                    <div class="alert-actions">
+                                        <button class="alert-btn primary">Reorder</button>
+                                        <button class="alert-btn">View Stock</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RESOURCES SECTION -->
+                    <div id="resources-section" class="content-section">
+                        <div class="metrics-container">
+                            <div class="section-header">
+                                <h2>🏥 Resources & Equipment Management</h2>
+                            </div>
+                            <div class="metrics-row" >
+                                <div class="metric-card resource-card">
+                                    <h3>Equipment Status</h3>
+                                    <div class="equipment-grid">
+                                        <div class="equipment-item">
+                                            <span class="equipment-name" style="color: gray; font-weight: bold; ">Ventilators</span>
+                                            <span class="equipment-status operational">24/28 ✓</span>
+                                        </div>
+                                        <div class="equipment-item">
+                                            <span class="equipment-name" style="color: gray; font-weight: bold; ">CT Scanners</span>
+                                            <span class="equipment-status operational">3/3 ✓</span>
+                                        </div>
+                                        <div class="equipment-item">
+                                            <span class="equipment-name" style="color: gray; font-weight: bold; ">MRI Machines</span>
+                                            <span class="equipment-status maintenance">1/2 ⚠</span>
+                                        </div>
+                                        <div class="equipment-item">
+                                            <span class="equipment-name" style="color: gray; font-weight: bold; ">X-Ray Units</span>
+                                            <span class="equipment-status operational">8/8 ✓</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="metric-card resource-card">
+                                    <h3>Inventory Levels</h3>
+                                    <div class="inventory-list">
+                                        <div class="inventory-item">
+                                            <span class="inventory-name">Surgical Masks</span>
+                                            <div class="inventory-bar">
+                                                <div class="inventory-fill low" style="width: 15%;"></div>
+                                            </div>
+                                            <span class="inventory-count">15%</span>
+                                        </div>
+                                        <div class="inventory-item">
+                                            <span class="inventory-name">Gloves</span>
+                                            <div class="inventory-bar">
+                                                <div class="inventory-fill good" style="width: 78%;"></div>
+                                            </div>
+                                            <span class="inventory-count">78%</span>
+                                        </div>
+                                        <div class="inventory-item">
+                                            <span class="inventory-name">IV Bags</span>
+                                            <div class="inventory-bar">
+                                                <div class="inventory-fill good" style="width: 82%;"></div>
+                                            </div>
+                                            <span class="inventory-count">82%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                """
+                )
+
+                # Advanced Settings - Collapsible
+                with gr.Accordion(
+                    "Advanced AI Settings",
+                    open=False,
+                    elem_classes="dashboard-settings",
+                ):
+                    with gr.Row():
+                        with gr.Column():
+                            medical_specialty = gr.Dropdown(
+                                label="Medical Specialty",
+                                choices=[
+                                    "General Medicine",
+                                    "Cardiology",
+                                    "Neurology",
+                                    "Orthopedics",
+                                    "Psychiatry",
+                                    "Emergency Medicine",
+                                    "Pediatrics",
+                                ],
+                                value="General Medicine",
+                                elem_classes="settings-dropdown",
+                            )
+
+                        with gr.Column():
+                            temperature = gr.Slider(
+                                minimum=0.0,
+                                maximum=2.0,
+                                value=0.4,
+                                step=0.1,
+                                label="Temperature",
+                                elem_classes="settings-slider",
+                            )
+
+                    context_input = gr.Textbox(
+                        label="Medical Context (Optional)",
+                        placeholder="Patient symptoms, medical history, medications...",
+                        lines=2,
+                        elem_classes="context-input",
+                    )
+
+                    max_tokens = gr.Slider(
+                        minimum=100,
+                        maximum=4000,
+                        value=1000,
+                        step=100,
+                        label="Max Tokens",
+                        elem_classes="settings-slider",
+                        visible=False,  # Hide to reduce clutter
+                    )
+
+        # Hidden status indicator
+        status = gr.Textbox(visible=False)
 
         # Event handlers
         def respond(
-            message: str, 
-            history: List[Dict], 
-            model: str, 
-            temp: float, 
+            message: str,
+            history: List[Dict],
+            model: str,
+            temp: float,
             max_tok: int,
             specialty: str,
-            context: str
+            context: str,
         ):
             """Handle user message and generate AI response"""
             if not message.strip():
@@ -173,18 +444,18 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
 
         def clear_conversation():
             """Clear the conversation history"""
-            return [], "", ""  # Clear message and context too
+            return []
 
         def stream_response(
-            message: str, 
-            history: List[Dict], 
-            model: str, 
-            temp: float, 
+            message: str,
+            history: List[Dict],
+            model: str,
+            temp: float,
             max_tok: int,
             specialty: str,
-            context: str
+            context: str,
         ):
-            """Stream AI response for real-time effect"""
+            """Stream AI response for real-time effect with loading indicators"""
             if not message.strip():
                 yield history, ""
                 return
@@ -193,11 +464,175 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
             history.append({"role": "user", "content": message})
             yield history, ""
 
+            # Add initial loading message with animated dots
+            loading_states = [
+                "🤔 Thinking...",
+                "🔍 Analyzing your request...",
+                "🏥 Checking hospital systems...",
+                "⚡ Processing with AI...",
+            ]
+
+            # Start with first loading state
+            history.append(
+                {
+                    "role": "assistant",
+                    "content": f'<div class="loading-indicator" aria-live="polite" role="status" data-type="thinking">{loading_states[0]}<span class="loading-dots"></span></div>',
+                }
+            )
+            yield history, ""
+
+            # Cycle through loading states briefly
+            import time
+
+            for i, loading_text in enumerate(loading_states[:3]):
+                time.sleep(0.4)
+                data_type = "thinking" if i < 2 else "ai"
+                history[-1][
+                    "content"
+                ] = f'<div class="loading-indicator" aria-live="polite" role="status" data-type="{data_type}">{loading_text}<span class="loading-dots"></span></div>'
+                yield history, ""
+
+            # Check if this is a database query first
+            try:
+                from ..services.advanced_database_mcp import advanced_database_mcp
+
+                # First check if it's a database-related query
+                if any(
+                    keyword in message.lower()
+                    for keyword in [
+                        "patient",
+                        "room",
+                        "nurse",
+                        "doctor",
+                        "staff",
+                        "equipment",
+                        "medical",
+                        "hospital",
+                        "bed",
+                        "top",
+                        "list",
+                        "statistics",
+                        "occupancy",
+                        "inventory",
+                        "history",
+                        "admission",
+                    ]
+                ):
+                    # Show database-specific loading state
+                    history[-1][
+                        "content"
+                    ] = f'<div class="loading-indicator" aria-live="polite" role="status" data-type="database">🗄️ Querying the database...<span class="loading-dots"></span></div>'
+                    yield history, ""
+                    time.sleep(0.5)
+
+                    # Process with advanced database capabilities
+                    db_response = advanced_database_mcp.process_advanced_query(message)
+
+                    # If we got real data from the database, pass it through AI for analysis
+                    if (
+                        "Error processing" not in db_response
+                        and "Use more specific queries" not in db_response
+                    ):
+                        # Show AI analysis loading state
+                        history[-1][
+                            "content"
+                        ] = f'<div class="loading-indicator" aria-live="polite" role="status" data-type="ai">🧠 Analyzing results with AI...<span class="loading-dots"></span></div>'
+                        yield history, ""
+                        time.sleep(0.3)
+
+                        # Create enhanced prompt for AI analysis
+                        enhanced_prompt = f"""
+User Question: {message}
+
+Database Results: 
+{db_response}
+
+IMPORTANT: The user specifically requested details/information. Please provide:
+
+1. FIRST: Present the complete data the user requested in a well-formatted, easy-to-read manner
+   - Include ALL patient details in a structured format
+   - Use proper formatting with line breaks, headers, and organization
+   - Format medical values with LaTeX (ages, blood pressure, dosages, etc.)
+
+2. SECOND: After presenting the complete data, provide your professional medical analysis including:
+   - Key insights and patterns
+   - Medical observations and recommendations
+   - Data quality issues or notable findings
+
+Make sure the user gets both the complete information they requested AND your professional analysis.
+"""
+
+                        # Use AI to analyze the database results instead of returning raw data
+                        if (
+                            model == "nebius-llama-3.3-70b"
+                            and nebius_model.is_available()
+                        ):
+                            # Clear loading indicator and start real response
+                            history[-1]["content"] = ""
+
+                            try:
+                                response_generator = nebius_model.generate_response(
+                                    prompt=enhanced_prompt,
+                                    context=f"Database query results included in the analysis",
+                                    specialty=specialty,
+                                    max_tokens=max(
+                                        max_tok, 2000
+                                    ),  # Ensure enough space for complete data + analysis
+                                    temperature=temp,
+                                    stream=True,
+                                )
+
+                                for chunk in response_generator:
+                                    if chunk:
+                                        history[-1]["content"] += chunk
+                                        yield history, ""
+
+                            except Exception as e:
+                                error_msg = (
+                                    f"❌ Error analyzing database results: {str(e)}"
+                                )
+                                history[-1]["content"] = error_msg
+                                yield history, ""
+                        else:
+                            # Fallback: use handle_ai_response for analysis
+                            analyzed_response = handle_ai_response(
+                                enhanced_prompt,
+                                model,
+                                temp,
+                                max(max_tok, 2000),
+                                specialty,
+                                f"Database query results included in the analysis",
+                            )
+                            # Clear loading indicator and start real response
+                            history[-1]["content"] = ""
+
+                            # Stream the analyzed response
+                            words = analyzed_response.split()
+                            for i, word in enumerate(words):
+                                if i == 0:
+                                    history[-1]["content"] = word
+                                else:
+                                    history[-1]["content"] += " " + word
+                                time.sleep(0.02)
+                                yield history, ""
+                        return
+
+            except Exception as e:
+                # If advanced database integration fails, continue with regular AI response
+                pass
+
             # Check if using Nebius model and if it's available
             if model == "nebius-llama-3.3-70b" and nebius_model.is_available():
-                # Stream response using Nebius
-                history.append({"role": "assistant", "content": ""})
-                
+                # Show final loading state for AI generation
+                history[-1][
+                    "content"
+                ] = f'<div class="loading-indicator" aria-live="polite" role="status" data-type="generating">🚀 Generating response...<span class="loading-dots"></span></div>'
+                yield history, ""
+                time.sleep(0.3)
+
+                # Clear loading indicator and start real response
+                history[-1]["content"] = ""
+
                 try:
                     response_generator = nebius_model.generate_response(
                         prompt=message,
@@ -205,23 +640,33 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                         specialty=specialty,
                         max_tokens=max_tok,
                         temperature=temp,
-                        stream=True
+                        stream=True,
                     )
-                    
+
                     for chunk in response_generator:
                         if chunk:
                             history[-1]["content"] += chunk
                             yield history, ""
-                            
+
                 except Exception as e:
                     error_msg = f"❌ Nebius API Error: {str(e)}\n\nPlease check your API key configuration."
                     history[-1]["content"] = error_msg
                     yield history, ""
             else:
+                # Show final loading state for fallback response
+                history[-1][
+                    "content"
+                ] = f'<div class="loading-indicator" aria-live="polite" role="status" data-type="generating">🤖 Preparing response...<span class="loading-dots"></span></div>'
+                yield history, ""
+                time.sleep(0.4)
+
                 # Use fallback response (simulate streaming)
-                response = handle_ai_response(message, model, temp, max_tok, specialty, context)
-                history.append({"role": "assistant", "content": ""})
-                
+                response = handle_ai_response(
+                    message, model, temp, max_tok, specialty, context
+                )
+                # Clear loading indicator and start real response
+                history[-1]["content"] = ""
+
                 # Stream the response word by word
                 words = response.split()
                 for i, word in enumerate(words):
@@ -232,47 +677,78 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                     time.sleep(0.05)  # Simulate streaming delay
                     yield history, ""
 
+        # Quick action handler
+        def handle_status_update():
+            return "Provide a comprehensive update on current hospital status", [
+                {
+                    "role": "user",
+                    "content": "Provide a comprehensive update on current hospital status",
+                }
+            ]
+
         # Connect events
         msg.submit(
             fn=stream_response,
-            inputs=[msg, chatbot, model_dropdown, temperature, max_tokens, medical_specialty, context_input],
+            inputs=[
+                msg,
+                chatbot,
+                model_dropdown,
+                temperature,
+                max_tokens,
+                medical_specialty,
+                context_input,
+            ],
             outputs=[chatbot, msg],
             show_progress="hidden",
         )
 
         send_btn.click(
             fn=stream_response,
-            inputs=[msg, chatbot, model_dropdown, temperature, max_tokens, medical_specialty, context_input],
+            inputs=[
+                msg,
+                chatbot,
+                model_dropdown,
+                temperature,
+                max_tokens,
+                medical_specialty,
+                context_input,
+            ],
             outputs=[chatbot, msg],
             show_progress="hidden",
         )
 
-        clear_btn.click(fn=clear_conversation, outputs=[chatbot, msg, context_input])
+        status_btn.click(
+            fn=handle_status_update,
+            outputs=[msg, chatbot],
+        )
 
-        # Add some example conversations on load
+        # Load welcome message
         demo.load(
             fn=lambda: [
                 {
                     "role": "assistant",
-                    "content": "🏥 Hello! I'm your Hospital AI Helper powered by Nebius Studio and the Llama 3.3 70B model.\n\nI can help you with:\n• Medical consultations and symptom analysis\n• Health-related questions and advice\n• Medical information and explanations\n• General healthcare guidance\n\nPlease select a medical specialty above and describe your symptoms or questions. Remember: I provide information for educational purposes only and cannot replace professional medical advice.",
+                    "content": "🏥 Welcome to Smart Hospital Assistant! I'm powered by advanced AI and connected to real hospital systems.\n\n**I can help you with:**\n• Hospital status and real-time metrics\n• Patient information and medical consultations\n• Staff scheduling and resource management\n• Medical equipment tracking\n• Emergency response coordination\n\nSelect your preferred AI model above and ask me anything!",
                 }
             ],
             outputs=chatbot,
         )
 
+    # Dashboard data will be handled through JavaScript simulation
+    # since Gradio API endpoints aren't available in this version
+
     return demo
 
 
 def handle_ai_response(
-    user_message: str, 
-    model: str, 
-    temperature: float, 
+    user_message: str,
+    model: str,
+    temperature: float,
     max_tokens: int,
     specialty: str,
-    context: str
+    context: str,
 ) -> str:
     """
-    Handle AI response generation with model routing
+    Handle AI response generation with model routing and LaTeX support
 
     Args:
         user_message: User's input message
@@ -283,48 +759,127 @@ def handle_ai_response(
         context: Medical context
 
     Returns:
-        AI response string
+        AI response string with LaTeX formatting
     """
     # Medical disclaimer
     disclaimer = "\n\n⚠️ **Medical Disclaimer**: This is for informational purposes only and should not replace professional medical advice. Please consult with a healthcare provider for medical concerns."
-    
+
+    # First, check if this is a database query
+    try:
+        from ..services.advanced_database_mcp import advanced_database_mcp
+
+        if advanced_database_mcp.is_database_query(user_message):
+            # Process database query to get raw data
+            db_response = advanced_database_mcp.process_advanced_query(user_message)
+
+            # If we got real data from the database, pass it through AI for analysis
+            if (
+                "Error processing" not in db_response
+                and "Use more specific queries" not in db_response
+            ):
+                # Create enhanced prompt combining user question with database data
+                enhanced_prompt = f"""
+User Question: {user_message}
+
+Database Results: 
+{db_response}
+
+IMPORTANT: The user specifically requested details/information. Please provide:
+
+1. FIRST: Present the complete data the user requested in a well-formatted, easy-to-read manner
+   - Include ALL patient details in a structured format
+   - Use proper formatting with line breaks, headers, and organization
+   - Format medical values with LaTeX (ages, blood pressure, dosages, etc.)
+
+2. SECOND: After presenting the complete data, provide your professional medical analysis including:
+   - Key insights and patterns
+   - Medical observations and recommendations
+   - Data quality issues or notable findings
+
+Make sure the user gets both the complete information they requested AND your professional analysis.
+"""
+
+                # Continue to AI processing with enhanced prompt
+                user_message = enhanced_prompt
+                context = f"Database query results included in the analysis"
+
+    except Exception as e:
+        # If advanced database integration fails, continue with regular AI response
+        pass
+
     if model == "nebius-llama-3.3-70b":
         # Try to use Nebius model first
         try:
             from ..models.nebius_model import NebiusModel
+
             nebius_model = NebiusModel()
-            
+
             if nebius_model.is_available():
+                # Use higher token limit for database analysis if needed
+                analysis_max_tokens = max_tokens
+                if "Database Results:" in user_message:
+                    analysis_max_tokens = max(
+                        max_tokens, 2000
+                    )  # Ensure enough space for complete data + analysis
+
+                # Inject hospital schema context for better understanding
+                enhanced_context = context if context.strip() else ""
+
+                # Add hospital schema context if this isn't already a database query
+                if "Database Results:" not in user_message:
+                    try:
+                        from ..utils.schema_loader import hospital_schema_loader
+
+                        # Get medical context for general queries
+                        medical_context = hospital_schema_loader.get_medical_context()
+
+                        if enhanced_context:
+                            enhanced_context = (
+                                f"{enhanced_context}\n\n{medical_context}"
+                            )
+                        else:
+                            enhanced_context = medical_context
+
+                    except ImportError:
+                        pass  # Continue without hospital context if loader unavailable
+
                 response = nebius_model.generate_response(
                     prompt=user_message,
-                    context=context if context.strip() else None,
+                    context=enhanced_context if enhanced_context.strip() else None,
                     specialty=specialty,
-                    max_tokens=max_tokens,
+                    max_tokens=analysis_max_tokens,
                     temperature=temperature,
-                    stream=False
+                    stream=False,
                 )
-                return response + disclaimer
+                # Apply LaTeX formatting to the response
+                formatted_response = format_medical_response(response, specialty)
+                return formatted_response + disclaimer
             else:
-                return "❌ Nebius API is not available. Please check your API key configuration." + disclaimer
-                
+                return (
+                    "❌ Nebius API is not available. Please check your API key configuration."
+                    + disclaimer
+                )
+
         except Exception as e:
             return f"❌ Error using Nebius model: {str(e)}" + disclaimer
-    
+
     # Fallback responses for other models
     import random
-    
+
     medical_responses = [
         f"Based on your {specialty.lower()} inquiry about '{user_message}', I need to provide information carefully.",
         f"In {specialty}, regarding '{user_message}', here's what I can share based on general medical knowledge.",
         f"For your {specialty.lower()} question about '{user_message}', let me provide some general guidance.",
         f"Considering the {specialty.lower()} context and your question '{user_message}', here's some information.",
     ]
-    
+
     if context.strip():
-        medical_responses.append(f"Given the medical context you provided and your {specialty.lower()} question about '{user_message}', here's what I can tell you.")
-    
+        medical_responses.append(
+            f"Given the medical context you provided and your {specialty.lower()} question about '{user_message}', here's what I can tell you."
+        )
+
     base_response = random.choice(medical_responses)
-    
+
     # Add some medical content based on specialty
     if "pain" in user_message.lower() or "hurt" in user_message.lower():
         base_response += f"\n\nPain can have various causes and should be evaluated by a {specialty.lower()} specialist if persistent."
@@ -332,9 +887,12 @@ def handle_ai_response(
         base_response += "\n\nFever is often a sign that your body is fighting an infection. Monitor your temperature and seek medical attention if it's high or persistent."
     elif "medication" in user_message.lower() or "drug" in user_message.lower():
         base_response += "\n\nMedication questions should always be discussed with your healthcare provider or pharmacist who has access to your complete medical history."
-    
+
+    # Apply LaTeX formatting to fallback response
+    formatted_base_response = format_medical_response(base_response, specialty)
+
     return (
-        base_response
+        formatted_base_response
         + f"\n\n*Using {model} | Specialty: {specialty} | Temperature: {temperature}*"
         + disclaimer
     )
@@ -344,577 +902,1975 @@ def get_available_models():
     """Get list of available models"""
     return [
         "nebius-llama-3.3-70b",  # Nebius Studio model (primary)
-        "gpt-3.5-turbo", 
-        "gpt-4", 
-        "claude-3-sonnet", 
-        "llama-2-7b", 
-        "mistral-7b"
+        "gpt-3.5-turbo",
+        "gpt-4",
+        "claude-3-sonnet",
+        "llama-2-7b",
+        "mistral-7b",
     ]
 
 
-def load_chatgpt_css():
-    """Load ChatGPT-style CSS for the interface"""
-    return """    /* Main container styling */
+def load_latex_scripts():
+    """Load LaTeX rendering scripts and embedded dashboard functionality"""
+    return """
+    <script src="static/js/latex-renderer.js"></script>
+    <script src="static/js/app.js"></script>
+    
+    <!-- Dashboard Enhancement Styles -->
+    <style>
+    /* Navigation Enhancements */
+    .nav-buttons-container {
+        display: flex !important;
+        gap: 8px !important;
+        margin-bottom: 24px !important;
+        padding: 0 32px !important;
+        background: white !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding-bottom: 16px !important;
+    }
+
+    .nav-btn {
+        background: transparent !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 10px 18px !important;
+        font-size: 14px !important;
+        color: #64748b !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+        font-weight: 500 !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    .nav-btn:hover {
+        background: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+        color: #475569 !important;
+        transform: translateY(-1px) !important;
+    }
+
+    .nav-btn.active {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+        color: white !important;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+    }
+
+    /* Enhanced Metric Cards */
+    .metric-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        cursor: pointer !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    .metric-card::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 4px !important;
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4) !important;
+        transform: scaleX(0) !important;
+        transition: transform 0.3s ease !important;
+        transform-origin: left !important;
+    }
+
+    .metric-card:hover::before {
+        transform: scaleX(1) !important;
+    }
+
+    .metric-card:hover {
+        transform: translateY(-8px) !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Progress Circle Enhancements */
+    .progress-circle-fill {
+        transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .progress-text {
+        font-family: 'SF Pro Display', -apple-system, sans-serif !important;
+        font-weight: 700 !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .metric-card:hover .progress-text {
+        transform: scale(1.1) !important;
+        color: #3b82f6 !important;
+    }
+
+    /* Tool Usage Chart Enhancements */
+    .bar {
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+        cursor: pointer !important;
+        position: relative !important;
+    }
+
+    .bar:hover {
+        background: linear-gradient(180deg, #1d4ed8, #3b82f6) !important;
+        transform: scaleY(1.1) !important;
+        box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3) !important;
+    }
+
+    /* Staff Progress Bars Enhanced */
+    .progress-fill {
+        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        position: relative !important;
+    }
+
+    .staff-percentage {
+        font-weight: 600 !important;
+        color: #3b82f6 !important;
+        min-width: 45px !important;
+        text-align: right !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .staff-item:hover .staff-percentage {
+        transform: scale(1.1) !important;
+        color: #1d4ed8 !important;
+    }
+
+    /* Notification Styles */
+    .dashboard-notification {
+        position: fixed !important;
+        top: 20px !important;
+        right: 20px !important;
+        background: #10b981 !important;
+        color: white !important;
+        padding: 12px 20px !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+        z-index: 1000 !important;
+        transform: translateX(100%) !important;
+        transition: transform 0.3s ease !important;
+        font-weight: 500 !important;
+    }
+
+         .dashboard-notification.show {
+         transform: translateX(0) !important;
+     }
+
+     /* Content Sections */
+     .content-container {
+         position: relative !important;
+         width: 100% !important;
+         height: auto !important;
+     }
+
+     .content-section {
+         display: none !important;
+         opacity: 0 !important;
+         transform: translateY(20px) !important;
+         transition: all 0.3s ease !important;
+     }
+
+     .content-section.active {
+         display: block !important;
+         opacity: 1 !important;
+         transform: translateY(0) !important;
+     }
+
+     /* Section Headers */
+     .section-header {
+         padding: 0 0 20px 0 !important;
+         border-bottom: 1px solid #e2e8f0 !important;
+         margin-bottom: 24px !important;
+     }
+
+     .section-header h2 {
+         font-size: 24px !important;
+         font-weight: 700 !important;
+         color: #1e293b !important;
+         margin: 0 !important;
+     }
+
+     /* Forecasting Styles */
+     .forecast-card {
+         background: linear-gradient(135deg, #f0f9ff, #e0f2fe) !important;
+         border-left: 4px solid #10b981 !important;
+     }
+
+     .capacity-indicators {
+         display: flex !important;
+         flex-direction: column !important;
+         gap: 12px !important;
+     }
+
+     .capacity-item {
+         display: flex !important;
+         justify-content: space-between !important;
+         align-items: center !important;
+         padding: 8px 0 !important;
+     }
+
+     .capacity-trend {
+         font-weight: 600 !important;
+         font-size: 14px !important;
+     }
+
+     .capacity-trend.up {
+         color: #10b981 !important;
+     }
+
+     .capacity-trend.down {
+         color: #ef4444 !important;
+     }
+
+     /* Alerts Styles */
+     .alerts-header {
+         display: flex !important;
+         justify-content: space-between !important;
+         align-items: center !important;
+         padding: 0 0 20px 0 !important;
+         border-bottom: 1px solid #e2e8f0 !important;
+         margin-bottom: 24px !important;
+     }
+
+     .alert-summary {
+         display: flex !important;
+         gap: 16px !important;
+     }
+
+     .alert-count {
+         padding: 6px 12px !important;
+         border-radius: 20px !important;
+         font-size: 12px !important;
+         font-weight: 600 !important;
+     }
+
+     .alert-count.critical {
+         background: #fef2f2 !important;
+         color: #dc2626 !important;
+     }
+
+     .alert-count.warning {
+         background: #fffbeb !important;
+         color: #d97706 !important;
+     }
+
+     .alert-count.info {
+         background: #eff6ff !important;
+         color: #2563eb !important;
+     }
+
+     .alerts-list {
+         display: flex !important;
+         flex-direction: column !important;
+         gap: 16px !important;
+     }
+
+     .alert-item {
+         display: flex !important;
+         gap: 16px !important;
+         padding: 16px !important;
+         background: white !important;
+         border-radius: 8px !important;
+         border-left: 4px solid #e2e8f0 !important;
+         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+         transition: all 0.3s ease !important;
+     }
+
+     .alert-item:hover {
+         transform: translateY(-2px) !important;
+         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+     }
+
+     .alert-item.critical {
+         border-left-color: #dc2626 !important;
+         background: #fef2f2 !important;
+     }
+
+     .alert-item.warning {
+         border-left-color: #d97706 !important;
+         background: #fffbeb !important;
+     }
+
+     .alert-item.info {
+         border-left-color: #2563eb !important;
+         background: #eff6ff !important;
+     }
+
+     .alert-icon {
+         font-size: 20px !important;
+         width: 24px !important;
+         text-align: center !important;
+     }
+
+     .alert-content {
+         flex: 1 !important;
+     }
+
+     .alert-content h4 {
+         margin: 0 0 4px 0 !important;
+         font-size: 16px !important;
+         font-weight: 600 !important;
+         color: #1e293b !important;
+     }
+
+     .alert-content p {
+         margin: 0 0 8px 0 !important;
+         color: #64748b !important;
+         font-size: 14px !important;
+     }
+
+     .alert-time {
+         font-size: 12px !important;
+         color: #94a3b8 !important;
+     }
+
+     .alert-actions {
+         display: flex !important;
+         gap: 8px !important;
+         align-items: flex-start !important;
+     }
+
+     .alert-btn {
+         padding: 6px 12px !important;
+         border-radius: 6px !important;
+         font-size: 12px !important;
+         font-weight: 500 !important;
+         border: none !important;
+         cursor: pointer !important;
+         transition: all 0.2s ease !important;
+     }
+
+     .alert-btn.primary {
+         background: #3b82f6 !important;
+         color: white !important;
+     }
+
+     .alert-btn.primary:hover {
+         background: #1d4ed8 !important;
+     }
+
+     .alert-btn {
+         background: #f1f5f9 !important;
+         color: #64748b !important;
+     }
+
+     .alert-btn:hover {
+         background: #e2e8f0 !important;
+     }
+
+     /* Resources Styles */
+     .resource-card {
+         background: linear-gradient(135deg, #f8fafc, #f1f5f9) !important;
+         border-left: 4px solid #3b82f6 !important;
+     }
+
+     .equipment-grid {
+         display: flex !important;
+         flex-direction: column !important;
+         gap: 12px !important;
+     }
+
+     .equipment-item {
+         display: flex !important;
+         justify-content: space-between !important;
+         align-items: center !important;
+         padding: 8px 0 !important;
+     }
+
+     .equipment-status.operational {
+         color: #10b981 !important;
+         font-weight: 600 !important;
+     }
+
+     .equipment-status.maintenance {
+         color: #f59e0b !important;
+         font-weight: 600 !important;
+     }
+
+     .inventory-list {
+         display: flex !important;
+         flex-direction: column !important;
+         gap: 16px !important;
+     }
+
+     .inventory-item {
+         display: flex !important;
+         align-items: center !important;
+         gap: 12px !important;
+     }
+
+     .inventory-name {
+         min-width: 120px !important;
+         font-size: 14px !important;
+         color: #374151 !important;
+     }
+
+     .inventory-bar {
+         flex: 1 !important;
+         height: 8px !important;
+         background: #f3f4f6 !important;
+         border-radius: 4px !important;
+         overflow: hidden !important;
+     }
+
+     .inventory-fill {
+         height: 100% !important;
+         transition: width 1s ease !important;
+         border-radius: 4px !important;
+     }
+
+     .inventory-fill.good {
+         background: #10b981 !important;
+     }
+
+     .inventory-fill.medium {
+         background: #f59e0b !important;
+     }
+
+     .inventory-fill.low {
+         background: #ef4444 !important;
+     }
+
+     .inventory-count {
+         min-width: 40px !important;
+         text-align: right !important;
+         font-weight: 600 !important;
+         font-size: 14px !important;
+     }
+    </style>
+
+    <!-- Dashboard Enhancement JavaScript -->
+    <script>
+    class HospitalDashboard {
+        constructor() {
+            this.updateInterval = 30000; // 30 seconds
+            this.metrics = {};
+            this.init();
+        }
+
+        init() {
+            // Wait for page to load
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => this.setup());
+            } else {
+                this.setup();
+            }
+        }
+
+        setup() {
+            this.setupEventListeners();
+            this.initializeCharts();
+            this.startDataUpdates();
+            this.setupNavigation();
+            this.showWelcomeMessage();
+        }
+
+        setupEventListeners() {
+            // Navigation buttons
+            const observer = new MutationObserver(() => {
+                const navBtns = document.querySelectorAll('.nav-btn');
+                navBtns.forEach(btn => {
+                    if (!btn.hasAttribute('data-listener')) {
+                        btn.addEventListener('click', (e) => this.handleNavigation(e));
+                        btn.setAttribute('data-listener', 'true');
+                    }
+                });
+
+                // Metric cards hover effects
+                const cards = document.querySelectorAll('.metric-card');
+                cards.forEach(card => {
+                    if (!card.hasAttribute('data-listener')) {
+                        card.addEventListener('mouseenter', (e) => this.animateCard(e.target, true));
+                        card.addEventListener('mouseleave', (e) => this.animateCard(e.target, false));
+                        card.setAttribute('data-listener', 'true');
+                    }
+                });
+
+                                 // Quick action buttons
+                 const actionBtns = document.querySelectorAll('.quick-action-btn, .header-action-btn');
+                 actionBtns.forEach(btn => {
+                     if (!btn.hasAttribute('data-listener')) {
+                         btn.addEventListener('click', (e) => this.handleQuickAction(e));
+                         btn.setAttribute('data-listener', 'true');
+                     }
+                 });
+
+                 // Alert action buttons
+                 const alertBtns = document.querySelectorAll('.alert-btn');
+                 alertBtns.forEach(btn => {
+                     if (!btn.hasAttribute('data-listener')) {
+                         btn.addEventListener('click', (e) => this.handleAlertAction(e));
+                         btn.setAttribute('data-listener', 'true');
+                     }
+                 });
+            });
+
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
+
+        setupNavigation() {
+            setTimeout(() => {
+                const navBtns = document.querySelectorAll('.nav-btn');
+                if (navBtns.length > 0 && !navBtns[0].classList.contains('active')) {
+                    navBtns[0].classList.add('active');
+                }
+            }, 500);
+        }
+
+                 handleNavigation(event) {
+             const clickedBtn = event.target;
+             const section = clickedBtn.getAttribute('data-section') || clickedBtn.textContent.toLowerCase();
+
+             // Update active state
+             document.querySelectorAll('.nav-btn').forEach(btn => {
+                 btn.classList.remove('active');
+             });
+             clickedBtn.classList.add('active');
+
+             // Switch content sections
+             this.switchContentSection(section);
+             this.loadSectionData(section);
+         }
+
+         switchContentSection(section) {
+             // Hide all sections
+             document.querySelectorAll('.content-section').forEach(sec => {
+                 sec.classList.remove('active');
+             });
+
+             // Show selected section
+             const targetSection = document.getElementById(`${section}-section`);
+             if (targetSection) {
+                 setTimeout(() => {
+                     targetSection.classList.add('active');
+                 }, 150); // Small delay for smooth transition
+             }
+         }
+
+                 loadSectionData(section) {
+             console.log(`Loading ${section} section with simulated data...`);
+             
+             switch(section) {
+                 case 'dashboard':
+                     this.loadDashboardData();
+                     this.showNotification('📊 Dashboard refreshed', 'success');
+                     break;
+                 case 'forecasting':
+                     this.showNotification('📈 Forecasting data updated', 'info');
+                     this.animateForecastCharts();
+                     break;
+                 case 'alerts':
+                     this.showNotification('🚨 Alerts panel loaded', 'info');
+                     this.updateAlertCounts();
+                     break;
+                 case 'resources':
+                     this.showNotification('🏥 Resources data loaded', 'info');
+                     this.animateResourceBars();
+                     break;
+             }
+         }
+
+         animateForecastCharts() {
+             // Animate forecast chart if visible
+             const forecastChart = document.querySelector('#forecasting-section .forecast-chart path');
+             if (forecastChart) {
+                 forecastChart.style.strokeDasharray = '500';
+                 forecastChart.style.strokeDashoffset = '500';
+                 setTimeout(() => {
+                     forecastChart.style.strokeDashoffset = '0';
+                 }, 300);
+             }
+         }
+
+         updateAlertCounts() {
+             // Update alert counts with random numbers
+             const criticalCount = Math.floor(Math.random() * 5) + 1;
+             const warningCount = Math.floor(Math.random() * 10) + 3;
+             const infoCount = Math.floor(Math.random() * 15) + 8;
+
+             const criticalEl = document.querySelector('.alert-count.critical');
+             const warningEl = document.querySelector('.alert-count.warning');
+             const infoEl = document.querySelector('.alert-count.info');
+
+             if (criticalEl) criticalEl.textContent = `${criticalCount} Critical`;
+             if (warningEl) warningEl.textContent = `${warningCount} Warnings`;
+             if (infoEl) infoEl.textContent = `${infoCount} Info`;
+         }
+
+         animateResourceBars() {
+             // Animate inventory bars
+             const inventoryFills = document.querySelectorAll('#resources-section .inventory-fill');
+             inventoryFills.forEach((fill, index) => {
+                 const currentWidth = fill.style.width;
+                 fill.style.width = '0%';
+                 setTimeout(() => {
+                     fill.style.width = currentWidth;
+                 }, index * 200);
+             });
+         }
+
+        showLoadingState(section) {
+            const metricsContainer = document.querySelector('.metrics-container');
+            if (metricsContainer) {
+                metricsContainer.style.opacity = '0.7';
+                setTimeout(() => {
+                    metricsContainer.style.opacity = '1';
+                }, 500);
+            }
+        }
+
+        initializeCharts() {
+            this.initICUOccupancyChart();
+            this.initStaffAvailability();
+            this.initToolUsageChart();
+        }
+
+        initICUOccupancyChart() {
+            const circle = document.querySelector('.progress-circle-fill');
+            const text = document.querySelector('.progress-text');
+            
+            if (circle && text) {
+                this.metrics.icuOccupancy = {
+                    element: circle,
+                    textElement: text,
+                    value: 71,
+                    animate: (newValue) => {
+                        const circumference = 2 * Math.PI * 54;
+                        const offset = circumference - (newValue / 100) * circumference;
+                        circle.style.strokeDashoffset = offset + 'px';
+                        text.textContent = newValue + '%';
+                    }
+                };
+            }
+        }
+
+        initStaffAvailability() {
+            const doctorsProgress = document.querySelector('.doctors-progress');
+            const nursesProgress = document.querySelector('.nurses-progress');
+            
+            if (doctorsProgress && nursesProgress) {
+                this.metrics.staffAvailability = {
+                    doctors: { element: doctorsProgress, value: 75 },
+                    nurses: { element: nursesProgress, value: 60 },
+                    animate: (doctorValue, nurseValue) => {
+                        doctorsProgress.style.width = doctorValue + '%';
+                        nursesProgress.style.width = nurseValue + '%';
+                        
+                        // Update percentage displays
+                        const doctorPercentage = document.querySelector('.staff-item:first-child .staff-percentage');
+                        const nursePercentage = document.querySelector('.staff-item:last-child .staff-percentage');
+                        if (doctorPercentage) doctorPercentage.textContent = doctorValue + '%';
+                        if (nursePercentage) nursePercentage.textContent = nurseValue + '%';
+                    }
+                };
+            }
+        }
+
+        initToolUsageChart() {
+            const bars = document.querySelectorAll('.usage-chart .bar');
+            if (bars.length > 0) {
+                this.metrics.toolUsage = {
+                    elements: Array.from(bars),
+                    values: [60, 40, 70, 35, 85],
+                    animate: (newValues) => {
+                        bars.forEach((bar, index) => {
+                            if (newValues[index] !== undefined) {
+                                bar.style.height = newValues[index] + '%';
+                            }
+                        });
+                    }
+                };
+            }
+        }
+
+        startDataUpdates() {
+            this.updateDashboardData();
+            setInterval(() => {
+                this.updateDashboardData();
+            }, this.updateInterval);
+        }
+
+        updateDashboardData() {
+            console.log('Updating dashboard with simulated real-time data...');
+            this.simulateDataUpdate();
+        }
+
+        simulateDataUpdate() {
+            // Simulate ICU occupancy changes
+            const currentICU = this.metrics.icuOccupancy?.value || 71;
+            const newICU = Math.max(50, Math.min(95, currentICU + (Math.random() - 0.5) * 10));
+            this.updateICUOccupancy(Math.round(newICU));
+
+            // Simulate staff availability changes
+            const currentDoctors = this.metrics.staffAvailability?.doctors.value || 75;
+            const currentNurses = this.metrics.staffAvailability?.nurses.value || 60;
+            const newDoctors = Math.max(40, Math.min(90, currentDoctors + (Math.random() - 0.5) * 15));
+            const newNurses = Math.max(30, Math.min(85, currentNurses + (Math.random() - 0.5) * 20));
+            this.updateStaffAvailability(Math.round(newDoctors), Math.round(newNurses));
+
+            // Simulate tool usage changes
+            const newToolUsage = this.metrics.toolUsage?.values.map(val => 
+                Math.max(20, Math.min(90, val + (Math.random() - 0.5) * 20))
+            ) || [60, 40, 70, 35, 85];
+            this.updateToolUsage(newToolUsage.map(val => Math.round(val)));
+        }
+
+        updateICUOccupancy(value) {
+            if (this.metrics.icuOccupancy) {
+                this.metrics.icuOccupancy.value = value;
+                this.metrics.icuOccupancy.animate(value);
+            }
+        }
+
+        updateStaffAvailability(doctorValue, nurseValue) {
+            if (this.metrics.staffAvailability) {
+                this.metrics.staffAvailability.doctors.value = doctorValue;
+                this.metrics.staffAvailability.nurses.value = nurseValue;
+                this.metrics.staffAvailability.animate(doctorValue, nurseValue);
+            }
+        }
+
+        updateToolUsage(values) {
+            if (this.metrics.toolUsage) {
+                this.metrics.toolUsage.values = values;
+                this.metrics.toolUsage.animate(values);
+            }
+        }
+
+        animateCard(card, isHovering) {
+            if (isHovering) {
+                card.style.transform = 'translateY(-4px) scale(1.02)';
+                card.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
+            } else {
+                card.style.transform = 'translateY(0) scale(1)';
+                card.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
+            }
+        }
+
+                 handleQuickAction(event) {
+             const button = event.target;
+             const action = button.textContent.toLowerCase();
+             
+             const originalText = button.textContent;
+             button.style.opacity = '0.7';
+             button.textContent = 'Loading...';
+             
+             setTimeout(() => {
+                 button.style.opacity = '1';
+                 button.textContent = originalText;
+                 
+                 if (action.includes('status')) {
+                     this.refreshAllMetrics();
+                 }
+             }, 1000);
+         }
+
+         handleAlertAction(event) {
+             const button = event.target;
+             const action = button.textContent.toLowerCase();
+             const alertItem = button.closest('.alert-item');
+             
+             const originalText = button.textContent;
+             button.style.opacity = '0.7';
+             button.textContent = 'Processing...';
+             
+             setTimeout(() => {
+                 button.style.opacity = '1';
+                 button.textContent = originalText;
+                 
+                 if (action.includes('acknowledge') || action.includes('dispatch')) {
+                     // Fade out the alert
+                     alertItem.style.opacity = '0.5';
+                     alertItem.style.transform = 'translateX(20px)';
+                     this.showNotification(`Alert ${action}d successfully`, 'success');
+                 } else if (action.includes('reorder')) {
+                     this.showNotification('Reorder request submitted', 'success');
+                 } else {
+                     this.showNotification(`${action} action completed`, 'info');
+                 }
+             }, 1000);
+         }
+
+        refreshAllMetrics() {
+            this.simulateDataUpdate();
+            this.showNotification('Dashboard updated successfully', 'success');
+        }
+
+        showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'dashboard-notification';
+            notification.textContent = message;
+            
+            if (type === 'success') {
+                notification.style.background = '#10b981';
+            } else if (type === 'error') {
+                notification.style.background = '#ef4444';
+            } else {
+                notification.style.background = '#3b82f6';
+            }
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        showWelcomeMessage() {
+            setTimeout(() => {
+                this.showNotification('Interactive Dashboard Loaded! 🎉', 'success');
+            }, 1000);
+        }
+
+        loadDashboardData() {
+            console.log('Loading dashboard data...');
+            this.simulateDataUpdate();
+        }
+    }
+
+    // Initialize dashboard
+    window.hospitalDashboard = new HospitalDashboard();
+    </script>
+    """
+
+
+def load_modern_hospital_css():
+    """Load modern hospital CSS for the interface"""
+    return """
+    /* HOSPITAL DASHBOARD - OPTIMIZED LAYOUT */
+    
+    /* Reset and force proper layout */
     .gradio-container {
         max-width: 100vw !important;
         width: 100% !important;
         margin: 0 auto !important;
         padding: 0 !important;
-        background: #ffffff !important;
-        max-height: 100vh !important;
+        background: #f8fafc !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    
+    /* Main container - FIXED LAYOUT */
+    .main-container {
+        display: flex !important;
+        height: 100vh !important;
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        flex-wrap: nowrap !important;
+        align-items: stretch !important;
+    }
+    
+    /* Left Sidebar - FIXED AND VISIBLE */
+    .sidebar-container {
+        width: 350px !important;
+        min-width: 350px !important;
+        max-width: 350px !important;
+        height: 100vh !important;
+        background: white !important;
+        border-right: 1px solid #e2e8f0 !important;
         display: flex !important;
         flex-direction: column !important;
-        overflow-y: scroll !important;
-    }
-    
-    /* Ensure full height usage */
-    .gradio-container > div {
-        flex: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-    }
-    
-    /* Header styling - Medical theme */
-    .header-row {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        color: white;
-        padding: 20px 30px;
-        margin-bottom: 0;
-        border-radius: 0;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    .header-title {
-        margin: 0 !important;
-    }
-    
-    .header-title h1 {
-        margin: 0 !important;
-        font-size: 1.8em !important;
-        font-weight: 600 !important;
-        color: white !important;
-    }
-    
-    .model-selector {
-        background: rgba(255, 255, 255, 0.1) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 8px !important;
-        color: white !important;
-    }
-    
-    /* Main chatbot styling - clean ChatGPT style */
-    .main-chatbot {
-        border: none !important;
-        border-radius: 0 !important;
-        height: 600px !important;
-        background: #ffffff !important;
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.05) !important;
-        width: 100% !important; 
+        flex-shrink: 0 !important;
+        overflow: visible !important;
         position: relative !important;
     }
-      /* Input area styling - ChatGPT bottom input */
-    .input-row {
+    
+    /* Assistant Header - Compact and clean */
+    .assistant-header {
         padding: 20px !important;
-        background: #ffffff !important;
-        border-top: 1px solid #e5e5e5 !important;
-        margin: 0 !important;
-        position: sticky !important;
-        bottom: 0 !important;
-        z-index: 100 !important;
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.05) !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+        background: white !important;
         display: flex !important;
-        align-items: flex-end !important;
+        align-items: center !important;
+        gap: 12px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .avatar-circle {
+        width: 50px !important;
+        height: 50px !important;
+        border-radius: 50% !important;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: white !important;
+        font-size: 20px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .assistant-text h3 {
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+        margin: 0 0 2px 0 !important;
+    }
+    
+    .assistant-text p {
+        font-size: 13px !important;
+        color: #64748b !important;
+        margin: 0 !important;
+    }
+    
+    /* Model Dropdown - Blue Background with White Text (STRONGER TARGETING) */
+    .sidebar-container .gradio-dropdown,
+    .sidebar-container .gradio-dropdown > div,
+    .sidebar-container .gradio-dropdown div,
+    .sidebar-container [data-testid="dropdown"],
+    .sidebar-container [data-testid="dropdown"] > div,
+    .sidebar-container [data-testid="dropdown"] div,
+    .sidebar-container .wrap,
+    .sidebar-container .wrap > div {
+        background: #3b82f6 !important;
+        background-color: #3b82f6 !important;
+        border: none !important;
+        border-radius: 8px !important;
+        margin: 16px 20px 12px 20px !important;
+    }
+    
+    .sidebar-container .gradio-dropdown button,
+    .sidebar-container .gradio-dropdown select,
+    .sidebar-container [data-testid="dropdown"] button,
+    .sidebar-container [data-testid="dropdown"] div,
+    .sidebar-container .wrap button,
+    .sidebar-container [role="button"],
+    .sidebar-container .svelte-select,
+    .sidebar-container .svelte-select button {
+        background: #3b82f6 !important;
+        background-color: #3b82f6 !important;
+        color: white !important;
+        border: none !important;
+        font-weight: 500 !important;
+    }
+    
+    /* Force all elements in dropdown to be blue with white text (ONLY DROPDOWN) */
+    .sidebar-container .gradio-dropdown *:not([data-testid="chatbot"]):not([class*="chatbot"]),
+    .sidebar-container [class*="dropdown"]:not([class*="chatbot"]) *,
+     {
+
+        color: white !important;
+    }
+    
+    /* ENSURE model dropdown area only affects dropdown, not chat */
+    .sidebar-container > *:first-child .gradio-dropdown,
+    .sidebar-container > *:first-child [class*="dropdown"] {
+        background: #3b82f6 !important;
+        background-color: #3b82f6 !important;
+    }
+    
+    /* NUCLEAR OPTION: FORCE WHITE CHAT BACKGROUND - OVERRIDE EVERYTHING */
+    .sidebar-container .gradio-chatbot,
+    .sidebar-container [data-testid="chatbot"],
+    .sidebar-container .gradio-chatbot *,
+    .sidebar-container [data-testid="chatbot"] * {
+        background: white !important;
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Override specific blue background that's being applied */
+    .sidebar-container [style*="background: rgb(59, 130, 246)"] {
+        background: white !important;
+        background-color: white !important;
+    }
+    
+    /* Override any blue background inline styles in chat */
+    .sidebar-container .gradio-chatbot[style],
+    .sidebar-container [data-testid="chatbot"][style] {
+        background: white !important;
+        background-color: white !important;
+    }
+    
+    /* Make sure chat container itself is white */
+    .sidebar-container > * > .gradio-chatbot,
+    .sidebar-container > * > [data-testid="chatbot"] {
+        background: white !important;
+        background-color: white !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 8px !important;
+        margin: 12px 20px !important;
+    }
+    
+    /* Force white background on any element that might be blue */
+    .sidebar-container [class*="chatbot"] {
+        background: white !important;
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Chat Interface - Light Background with Black Text (SELECTIVE TARGETING) */
+    .sidebar-container .gradio-chatbot,
+    .sidebar-container [data-testid="chatbot"] {
+        background: white !important;
+        background-color: white !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 8px !important;
+        margin: 12px 20px !important;
+    }
+    
+    /* Chat messages should have light background and dark text (EXCLUDE dropdowns) */
+    .sidebar-container .gradio-chatbot div:not([class*="dropdown"]):not([class*="select"]),
+    .sidebar-container [data-testid="chatbot"] div:not([class*="dropdown"]):not([class*="select"]) {
+        background: #f8fafc !important;
+        background-color: #f8fafc !important;
+        color: #1f2937 !important;
+        border: none !important;
+        border-radius: 6px !important;
+        margin: 4px !important;
+        padding: 8px !important;
+    }
+    
+    /* Ensure chat text is dark (EXCLUDE dropdowns) */
+    .sidebar-container .gradio-chatbot p,
+    .sidebar-container .gradio-chatbot span,
+    .sidebar-container [data-testid="chatbot"] p,
+    .sidebar-container [data-testid="chatbot"] span {
+        color: #1f2937 !important;
+        background: transparent !important;
+    }
+    
+    /* Chat Input Area - Clean and Modern */
+    .sidebar-container .gradio-textbox,
+    .sidebar-container [data-testid="textbox"] {
+        background: #f8fafc !important;
+        background-color: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        color: #1f2937 !important;
+        margin: 12px 20px !important;
+    }
+    
+    .sidebar-container .gradio-textbox:focus,
+    .sidebar-container [data-testid="textbox"]:focus {
+        border-color: #3b82f6 !important;
+        background: white !important;
+        background-color: white !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+    }
+    
+    .sidebar-container .gradio-button,
+    .sidebar-container [data-testid="button"] {
+        background: #3b82f6 !important;
+        background-color: #3b82f6 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        margin: 12px 8px 12px 0 !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    .sidebar-container .gradio-button:hover,
+    .sidebar-container [data-testid="button"]:hover {
+        background: #2563eb !important;
+        background-color: #2563eb !important;
+        transform: translateY(-1px) !important;
+    }
+    
+    /* Right Dashboard - EXPANDED AND CENTERED */
+    .dashboard-container {
+        flex: 1 !important;
+        height: 100vh !important;
+        background: #f8fafc !important;
+        overflow-y: auto !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    /* Dashboard Header with Model Selection */
+    .dashboard-header-row {
+        background: white !important;
+        padding: 20px 32px !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 20px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .dashboard-title h1 {
+        font-size: 26px !important;
+        font-weight: 700 !important;
+        color: #1e293b !important;
+        letter-spacing: -0.5px !important;
+        margin: 0 0 2px 0 !important;
+    }
+    
+    .dashboard-title p {
+        font-size: 14px !important;
+        color: #64748b !important;
+        font-weight: 500 !important;
+        margin: 0 !important;
+    }
+    
+    /* Header Controls - Model Selection */
+    .dashboard-controls {
+        display: flex !important;
+        align-items: center !important;
         gap: 12px !important;
     }
-      .chat-input {
-        border-radius: 12px !important;
-        border: 1px solid #d1d5db !important;
-        padding: 12px 16px !important;
-        font-size: 16px !important;
-        background: #ffffff !important;
-        box-shadow: 0 0 0 0 rgba(16, 163, 127, 0) !important;
-        transition: all 0.2s ease !important;
-        resize: none !important;
-        flex: 1 !important;
-        min-height: 44px !important;
-        max-height: 200px !important;
-        overflow-y: auto !important;
-        line-height: 1.5 !important;
-    }
     
-    .chat-input:focus {
-        border-color: #2563eb !important;
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
-        outline: none !important;
-    }
-    
-    /* Medical specialty row styling */
-    .specialty-row {
-        padding: 15px 20px !important;
-        background: #f8fafc !important;
-        border-bottom: 1px solid #e2e8f0 !important;
-        gap: 15px !important;
-    }
-    
-    .specialty-selector {
+    .header-dropdown {
+        min-width: 200px !important;
+        background: white !important;
+        border: 1px solid #e2e8f0 !important;
         border-radius: 8px !important;
-        border: 1px solid #d1d5db !important;
+        font-size: 13px !important;
+    }
+    
+    .header-action-btn {
+        background: #3b82f6 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 8px 16px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        white-space: nowrap !important;
+    }
+    
+    .header-action-btn:hover {
+        background: #2563eb !important;
+        transform: translateY(-1px) !important;
+    }
+    
+    /* Navigation Buttons */
+    .nav-buttons-container {
+        background: white !important;
+        padding: 12px 32px !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        display: flex !important;
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .nav-btn {
+        background: transparent !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 6px !important;
+        padding: 6px 14px !important;
+        font-size: 13px !important;
+        color: #64748b !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        font-weight: 500 !important;
+    }
+    
+    .nav-btn.active {
+        background: #3b82f6 !important;
+        color: white !important;
+        border-color: #3b82f6 !important;
+    }
+    
+    .nav-btn:hover {
+        background: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+        color: #475569 !important;
+    }
+    
+    .nav-btn.active:hover {
+        background: #2563eb !important;
+        color: white !important;
+    }
+    
+    /* Metrics Container - PERFECTLY BALANCED */
+    .metrics-container {
+        flex: 1 !important;
+        padding: 24px 32px !important;
+        overflow-y: auto !important;
+        display: block !important;
+    }
+    
+    .metrics-row {
+        display: flex !important;
+        gap: 20px !important;
+        margin-bottom: 20px !important;
+        width: 100% !important;
+        flex-wrap: nowrap !important;
+    }
+    
+    .metric-card {
+        flex: 1 !important;
+        background: white !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        padding: 24px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.2s ease !important;
+        overflow: hidden !important;
+        min-height: 180px !important;
+        min-width: 250px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    
+    .metric-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        transform: translateY(-2px) !important;
+    }
+    
+    .metric-card h3 {
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+        margin: 12px 0 6px 0 !important;
+    }
+    
+    .card-subtitle {
+        font-size: 12px !important;
+        color: #64748b !important;
+        margin: 4px 0 0 0 !important;
+    }
+    
+    /* Progress Circle (ICU Occupancy) */
+    .progress-circle {
+        position: relative !important;
+        width: 100px !important;
+        height: 100px !important;
+        margin: 0 auto 12px auto !important;
+        display: block !important;
+    }
+    
+    .progress-circle svg {
+        transform: rotate(-90deg) !important;
+        display: block !important;
+    }
+    
+    .progress-circle-bg {
+        fill: none !important;
+        stroke: #f1f5f9 !important;
+        stroke-width: 8 !important;
+    }
+    
+    .progress-circle-fill {
+        fill: none !important;
+        stroke: #3b82f6 !important;
+        stroke-width: 8 !important;
+        stroke-linecap: round !important;
+        stroke-dasharray: 283 !important;
+        stroke-dashoffset: 82 !important;
+        transition: stroke-dashoffset 0.3s ease !important;
+    }
+    
+    .progress-text {
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        color: #1e293b !important;
+    }
+    
+    /* Load Chart (Emergency Room Load) */
+    .load-chart {
+        width: 180px !important;
+        height: 70px !important;
+        margin: 0 auto 12px auto !important;
+        display: block !important;
+    }
+    
+    .load-path {
+        stroke: #3b82f6 !important;
+        stroke-width: 3 !important;
+        fill: none !important;
+    }
+    
+    .load-area {
+        fill: url(#gradient) !important;
+    }
+    
+    /* Staff Metrics */
+    .staff-metrics {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        width: 180px !important;
+        margin: 12px auto 0 auto !important;
+    }
+    
+    .staff-item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+    
+    .staff-label {
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        color: #475569 !important;
+        min-width: 50px !important;
+        text-align: left !important;
+    }
+    
+    .progress-bar {
+        flex: 1 !important;
+        height: 6px !important;
+        background: #f1f5f9 !important;
+        border-radius: 3px !important;
+        overflow: hidden !important;
+        position: relative !important;
+    }
+    
+    .progress-fill {
+        height: 100% !important;
+        border-radius: 3px !important;
+        transition: width 0.3s ease !important;
+        display: block !important;
+    }
+    
+    .doctors-progress {
+        width: 75% !important;
+        background: #3b82f6 !important;
+    }
+    
+    .nurses-progress {
+        width: 60% !important;
+        background: #3b82f6 !important;
+    }
+    
+    .staff-percentage {
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        color: #3b82f6 !important;
+        min-width: 28px !important;
+        text-align: right !important;
+    }
+    
+    /* Tool Usage Chart */
+    .usage-chart {
+        display: flex !important;
+        align-items: end !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        height: 70px !important;
+        width: 140px !important;
+        margin: 0 auto 12px auto !important;
+    }
+    
+    .bar {
+        width: 14px !important;
+        background: #3b82f6 !important;
+        border-radius: 2px 2px 0 0 !important;
+        transition: all 0.3s ease !important;
+        opacity: 0.8 !important;
+        display: block !important;
+    }
+    
+    .bar:hover {
+        opacity: 1 !important;
+        background: #2563eb !important;
+    }
+    
+    .bar:nth-child(1) { height: 60% !important; }
+    .bar:nth-child(2) { height: 40% !important; }
+    .bar:nth-child(3) { height: 70% !important; }
+    .bar:nth-child(4) { height: 35% !important; }
+    .bar:nth-child(5) { height: 85% !important; }
+    
+    /* Settings Panel */
+    .dashboard-settings {
+        margin: 16px 32px 32px 32px !important;
+        background: white !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    .settings-dropdown, .settings-slider {
+        margin: 8px 0 !important;
         background: white !important;
     }
     
     .context-input {
+        border: 1px solid #e2e8f0 !important;
         border-radius: 8px !important;
-        border: 1px solid #d1d5db !important;
         background: white !important;
         resize: vertical !important;
+        margin-top: 12px !important;
+        font-size: 14px !important;
+        padding: 10px 12px !important;
     }
     
     .context-input:focus {
-        border-color: #2563eb !important;
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2) !important;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
         outline: none !important;
     }
     
-      .send-button {
-        background: #2563eb !important;
-        border: none !important;
-        border-radius: 8px !important;
-        padding: 12px 16px !important;
-        font-weight: 600 !important;
-        font-size: 18px !important;
-        color: white !important;
-        transition: all 0.2s ease !important;
-        cursor: pointer !important;
-        min-width: 44px !important;
-        min-height: 44px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        flex-shrink: 0 !important;
-    }
-    
-    .send-button:hover {
-        background: #1d4ed8 !important;
-        transform: none !important;
-        box-shadow: none !important;
-    }
-    
-    .send-button:disabled {
-        background: #d1d5db !important;
-        cursor: not-allowed !important;
-    }
-    
-    /* Action buttons styling */
-    .action-row {
-        padding: 10px 20px !important;
-        background: #f9fafb !important;
-        border-top: 1px solid #e5e5e5 !important;
-        justify-content: space-between !important;
-    }
-    
-    /* Settings panel - hidden by default like ChatGPT */
-    .settings-panel {
-        margin: 0 !important;
-        border: none !important;
-        border-top: 1px solid #e5e5e5 !important;
-        border-radius: 0 !important;
-        background: #f9fafb !important;
-    }
-    
-    .setting-slider {
-        margin: 10px 0 !important;
-    }
-    
-    /* Status indicator - minimal like ChatGPT */
-    .status-indicator {
-        display: none !important;
-    }
-    
-    /* Message styling - ChatGPT style bubbles */
-    .message.user {
-        background: #f7f7f8 !important;
-        border: 1px solid #e5e5e5 !important;
-        border-radius: 18px !important;
-        padding: 12px 16px !important;
-        margin: 8px 0 !important;
-        max-width: 80% !important;
-        min-width: 150px !important;
-        margin-left: auto !important;
-    }
-    /* Dark mode user message */
-    .message.user.dark {
-        background: #2d2d2d !important;
-        border-color: #444 !important;
-        color: #f0f0f0 !important;
-        box-shadow: none !important;
-        border-radius: 18px !important;
-        padding: 12px 16px !important;
-        margin: 8px 0 !important;
-        margin-left: auto !important;
-    }
-    
-    .message.bot {
-        background: transparent !important;
-        border: none !important;
-        border-radius: 0 !important;
-        padding: 12px 16px !important;
-        margin: 8px 0 !important;
-        max-width: 100% !important;
-    }
-    
-    /* Chat message styling */
-    .chatbot .message-wrap {
-        padding: 16px 24px !important;
-        border-bottom: 1px solid #f0f0f0 !important;
-    }
-    
-    .chatbot .message-wrap:last-child {
-        border-bottom: none !important;
-    }
-    
-    /* User message styling */
-    .chatbot .user-message {
-        background: #f7f7f8 !important;
-        border-radius: 18px !important;
-        padding: 12px 16px !important;
-        margin-left: auto !important;
-        max-width: 70% !important;
-        display: inline-block !important;
-    }
-    
-    /* Assistant message styling */
-    .chatbot .assistant-message {
-        background: transparent !important;
-        padding: 12px 0 !important;
-        max-width: 100% !important;
-    }
-    
-    /* Improved button styling */
-    button {
-        transition: all 0.2s ease !important;
-        border-radius: 6px !important;
-    }
-    
-    button:hover {
-        transform: none !important;
-        opacity: 0.9 !important;
-    }
-      /* Responsive design */
-    @media (max-width: 768px) {
-        .gradio-container {
-            max-width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        
-        .header-row {
-            padding: 15px 20px !important;
-            flex-direction: column !important;
-            gap: 15px !important;
-        }
-        
-        .header-title h1 {
-            font-size: 1.5em !important;
-        }
-        
-        .model-selector {
-            width: 100% !important;
-        }
-        
-        .main-chatbot {
-            height: calc(100vh - 280px) !important;
-            border-radius: 0 !important;
-        }
-        
-        .input-row {
-            padding: 15px !important;
-            flex-direction: column !important;
-            gap: 10px !important;
-        }
-        
-        .chat-input {
-            font-size: 16px !important;
-            width: 100% !important;
-            min-height: 44px !important;
-        }
-        
-        .send-button {
-            width: 100% !important;
-            min-height: 44px !important;
-            font-size: 16px !important;
-        }
-        
-        .action-row {
-            padding: 10px 15px !important;
-            flex-wrap: wrap !important;
-            gap: 10px !important;
-        }
-        
-        .settings-panel {
-            margin: 0 !important;
-        }
-        
-        .setting-slider {
-            margin: 15px 0 !important;
-        }
-    }
-    
-    /* Tablet responsive design */
-    @media (min-width: 769px) and (max-width: 1024px) {
-        .gradio-container {
-            max-width: 95% !important;
-            padding: 0 10px !important;
-        }
-        
-        .header-row {
-            padding: 20px 25px !important;
-        }
-        
-        .main-chatbot {
-            height: calc(100vh - 250px) !important;
-        }
-        
-        .input-row {
-            padding: 18px !important;
-        }
-        
-        .chat-input {
-            font-size: 15px !important;
-        }
-    }
-    
-    /* Large screen optimization */
-    @media (min-width: 1400px) {
-        .gradio-container {
-            max-width: 1400px !important;
-        }
-        
-        .main-chatbot {
-            height: 700px !important;
-        }
-        
-        .chat-input {
-            font-size: 17px !important;
-        }
-    }
-    
-    /* Touch device optimizations */
-    @media (hover: none) and (pointer: coarse) {
-        .chat-input {
-            font-size: 16px !important;
-            min-height: 44px !important;
-            padding: 15px 18px !important;
-        }
-        
-        .send-button {
-            min-height: 48px !important;
-            min-width: 48px !important;
-            font-size: 20px !important;
-        }
-        
-        button {
-            min-height: 44px !important;
-            padding: 12px 16px !important;
-        }
-        
-        .setting-slider {
-            margin: 20px 0 !important;
-        }
-    }
-    
-    /* Landscape mobile optimization */
-    @media (max-width: 768px) and (orientation: landscape) {
-        .main-chatbot {
-            height: calc(100vh - 200px) !important;
-        }
-        
-        .header-row {
-            padding: 10px 15px !important;
-        }
-        
-        .header-title h1 {
-            font-size: 1.3em !important;
-        }
-        
-        .input-row {
-            padding: 10px !important;
-        }
-    }
-    
-    /* Small mobile devices */
-    @media (max-width: 480px) {
-        .header-row {
-            padding: 12px 15px !important;
-        }
-        
-        .header-title h1 {
-            font-size: 1.4em !important;
-        }
-        
-        .main-chatbot {
-            height: calc(100vh - 300px) !important;
-        }
-        
-        .input-row {
-            padding: 12px !important;
-        }
-        
-        .action-row {
-            padding: 8px 12px !important;
-        }
-        
-        .chatbot .message-wrap {
-            padding: 12px 16px !important;
-        }
-        
-        .chatbot .user-message {
-            max-width: 85% !important;
-            padding: 10px 14px !important;
-        }
-    }
-      /* Flexible grid system for settings */
-    .settings-panel .gradio-row {
-        flex-wrap: wrap !important;
-        gap: 15px !important;
-    }
-    
-    @media (max-width: 768px) {
-        .settings-panel .gradio-row {
-            flex-direction: column !important;
-        }
-        
-        .settings-panel .gradio-column {
-            width: 100% !important;
-            min-width: unset !important;
-        }
-    }
-    
-    /* Improved focus states for accessibility */
-    .chat-input:focus,
-    .send-button:focus,
-    .model-selector:focus,
-    .specialty-selector:focus,
-    .context-input:focus {
-        outline: 2px solid #2563eb !important;
-        outline-offset: 2px !important;
-    }
-    
-    /* Better button states */
-    .send-button:active {
-        transform: scale(0.98) !important;
-    }
-    
-    /* Smooth transitions for responsive changes */
-    .gradio-container,
-    .header-row,
-    .main-chatbot,
-    .input-row {
-        transition: all 0.3s ease !important;
-    }
-    
-    /* Loading states */
-    .chatbot.loading {
-        opacity: 0.7 !important;
-    }
-    
-    .chatbot.loading::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 20px;
-        height: 20px;
-        margin: -10px 0 0 -10px;
-        border: 2px solid #2563eb;
-        border-radius: 50%;
-        border-top-color: transparent;
-        animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-        to {
-            transform: rotate(360deg);
-        }
-    }
-    
-    /* High DPI display optimization */
-    @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-        .chat-input,
-        .send-button {
-            border-width: 0.5px !important;
-        }
-    }
-    
-    /* Dark mode support (optional) */
-    @media (prefers-color-scheme: dark) {
-        .gradio-container {
-            background: #1a1a1a !important;
-            color: white !important;
-        }
-        
-        .main-chatbot {
-            background: #2d2d2d !important;
-        }
-        
-        .chat-input {
-            background: #3a3a3a !important;
-            border-color: #555 !important;
-            color: white !important;
-        }
-        
-        .input-row {
-            background: #2d2d2d !important;
-            border-color: #555 !important;
-        }
-    }
-    
-    /* Animation for message loading */
-    @keyframes messageSlideIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .message {
-        animation: messageSlideIn 0.3s ease-out !important;
-    }
-    
-    /* Hide Gradio branding */
+    /* Hide Gradio elements that interfere */
     .footer {
         display: none !important;
     }
     
-    .gr-button-secondary {
-        background: transparent !important;
-        border: 1px solid #d1d5db !important;
-        color: #374151 !important;
+    /* Force overrides for Gradio layout quirks */
+    .gradio-row {
+        gap: 0 !important;
+        margin: 0 !important;
     }
     
-    .gr-button-secondary:hover {
-        background: #f9fafb !important;
-        border-color: #9ca3af !important;
+    .gradio-column {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .gradio-accordion {
+        border: none !important;
+    }
+    
+    /* Removed problematic chatbot CSS - using Gradio defaults */
+    
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .main-container {
+            max-width: 100% !important;
+        }
+        
+        .sidebar-container {
+            width: 300px !important;
+            min-width: 300px !important;
+            max-width: 300px !important;
+        }
+        
+        .metrics-row {
+            gap: 16px !important;
+        }
+        
+        .dashboard-header-row {
+            padding: 16px 24px !important;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .main-container {
+            flex-direction: column !important;
+        }
+        
+        .sidebar-container {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            height: 50vh !important;
+            border-right: none !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+        }
+        
+        .dashboard-container {
+            height: 50vh !important;
+        }
+        
+        .metrics-row {
+            flex-direction: column !important;
+            gap: 12px !important;
+        }
+        
+        .dashboard-header-row {
+            padding: 12px 16px !important;
+            flex-direction: column !important;
+            gap: 12px !important;
+            align-items: flex-start !important;
+        }
+        
+        .dashboard-controls {
+            align-self: stretch !important;
+            justify-content: space-between !important;
+        }
+        
+        .dashboard-title h1 {
+            font-size: 22px !important;
+        }
     }
     
     /* Scrollbar styling */
     ::-webkit-scrollbar {
-        width: 6px;
+        width: 6px !important;
     }
     
     ::-webkit-scrollbar-track {
-        background: #f1f1f1;
+        background: #f8fafc !important;
     }
     
     ::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 3px;
+        background: #cbd5e1 !important;
+        border-radius: 3px !important;
     }
     
     ::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8;
+        background: #94a3b8 !important;
+    }
+    
+    /* CRITICAL: Force visibility and centering */
+    .gradio-container * {
+        box-sizing: border-box !important;
+    }
+    
+    /* Force all elements to be visible */
+    .metric-card, .metrics-row, .metrics-container {
+        visibility: visible !important;
+        display: block !important;
+        opacity: 1 !important;
+    }
+    
+    .metrics-row {
+        display: flex !important;
+    }
+    
+    /* Center the entire interface */
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow-x: hidden !important;
+    }
+    /* ENHANCED MODEL DROPDOWN - FUNCTIONAL AND BEAUTIFUL */
+    .model-gr-dropdown {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 6px rgba(59, 130, 246, 0.08) !important;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    
+    .model-gr-dropdown:hover {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.12) !important;
+    }
+
+    .model-gr-dropdown .options {
+        background: white !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 6px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+        margin-top: 4px !important;
+    }
+
+    .model-gr-dropdown li {
+        color: #475569 !important;
+        padding: 10px 14px !important;
+        transition: background-color 0.15s ease !important;
+        font-weight: 500 !important;
+        border: none !important;
+    }
+
+    .model-gr-dropdown li[aria-selected="true"] {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+        color: white !important;
+        font-weight: 600 !important;
+    }
+
+    .model-gr-dropdown li:hover:not([aria-selected="true"]) {
+        background: #f1f5f9 !important;
+        color: #1e293b !important;
+    }
+
+    .model-gr-dropdown li[aria-selected="true"]:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+        color: white !important;
+    }
+
+    /* ENHANCED CHATBOT - PREMIUM MESSAGING INTERFACE */
+    .chatbot-gr-chatbot {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+        overflow: hidden !important;
+        position: relative !important;
+    }
+
+    .chatbot-gr-chatbot::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 3px !important;
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4) !important;
+    }
+    
+    .chatbot-gr-chatbot .bubble-wrap {
+        background: transparent !important;
+        padding: 8px 12px !important;
+        margin: 6px 0 !important;
+        border-radius: 14px !important;
+        position: relative !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    /* ASSISTANT MESSAGE - SOPHISTICATED BLUE GRADIENT */
+    .chatbot-gr-chatbot .message.bot {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 85%, #1d4ed8 100%) !important;
+        color: white !important;
+        box-shadow: 0 3px 12px rgba(59, 130, 246, 0.25) !important;
+        border: none !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    .chatbot-gr-chatbot .message.bot::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent) !important;
+        transition: left 0.5s ease !important;
+    }
+
+    .chatbot-gr-chatbot .message.bot:hover::before {
+        left: 100% !important;
+    }
+
+    .chatbot-gr-chatbot .message.bot:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35) !important;
+    }
+    
+    /* USER MESSAGE - ELEGANT LIGHT BLUE SHADE */
+    .chatbot-gr-chatbot .message.user {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 85%, #93c5fd 100%) !important;
+        color: #1e293b !important; /* Changed color to a darker shade for better contrast */
+        border: 1px solid #93c5fd !important;
+        box-shadow: 0 2px 8px rgba(147, 197, 253, 0.2) !important;
+        font-weight: 500 !important;
+        position: relative !important;
+    }
+
+    .chatbot-gr-chatbot .message.user:hover {
+        background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 85%, #60a5fa 100%) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(147, 197, 253, 0.3) !important;
+    }
+
+    /* ICON BUTTONS - REFINED ACCENT COLORS */
+    .chatbot-gr-chatbot .icon-button-wrapper {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 6px rgba(6, 182, 212, 0.2) !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .chatbot-gr-chatbot .icon-button-wrapper:hover {
+        background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%) !important;
+        transform: scale(1.05) !important;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3) !important;
+    }
+    
+    .chatbot-gr-chatbot .icon-button-wrapper button {
+        background: transparent !important;
+        color: white !important;
+        border: none !important;
+        font-weight: 600 !important;
+    }
+
+    /* ENHANCED INPUT CONTAINER - MODERN CHAT INPUT */
+    #component-6 {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 12px !important;
+        padding: 0 !important;
+    }
+
+    #component-6 .input-container {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 14px !important;
+        padding: 4px 16px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    #component-6 .input-container::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.05), transparent) !important;
+        transition: left 0.6s ease !important;
+    }
+
+    #component-6 .input-container:focus-within {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 4px 12px rgba(59, 130, 246, 0.15) !important;
+        transform: translateY(-1px) !important;
+    }
+
+    #component-6 .input-container:focus-within::before {
+        left: 100% !important;
+    }
+    
+    #component-6 .input-container textarea {
+        background: transparent !important;
+        border: none !important;
+        outline: none !important;
+        color: #1e293b !important;
+        font-weight: 500 !important;
+        margin: 0 !important;
+        padding: 8px 0 !important;
+        resize: none !important;
+    }
+
+    #component-6 .input-container textarea::placeholder {
+        color: #94a3b8 !important;
+        font-weight: 400 !important;
+    }
+    
+    /* ENHANCED SEND BUTTON - PREMIUM ACTION BUTTON */
+    #component-6 button {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
+        color: white !important;
+        border: none !important;
+        width: 40px !important;
+        height: 40px !important;
+        max-height: 40px !important;
+        max-width: 40px !important;
+        min-height: 40px !important;
+        min-width: 40px !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    #component-6 button::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        width: 0 !important;
+        height: 0 !important;
+        background: rgba(255, 255, 255, 0.2) !important;
+        border-radius: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        transition: width 0.3s ease, height 0.3s ease !important;
+    }
+
+    #component-6 button:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%) !important;
+        transform: translateY(-2px) scale(1.05) !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+    }
+
+    #component-6 button:hover::before {
+        width: 30px !important;
+        height: 30px !important;
+    }
+
+    #component-6 button:active {
+        transform: translateY(0) scale(0.95) !important;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+    }
+
+    /* ENHANCED FOCUS STATES AND ACCESSIBILITY */
+    .model-gr-dropdown:focus-within,
+    .chatbot-gr-chatbot:focus-within,
+    #component-6 button:focus {
+        outline: 2px solid #3b82f6 !important;
+        outline-offset: 2px !important;
+    }
+
+    /* SUBTLE ANIMATIONS FOR ENHANCED INTERACTIVITY */
+    @keyframes messageSlideIn {
+        from {
+            opacity: 0 !important;
+            transform: translateY(10px) !important;
+        }
+        to {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+    }
+
+    .chatbot-gr-chatbot .message {
+        animation: messageSlideIn 0.3s ease-out !important;
+    }
+
+    /* LOADING STATES */
+    .chatbot-gr-chatbot .message.loading {
+        background: linear-gradient(90deg, #f1f5f9, #e2e8f0, #f1f5f9) !important;
+        background-size: 200% 100% !important;
+        animation: shimmer 1.5s infinite !important;
+    }
+
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    .gradio-container-5-32-1 .user .prose * {
+        color: #1e293b !important; /* Set a consistent color for body text */
+    }
+
+    /* ===== CHATBOT LOADER INTEGRATION STYLES ===== */
+    
+    /* Loading Indicator Container */
+    .loading-indicator {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 16px 20px !important;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        color: #64748b !important;
+        font-weight: 500 !important;
+        font-size: 14px !important;
+        margin: 8px 0 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+        position: relative !important;
+        overflow: hidden !important;
+        animation: loadingSlideIn 0.3s ease-out !important;
+    }
+
+    /* Loading Indicator Shimmer Effect */
+    .loading-indicator::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.08), transparent) !important;
+        animation: loadingShimmer 2s infinite !important;
+    }
+
+    /* Animated Loading Dots */
+    .loading-dots {
+        display: inline-block !important;
+        width: 20px !important;
+        height: 14px !important;
+        position: relative !important;
+    }
+
+    .loading-dots::after {
+        content: '•••' !important;
+        display: inline-block !important;
+        color: #3b82f6 !important;
+        font-size: 16px !important;
+        letter-spacing: 2px !important;
+        animation: loadingDots 1.4s infinite ease-in-out !important;
+    }
+
+    /* Loading Animations */
+    @keyframes loadingSlideIn {
+        from {
+            opacity: 0 !important;
+            transform: translateY(10px) scale(0.95) !important;
+        }
+        to {
+            opacity: 1 !important;
+            transform: translateY(0) scale(1) !important;
+        }
+    }
+
+    @keyframes loadingShimmer {
+        0% { 
+            left: -100% !important;
+        }
+        100% { 
+            left: 100% !important;
+        }
+    }
+
+    @keyframes loadingDots {
+        0%, 80%, 100% {
+            opacity: 0.3 !important;
+            transform: scale(0.8) !important;
+        }
+        40% {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+        }
+    }
+
+    /* Enhanced Loading States for Different Types */
+    .loading-indicator[data-type="thinking"] {
+        border-left: 4px solid #8b5cf6 !important;
+    }
+
+    .loading-indicator[data-type="database"] {
+        border-left: 4px solid #06b6d4 !important;
+    }
+
+    .loading-indicator[data-type="ai"] {
+        border-left: 4px solid #10b981 !important;
+    }
+
+    .loading-indicator[data-type="generating"] {
+        border-left: 4px solid #f59e0b !important;
+    }
+
+    /* Responsive Loading Indicator */
+    @media (max-width: 768px) {
+        .loading-indicator {
+            padding: 12px 16px !important;
+            font-size: 13px !important;
+            margin: 6px 0 !important;
+        }
+        
+        .loading-dots::after {
+            font-size: 14px !important;
+        }
+    }
+
+    /* Dark Mode Support for Loading Indicator */
+    @media (prefers-color-scheme: dark) {
+        .loading-indicator {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+            border-color: #475569 !important;
+            color: #cbd5e1 !important;
+        }
+        
+        .loading-indicator::before {
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.15), transparent) !important;
+        }
+    }
+
+    /* Accessibility Enhancements */
+    .loading-indicator[aria-live="polite"] {
+        position: relative !important;
+    }
+
+    /* Reduced Motion Support */
+    @media (prefers-reduced-motion: reduce) {
+        .loading-indicator,
+        .loading-indicator::before,
+        .loading-dots::after {
+            animation: none !important;
+        }
+        
+        .loading-dots::after {
+            content: '...' !important;
+        }
     }
     """
