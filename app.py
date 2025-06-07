@@ -52,7 +52,7 @@ def main():
 
     # Launch the application
     logger.info(f"Launching application with params: {launch_params}")
-    demo.launch(**launch_params)
+    demo.launch(mcp_server=True)
 
 
 if __name__ == "__main__":
