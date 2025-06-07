@@ -39,6 +39,8 @@ class NebiusModel:
         try:
             # Check if API key is available
             api_key = os.getenv("NEBIUS_API_KEY")
+            print("api_key", api_key)
+            print("OS api_key", os.getenv("NEBIUS_API_KEY"))
 
             if not api_key or api_key == "your-nebius-api-key-here":
                 logger.warning(
@@ -48,7 +50,7 @@ class NebiusModel:
                 return
 
             self.nebius = NebiusInference()
-            logger.info("Nebius model initialized successfully")
+            logger.info(f"Nebius model initialized successfully {api_key}")
 
         except Exception as e:
             logger.error(f"Failed to initialize Nebius model: {e}")
