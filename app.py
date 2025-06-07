@@ -9,9 +9,14 @@ import sys
 
 import gradio as gr
 
+# Load environment variables from .env file
+from src.utils.env_loader import ensure_env_loaded
 from src.components.interface import create_main_interface
 from src.utils.config import load_config
 from src.utils.logger import setup_logger
+
+# Ensure .env file is loaded
+ensure_env_loaded()
 
 # Ensure stdout/stderr support UTF-8 on Windows for emoji output
 if hasattr(sys.stdout, "buffer"):
