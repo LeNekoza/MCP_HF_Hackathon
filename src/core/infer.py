@@ -47,6 +47,7 @@ class NebiusInference:
         """Load configuration from environment variables"""
         # Load API key from environment
         api_key = os.getenv("NEBIUS_API_KEY")
+        print("api_key", api_key)
 
         if not api_key or api_key == "your-nebius-api-key-here":
             raise ValueError(
