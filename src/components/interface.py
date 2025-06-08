@@ -51,21 +51,16 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                         <p>How can I help you?</p>
                     </div>
                 </div>
-                """
-                )
-
-                # Chat Interface - Normal Chat
+                """                )                # Chat Interface - Normal Chat
                 chatbot = gr.Chatbot(
                     type="messages",
-                    height=350,
+                    height=600,
                     show_copy_button=False,
                     show_share_button=True,
                     container=False,
                     layout="bubble",
                     elem_classes="chatbot-gr-chatbot",
-                )
-
-                # Chat Input Area - Standard
+                )# Chat Input Area - Standard
                 with gr.Row():
                     msg = gr.Textbox(
                         placeholder="Ask about hospital status, patients, or medical queries...",
@@ -76,6 +71,29 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                         scale=4,
                     )
                     send_btn = gr.Button("→", size="sm", scale=0, min_width=40)
+
+                # Tools Section with Dropdown
+                with gr.Row(elem_classes="tools-section"):
+                    with gr.Column(scale=1):
+                        tools_dropdown = gr.Dropdown(
+                            choices=[
+                                "Patient Search",
+                                "Room Status",
+                                "Staff Directory", 
+                                "Equipment Inventory",
+                                "Medication Lookup",
+                                "Lab Results",
+                                "Appointment Scheduler",
+                                "Emergency Protocols",
+                                "Medical Calculator",
+                                "Report Generator"
+                            ],
+                            label="🔧 Tools",
+                            value=None,
+                            interactive=True,
+                            container=True,
+                            elem_classes="tools-dropdown"
+                        )
 
                 # Guidance text from image
                 """ gr.HTML( """
@@ -212,26 +230,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                                         </div>
                     </div>
                 </div>
-                """
-                )
-
-                # Message input at bottom (like in the image)
-                with gr.Row(elem_classes="bottom-input-row"):
-                    bottom_msg = gr.Textbox(
-                        placeholder="Ask about hospital status, patients, or medical queries...",
-                        show_label=False,
-                        lines=1,
-                        container=False,
-                        scale=4,
-                        elem_classes="bottom-input",
-                    )
-                    bottom_send_btn = gr.Button(
-                        "→",
-                        size="sm",
-                        scale=0,
-                        min_width=40,
-                        elem_classes="bottom-send-btn",
-                    )
+                """                )
 
         # Hidden status indicator
         status = gr.Textbox(visible=False)
@@ -496,14 +495,45 @@ Make sure the user gets both the complete information they requested AND your pr
                     else:
                         history[-1]["content"] += " " + word
                     time.sleep(0.05)  # Simulate streaming delay
-                    yield history, ""
-
-        # Quick action handler
+                    yield history, ""        # Quick action handler
         def handle_helpline():
-            return "Connect me to the hospital helpline for urgent assistance", [
+            return "", [
                 {
                     "role": "user",
                     "content": "Connect me to the hospital helpline for urgent assistance",
+                },
+                {
+                    "role": "assistant",
+                    "content": "📞 The helpline number of the hospital is **555-HELP (555-4357)**.\n\nOur helpline is available 24/7 for urgent assistance. Please call immediately if you have any medical emergencies or need immediate support.",
+                }
+            ]
+
+        def handle_tool_selection(tool_name):
+            """Handle tool selection from dropdown"""
+            if not tool_name:
+                return "", []
+            
+            tool_messages = {
+                "Patient Search": "Please search for patient information. What patient details would you like me to look up?",
+                "Room Status": "I'll check the current room occupancy and availability status for you.",
+                "Staff Directory": "Let me show you the staff directory and current availability.",
+                "Equipment Inventory": "I'll retrieve the current medical equipment inventory status.",
+                "Medication Lookup": "What medication information would you like me to look up?",
+                "Lab Results": "I'll help you access and review lab results. Which patient or test are you looking for?",
+                "Appointment Scheduler": "I can help you check appointments and scheduling. What would you like to know?",
+                "Emergency Protocols": "I'll provide emergency protocol information. What type of emergency are you asking about?",
+                "Medical Calculator": "I can help with medical calculations. What would you like to calculate?",
+                "Report Generator": "I'll help you generate reports. What type of report do you need?"
+            }
+            
+            return "", [
+                {
+                    "role": "user", 
+                    "content": f"I selected the {tool_name} tool"
+                },
+                {
+                    "role": "assistant",
+                    "content": f"🔧 **{tool_name} Tool Activated**\n\n{tool_messages.get(tool_name, 'Tool activated. How can I assist you?')}"
                 }
             ]
 
@@ -530,47 +560,51 @@ Make sure the user gets both the complete information they requested AND your pr
                 chatbot,
                 gr.State("nebius-llama-3.3-70b"),  # default model
                 gr.State(0.4),  # temperature
-                gr.State(1000),  # max_tokens
-                gr.State("General Medicine"),  # medical_specialty
+                gr.State(1000),  # max_tokens                gr.State("General Medicine"),  # medical_specialty
                 gr.State(""),  # context_input
             ],
             outputs=[chatbot, msg],
             show_progress="hidden",
         )
 
-        # Connect events for bottom input
-        bottom_msg.submit(
-            fn=stream_response,
-            inputs=[
-                bottom_msg,
-                chatbot,
-                gr.State("nebius-llama-3.3-70b"),  # default model
-                gr.State(0.4),  # temperature
-                gr.State(1000),  # max_tokens
-                gr.State("General Medicine"),  # medical_specialty
-                gr.State(""),  # context_input
-            ],
-            outputs=[chatbot, bottom_msg],
-            show_progress="hidden",
-        )
-
-        bottom_send_btn.click(
-            fn=stream_response,
-            inputs=[
-                bottom_msg,
-                chatbot,
-                gr.State("nebius-llama-3.3-70b"),  # default model
-                gr.State(0.4),  # temperature
-                gr.State(1000),  # max_tokens
-                gr.State("General Medicine"),  # medical_specialty
-                gr.State(""),  # context_input
-            ],
-            outputs=[chatbot, bottom_msg],
-            show_progress="hidden",
-        )
-
         helpline_btn.click(
             fn=handle_helpline,
+            outputs=[msg, chatbot],
+        )
+
+        # Tools dropdown handler
+        def handle_tool_selection(tool_name):
+            """Handle tool selection from dropdown"""
+            if not tool_name:
+                return "", []
+            
+            tool_messages = {
+                "Patient Search": "Please search for patient information. What patient details would you like me to look up?",
+                "Room Status": "I'll check the current room occupancy and availability status for you.",
+                "Staff Directory": "Let me show you the staff directory and current availability.",
+                "Equipment Inventory": "I'll retrieve the current medical equipment inventory status.",
+                "Medication Lookup": "What medication information would you like me to look up?",
+                "Lab Results": "I'll help you access and review lab results. Which patient or test are you looking for?",
+                "Appointment Scheduler": "I can help you check appointments and scheduling. What would you like to know?",
+                "Emergency Protocols": "I'll provide emergency protocol information. What type of emergency are you asking about?",
+                "Medical Calculator": "I can help with medical calculations. What would you like to calculate?",
+                "Report Generator": "I'll help you generate reports. What type of report do you need?"
+            }
+            
+            return "", [
+                {
+                    "role": "user", 
+                    "content": f"I selected the {tool_name} tool"
+                },
+                {
+                    "role": "assistant",
+                    "content": f"🔧 **{tool_name} Tool Activated**\n\n{tool_messages.get(tool_name, 'Tool activated. How can I assist you?')}"
+                }
+            ]
+
+        tools_dropdown.change(
+            fn=handle_tool_selection,
+            inputs=[tools_dropdown],
             outputs=[msg, chatbot],
         )
 
@@ -3139,53 +3173,9 @@ def load_modern_hospital_css():
     .line-chart svg path[fill*="#"] {
         transition: opacity 0.2s ease !important;
         cursor: pointer !important;
-    }
-
-    .line-chart svg path[fill*="#"]:hover {
+    }    .line-chart svg path[fill*="#"]:hover {
         opacity: 0.8 !important;
     }
-
-    /* BOTTOM INPUT ROW STYLING */
-    .bottom-input-row {
-        margin: 16px 24px !important;
-        background: white !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 12px !important;
-        padding: 8px !important;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
-        display: flex !important;
-        gap: 8px !important;
-        align-items: center !important;
-        width: calc(100% - 48px) !important;
-        max-width: calc(100% - 48px) !important;
-        box-sizing: border-box !important;
-    }
-
-    .bottom-input {
-        border: none !important;
-        background: transparent !important;
-        outline: none !important;
-    }
-
-    .bottom-send-btn {
-        background: #3b82f6 !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 8px !important;
-        width: 36px !important;
-        height: 36px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        cursor: pointer !important;
-        font-weight: 600 !important;
-    }
-
-    .bottom-send-btn:hover {
-        background: #2563eb !important;
-    }
-
-    
 
     /* ENHANCED CHATBOT - PREMIUM MESSAGING INTERFACE */
     .chatbot-gr-chatbot {
