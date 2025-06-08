@@ -29,7 +29,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
     nebius_model = NebiusModel()
 
     with gr.Blocks(
-        title="Smart Hospital - Department Assistant",
+        title="Health AI Hospital Aid (H.A.H.A)",
         css=load_modern_hospital_css(),
         fill_height=True,
         head=load_latex_scripts(),
@@ -45,7 +45,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                 gr.HTML(
                     """
                 <div class="assistant-header">
-                    <div class="avatar-circle">👨‍⚕️</div>
+                    <div class="avatar-circle">🩺</div>
                     <div class="assistant-text">
                         <h3>Medical Assistant</h3>
                         <p>How can I help you?</p>
@@ -54,15 +54,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                 """
                 )
 
-                # Model Selection in Chat Panel
-                model_dropdown = gr.Dropdown(
-                    choices=get_available_models(),
-                    label="Model",
-                    value=config.get("default_model", "nebius-llama-3.3-70b"),
-                    container=False,
-                    scale=0.05,
-                    elem_classes="model-gr-dropdown",
-                )
+
 
                 # Chat Interface - Normal Chat
                 chatbot = gr.Chatbot(
@@ -87,330 +79,155 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                     )
                     send_btn = gr.Button("→", size="sm", scale=0, min_width=40)
 
+                # Guidance text from image
+                gr.HTML(
+                    """
+                <div class="guidance-text">
+                    <p>I'll assist you with health information and guidance. If you have any health-related questions or concerns, feel free to ask, and I'll do my best to assist you. Remember, I'm not a replacement for professional medical advice, and it's always best to consult with a healthcare professional for serious concerns.</p>
+                    <br>
+                    <p>What's on your mind today? Do you have a specific health topic you'd like to discuss or any questions about general medicine?</p>
+                </div>
+                """
+                )
+
             # Right Side - Dashboard
             with gr.Column(scale=2, elem_classes="dashboard-container"):
 
-                # Dashboard Header - Clean without Model Selection
-                with gr.Row(elem_classes="dashboard-header-row"):
-                    with gr.Column(scale=2):
+                # Dashboard Header - Compact
+                with gr.Row(elem_classes="dashboard-header-compact"):
+                    with gr.Column(scale=3):
                         gr.HTML(
                             """
-                        <div class="dashboard-title">
-                            <h1>SMART HOSPITAL</h1>
-                            <p>Department Assistant</p>
+                        <div class="dashboard-title-compact">
+                            <h1>Health AI Hospital Aid (H.A.H.A)</h1>
+                            <p>Medical Assistant</p>
                         </div>
                         """
                         )
 
-                    with gr.Column(scale=1, elem_classes="dashboard-controls"):
-                        # Quick Controls
-                        status_btn = gr.Button(
-                            "Hospital Status",
-                            elem_classes="header-action-btn",
+                    with gr.Column(scale=1, elem_classes="dashboard-controls-compact"):
+                        # Helpline Button
+                        helpline_btn = gr.Button(
+                            "📞 Helpline",
+                            elem_classes="helpline-btn-compact",
                             size="sm",
                             scale=1,
                         )
 
-                # Navigation Buttons Row
+                # Navigation Buttons Row - Updated to match image
                 gr.HTML(
                     """
                 <div class="nav-buttons-container">
                     <button class="nav-btn active" data-section="dashboard">Dashboard</button>
-                    <button class="nav-btn" data-section="forecasting">Forecasting</button>
                     <button class="nav-btn" data-section="alerts">Alerts</button>
                     <button class="nav-btn" data-section="resources">Resources</button>
+                    <button class="nav-btn" data-section="data">Data</button>
                 </div>
                 """
                 )
 
-                # Dynamic Content Container - Changes based on navigation
+                # Main Content Area - Always Visible Analysis Section
                 gr.HTML(
                     """
-                <div class="content-container">
-                    <!-- DASHBOARD SECTION -->
-                    <div id="dashboard-section" class="content-section active">
-                        <div class="metrics-container">
-                            <!-- First Row: ICU Occupancy and Emergency Room Load -->
-                            <div class="metrics-row">
-                                <div class="metric-card">
-                                    <div class="progress-circle">
-                                        <svg width="120" height="120">
-                                            <circle class="progress-circle-bg" cx="60" cy="60" r="54"></circle>
-                                            <circle class="progress-circle-fill" cx="60" cy="60" r="54" 
-                                                    style="stroke-dasharray: 339.292; stroke-dashoffset: 98.195;"></circle>
-                                        </svg>
-                                        <div class="progress-text">71%</div>
-                                    </div>
-                                    <h3>ICU Occupancy</h3>
-                                    <p class="card-subtitle">Current Capacity</p>
-                                </div>
-                                
-                                <div class="metric-card">
-                                    <svg class="load-chart" width="200" height="80">
-                                        <defs>
-                                            <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                                <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.3" />
-                                                <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:0.05" />
-                                            </linearGradient>
-                                        </defs>
-                                        <path class="load-path" d="M 10 70 Q 30 50 50 45 T 90 40 T 130 35 T 170 30 T 190 25" 
-                                              stroke="#3B82F6" stroke-width="3" fill="none"></path>
-                                        <path class="load-area" d="M 10 70 Q 30 50 50 45 T 90 40 T 130 35 T 170 30 T 190 25 L 190 70 L 10 70 Z" 
-                                              fill="url(#gradient)"></path>
-                                    </svg>
-                                    <h3>Emergency Room Load</h3>
-                                    <p class="card-subtitle">Patients in Queue: 12</p>
-                                </div>
+                <div class="main-content-area">
+                    <div class="analysis-section">
+                        <h2 class="analysis-title">Analysis Title</h2>
+                        
+                        <!-- Chart Type Controls -->
+                        <div class="chart-controls">
+                            <button class="chart-btn active" data-chart="line">Line</button>
+                            <button class="chart-btn" data-chart="bar">Bar</button>
+                            <button class="chart-btn" data-chart="pie">Pie</button>
+                            <button class="chart-btn" data-chart="scatter">Scatter</button>
                             </div>
                             
-                            <!-- Second Row: Staff Availability and Tool Usage -->
-                            <div class="metrics-row">
-                                <div class="metric-card">
-                                    <h3>Staff Availability</h3>
-                                    <div class="staff-metrics">
-                                        <div class="staff-item">
-                                            <span class="staff-label">Doctors</span>
-                                            <div class="progress-bar">
-                                                <div class="progress-fill doctors-progress"></div>
-                                            </div>
-                                            <span class="staff-percentage">75%</span>
-                                        </div>
-                                        <div class="staff-item">
-                                            <span class="staff-label">Nurses</span>
-                                            <div class="progress-bar">
-                                                <div class="progress-fill nurses-progress"></div>
-                                            </div>
-                                            <span class="staff-percentage">60%</span>
-                                        </div>
-                                    </div>
+                        <!-- Chart Container -->
+                        <div class="chart-container">
+                            <div class="chart-legend">
+                                <span class="legend-item">
+                                    <span class="legend-color" style="background: #3b82f6;"></span>
+                                    Patient Count
+                                </span>
+                                <span class="legend-item">
+                                    <span class="legend-color" style="background: #22d3ee;"></span>
+                                    Revenue Data
+                                </span>
                                 </div>
                                 
-                                <div class="metric-card">
-                                    <div class="usage-chart">
-                                        <div class="bar" style="height: 60%;"></div>
-                                        <div class="bar" style="height: 40%;"></div>
-                                        <div class="bar" style="height: 70%;"></div>
-                                        <div class="bar" style="height: 35%;"></div>
-                                        <div class="bar" style="height: 85%;"></div>
-                                    </div>
-                                    <h3>Equipment Usage</h3>
-                                    <p class="card-subtitle">Ventilators, Monitors, Beds</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- FORECASTING SECTION -->
-                    <div id="forecasting-section" class="content-section">
-                        <div class="metrics-container">
-                            <div class="section-header">
-                                <h2>📊 Predictive Analytics & Forecasting</h2>
-                            </div>
-                            <div class="metrics-row">
-                                <div class="metric-card forecast-card">
-                                    <h3>24-Hour Forecast</h3>
-                                    <div class="forecast-chart">
-                                        <svg width="200" height="100">
+                            <div class="line-chart">
+                                <svg width="100%" height="400" viewBox="0 0 600 300">
+                                    <!-- Grid lines -->
                                             <defs>
-                                                <linearGradient id="forecast-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                                    <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.3" />
-                                                    <stop offset="100%" style="stop-color:#10b981;stop-opacity:0.05" />
-                                                </linearGradient>
+                                        <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
+                                            <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+                                        </pattern>
                                             </defs>
-                                            <path d="M 10 80 Q 40 70 70 60 T 130 45 T 190 50" 
-                                                  stroke="#10b981" stroke-width="3" fill="none"></path>
-                                            <path d="M 10 80 Q 40 70 70 60 T 130 45 T 190 50 L 190 80 L 10 80 Z" 
-                                                  fill="url(#forecast-gradient)"></path>
-                                        </svg>
-                                    </div>
-                                    <p class="card-subtitle">Expected Admission Rate</p>
-                                </div>
-                                
-                                <div class="metric-card forecast-card">
-                                    <h3>Capacity Planning</h3>
-                                    <div class="capacity-indicators">
-                                        <div class="capacity-item">
-                                            <span class="capacity-label">ICU Beds</span>
-                                            <span class="capacity-value">85% Full</span>
-                                            <div class="capacity-trend up">↗ +5%</div>
-                                        </div>
-                                        <div class="capacity-item">
-                                            <span class="capacity-label">General Beds</span>
-                                            <span class="capacity-value">67% Full</span>
-                                            <div class="capacity-trend down">↘ -2%</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ALERTS SECTION -->
-                    <div id="alerts-section" class="content-section">
-                        <div class="metrics-container">
-                            <div class="alerts-header">
-                                <h2 style="color: black;">🚨 Critical Alerts & Notifications</h2>
-                                <div class="alert-summary">
-                                    <span class="alert-count critical">3 Critical</span>
-                                    <span class="alert-count warning">7 Warnings</span>
-                                    <span class="alert-count info">12 Info</span>
-                                </div>
-                            </div>
-                            
-                            <div class="alerts-list">
-                                <div class="alert-item critical">
-                                    <div class="alert-icon">🚨</div>
-                                    <div class="alert-content">
-                                        <h4>ICU Capacity Critical</h4>
-                                        <p>ICU occupancy at 95% - Consider patient transfer</p>
-                                        <span class="alert-time">2 minutes ago</span>
-                                    </div>
-                                    <div class="alert-actions">
-                                        <button class="alert-btn primary">Acknowledge</button>
-                                        <button class="alert-btn">Escalate</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="alert-item warning">
-                                    <div class="alert-icon">⚠️</div>
-                                    <div class="alert-content">
-                                        <h4>Equipment Malfunction</h4>
-                                        <p>Ventilator #3 in Room 205 requires attention</p>
-                                        <span class="alert-time">5 minutes ago</span>
-                                    </div>
-                                    <div class="alert-actions">
-                                        <button class="alert-btn primary">Dispatch</button>
-                                        <button class="alert-btn">Details</button>
-                                    </div>
-                                </div>
-                                
-                                <div class="alert-item info">
-                                    <div class="alert-icon">📋</div>
-                                    <div class="alert-content">
-                                        <h4>Inventory Low</h4>
-                                        <p>Surgical masks below 20% threshold</p>
-                                        <span class="alert-time">1 hour ago</span>
-                                    </div>
-                                    <div class="alert-actions">
-                                        <button class="alert-btn primary">Reorder</button>
-                                        <button class="alert-btn">View Stock</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- RESOURCES SECTION -->
-                    <div id="resources-section" class="content-section">
-                        <div class="metrics-container">
-                            <div class="section-header">
-                                <h2>🏥 Resources & Equipment Management</h2>
-                            </div>
-                            <div class="metrics-row" >
-                                <div class="metric-card resource-card">
-                                    <h3>Equipment Status</h3>
-                                    <div class="equipment-grid">
-                                        <div class="equipment-item">
-                                            <span class="equipment-name" style="color: gray; font-weight: bold; ">Ventilators</span>
-                                            <span class="equipment-status operational">24/28 ✓</span>
-                                        </div>
-                                        <div class="equipment-item">
-                                            <span class="equipment-name" style="color: gray; font-weight: bold; ">CT Scanners</span>
-                                            <span class="equipment-status operational">3/3 ✓</span>
-                                        </div>
-                                        <div class="equipment-item">
-                                            <span class="equipment-name" style="color: gray; font-weight: bold; ">MRI Machines</span>
-                                            <span class="equipment-status maintenance">1/2 ⚠</span>
-                                        </div>
-                                        <div class="equipment-item">
-                                            <span class="equipment-name" style="color: gray; font-weight: bold; ">X-Ray Units</span>
-                                            <span class="equipment-status operational">8/8 ✓</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="metric-card resource-card">
-                                    <h3>Inventory Levels</h3>
-                                    <div class="inventory-list">
-                                        <div class="inventory-item">
-                                            <span class="inventory-name">Surgical Masks</span>
-                                            <div class="inventory-bar">
-                                                <div class="inventory-fill low" style="width: 15%;"></div>
+                                    <rect width="100%" height="100%" fill="url(#grid)" />
+                                    
+                                    <!-- Y-axis labels -->
+                                    <text x="30" y="50" fill="#64748b" font-size="12" text-anchor="end">65</text>
+                                    <text x="30" y="88" fill="#64748b" font-size="12" text-anchor="end">60</text>
+                                    <text x="30" y="125" fill="#64748b" font-size="12" text-anchor="end">55</text>
+                                    <text x="30" y="163" fill="#64748b" font-size="12" text-anchor="end">50</text>
+                                    <text x="30" y="200" fill="#64748b" font-size="12" text-anchor="end">45</text>
+                                    <text x="30" y="238" fill="#64748b" font-size="12" text-anchor="end">40</text>
+                                    
+                                    <!-- X-axis labels -->
+                                    <text x="80" y="280" fill="#64748b" font-size="12" text-anchor="middle">January</text>
+                                    <text x="160" y="280" fill="#64748b" font-size="12" text-anchor="middle">February</text>
+                                    <text x="240" y="280" fill="#64748b" font-size="12" text-anchor="middle">March</text>
+                                    <text x="320" y="280" fill="#64748b" font-size="12" text-anchor="middle">April</text>
+                                    <text x="400" y="280" fill="#64748b" font-size="12" text-anchor="middle">May</text>
+                                    <text x="480" y="280" fill="#64748b" font-size="12" text-anchor="middle">June</text>
+                                    <text x="560" y="280" fill="#64748b" font-size="12" text-anchor="middle">July</text>
+                                    
+                                    <!-- Red line (declining) -->
+                                    <path d="M 80 50 L 160 88 L 240 125 L 320 163 L 400 200 L 480 163 L 560 238" 
+                                          stroke="#ef4444" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                    
+                                    <!-- Cyan/Teal line (rising then declining) -->
+                                    <path d="M 80 238 L 160 225 L 240 200 L 320 175 L 400 138 L 480 125 L 560 163" 
+                                          stroke="#22d3ee" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                    
+                                    <!-- Gray dotted line -->
+                                    <path d="M 80 88 L 160 125 L 240 138 L 320 150 L 400 175 L 480 188 L 560 200" 
+                                          stroke="#94a3b8" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                                    
+                                    <!-- Data points -->
+                                    <circle cx="80" cy="50" r="4" fill="#ef4444"/>
+                                    <circle cx="160" cy="88" r="4" fill="#ef4444"/>
+                                    <circle cx="240" cy="125" r="4" fill="#ef4444"/>
+                                    <circle cx="320" cy="163" r="4" fill="#ef4444"/>
+                                    <circle cx="400" cy="200" r="4" fill="#ef4444"/>
+                                    <circle cx="480" cy="163" r="4" fill="#ef4444"/>
+                                    <circle cx="560" cy="238" r="4" fill="#ef4444"/>
+                                    
+                                    <circle cx="80" cy="238" r="4" fill="#22d3ee"/>
+                                    <circle cx="160" cy="225" r="4" fill="#22d3ee"/>
+                                    <circle cx="240" cy="200" r="4" fill="#22d3ee"/>
+                                    <circle cx="320" cy="175" r="4" fill="#22d3ee"/>
+                                    <circle cx="400" cy="138" r="4" fill="#22d3ee"/>
+                                    <circle cx="480" cy="125" r="4" fill="#22d3ee"/>
+                                    <circle cx="560" cy="163" r="4" fill="#22d3ee"/>
+                                </svg>
                                             </div>
-                                            <span class="inventory-count">15%</span>
                                         </div>
-                                        <div class="inventory-item">
-                                            <span class="inventory-name">Gloves</span>
-                                            <div class="inventory-bar">
-                                                <div class="inventory-fill good" style="width: 78%;"></div>
-                                            </div>
-                                            <span class="inventory-count">78%</span>
-                                        </div>
-                                        <div class="inventory-item">
-                                            <span class="inventory-name">IV Bags</span>
-                                            <div class="inventory-bar">
-                                                <div class="inventory-fill good" style="width: 82%;"></div>
-                                            </div>
-                                            <span class="inventory-count">82%</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 """
                 )
 
-                # Advanced Settings - Collapsible
-                with gr.Accordion(
-                    "Advanced AI Settings",
-                    open=False,
-                    elem_classes="dashboard-settings",
-                ):
-                    with gr.Row():
-                        with gr.Column():
-                            medical_specialty = gr.Dropdown(
-                                label="Medical Specialty",
-                                choices=[
-                                    "General Medicine",
-                                    "Cardiology",
-                                    "Neurology",
-                                    "Orthopedics",
-                                    "Psychiatry",
-                                    "Emergency Medicine",
-                                    "Pediatrics",
-                                ],
-                                value="General Medicine",
-                                elem_classes="settings-dropdown",
-                            )
-
-                        with gr.Column():
-                            temperature = gr.Slider(
-                                minimum=0.0,
-                                maximum=2.0,
-                                value=0.4,
-                                step=0.1,
-                                label="Temperature",
-                                elem_classes="settings-slider",
-                            )
-
-                    context_input = gr.Textbox(
-                        label="Medical Context (Optional)",
-                        placeholder="Patient symptoms, medical history, medications...",
-                        lines=2,
-                        elem_classes="context-input",
+                # Message input at bottom (like in the image)
+                with gr.Row(elem_classes="bottom-input-row"):
+                    bottom_msg = gr.Textbox(
+                        placeholder="Ask about hospital status, patients, or medical queries...",
+                        show_label=False,
+                        lines=1,
+                        container=False,
+                        scale=4,
+                        elem_classes="bottom-input"
                     )
-
-                    max_tokens = gr.Slider(
-                        minimum=100,
-                        maximum=4000,
-                        value=1000,
-                        step=100,
-                        label="Max Tokens",
-                        elem_classes="settings-slider",
-                        visible=False,  # Hide to reduce clutter
-                    )
+                    bottom_send_btn = gr.Button("→", size="sm", scale=0, min_width=40, elem_classes="bottom-send-btn")
 
         # Hidden status indicator
         status = gr.Textbox(visible=False)
@@ -574,11 +391,11 @@ Make sure the user gets both the complete information they requested AND your pr
                                 response_generator = nebius_model.generate_response(
                                     prompt=enhanced_prompt,
                                     context=f"Database query results included in the analysis",
-                                    specialty=specialty,
+                                    specialty="General Medicine",
                                     max_tokens=max(
-                                        max_tok, 2000
+                                        1000, 2000
                                     ),  # Ensure enough space for complete data + analysis
-                                    temperature=temp,
+                                    temperature=0.4,
                                     stream=True,
                                 )
 
@@ -598,9 +415,9 @@ Make sure the user gets both the complete information they requested AND your pr
                             analyzed_response = handle_ai_response(
                                 enhanced_prompt,
                                 model,
-                                temp,
-                                max(max_tok, 2000),
-                                specialty,
+                                0.4,
+                                max(1000, 2000),
+                                "General Medicine",
                                 f"Database query results included in the analysis",
                             )
                             # Clear loading indicator and start real response
@@ -636,10 +453,10 @@ Make sure the user gets both the complete information they requested AND your pr
                 try:
                     response_generator = nebius_model.generate_response(
                         prompt=message,
-                        context=context if context.strip() else None,
-                        specialty=specialty,
-                        max_tokens=max_tok,
-                        temperature=temp,
+                        context=None,
+                        specialty="General Medicine",
+                        max_tokens=1000,
+                        temperature=0.4,
                         stream=True,
                     )
 
@@ -662,7 +479,7 @@ Make sure the user gets both the complete information they requested AND your pr
 
                 # Use fallback response (simulate streaming)
                 response = handle_ai_response(
-                    message, model, temp, max_tok, specialty, context
+                    message, model, 0.4, 1000, "General Medicine", ""
                 )
                 # Clear loading indicator and start real response
                 history[-1]["content"] = ""
@@ -678,25 +495,25 @@ Make sure the user gets both the complete information they requested AND your pr
                     yield history, ""
 
         # Quick action handler
-        def handle_status_update():
-            return "Provide a comprehensive update on current hospital status", [
+        def handle_helpline():
+            return "Connect me to the hospital helpline for urgent assistance", [
                 {
                     "role": "user",
-                    "content": "Provide a comprehensive update on current hospital status",
+                    "content": "Connect me to the hospital helpline for urgent assistance",
                 }
             ]
 
-        # Connect events
+        # Connect events for sidebar chat
         msg.submit(
             fn=stream_response,
             inputs=[
                 msg,
                 chatbot,
-                model_dropdown,
-                temperature,
-                max_tokens,
-                medical_specialty,
-                context_input,
+                gr.State("nebius-llama-3.3-70b"),  # default model
+                gr.State(0.4),  # temperature
+                gr.State(1000),  # max_tokens
+                gr.State("General Medicine"),  # medical_specialty
+                gr.State(""),  # context_input
             ],
             outputs=[chatbot, msg],
             show_progress="hidden",
@@ -707,18 +524,49 @@ Make sure the user gets both the complete information they requested AND your pr
             inputs=[
                 msg,
                 chatbot,
-                model_dropdown,
-                temperature,
-                max_tokens,
-                medical_specialty,
-                context_input,
+                gr.State("nebius-llama-3.3-70b"),  # default model
+                gr.State(0.4),  # temperature
+                gr.State(1000),  # max_tokens
+                gr.State("General Medicine"),  # medical_specialty
+                gr.State(""),  # context_input
             ],
             outputs=[chatbot, msg],
             show_progress="hidden",
         )
 
-        status_btn.click(
-            fn=handle_status_update,
+        # Connect events for bottom input
+        bottom_msg.submit(
+            fn=stream_response,
+            inputs=[
+                bottom_msg,
+                chatbot,
+                gr.State("nebius-llama-3.3-70b"),  # default model
+                gr.State(0.4),  # temperature
+                gr.State(1000),  # max_tokens
+                gr.State("General Medicine"),  # medical_specialty
+                gr.State(""),  # context_input
+            ],
+            outputs=[chatbot, bottom_msg],
+            show_progress="hidden",
+        )
+
+        bottom_send_btn.click(
+            fn=stream_response,
+            inputs=[
+                bottom_msg,
+                chatbot,
+                gr.State("nebius-llama-3.3-70b"),  # default model
+                gr.State(0.4),  # temperature
+                gr.State(1000),  # max_tokens
+                gr.State("General Medicine"),  # medical_specialty
+                gr.State(""),  # context_input
+            ],
+            outputs=[chatbot, bottom_msg],
+            show_progress="hidden",
+        )
+
+        helpline_btn.click(
+            fn=handle_helpline,
             outputs=[msg, chatbot],
         )
 
@@ -727,14 +575,11 @@ Make sure the user gets both the complete information they requested AND your pr
             fn=lambda: [
                 {
                     "role": "assistant",
-                    "content": "🏥 Welcome to Smart Hospital Assistant! I'm powered by advanced AI and connected to real hospital systems.\n\n**I can help you with:**\n• Hospital status and real-time metrics\n• Patient information and medical consultations\n• Staff scheduling and resource management\n• Medical equipment tracking\n• Emergency response coordination\n\nSelect your preferred AI model above and ask me anything!",
+                    "content": "🏥 Welcome to Health AI Hospital Aid (H.A.H.A)! I'm your Medical Assistant powered by advanced AI.\n\n**I can help you with:**\n• Health information and medical guidance\n• Hospital services and patient support\n• Medical consultations and advice\n• Health monitoring and analysis\n• Emergency assistance coordination\n\nFeel free to ask me any health-related questions or concerns!",
                 }
             ],
             outputs=chatbot,
         )
-
-    # Dashboard data will be handled through JavaScript simulation
-    # since Gradio API endpoints aren't available in this version
 
     return demo
 
@@ -1361,7 +1206,27 @@ def load_latex_scripts():
             this.initializeCharts();
             this.startDataUpdates();
             this.setupNavigation();
+            this.initializeInteractiveChart();
             this.showWelcomeMessage();
+        }
+
+        initializeInteractiveChart() {
+            // Initialize chart with default line chart
+            setTimeout(() => {
+                this.updateChart('line');
+                
+                // Ensure chart buttons are properly connected
+                const chartButtons = document.querySelectorAll('.chart-btn');
+                chartButtons.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.handleChartTypeChange(e);
+                    });
+                });
+                
+                console.log('Interactive chart initialized with', chartButtons.length, 'buttons');
+            }, 1000);
         }
 
         setupEventListeners() {
@@ -1402,6 +1267,15 @@ def load_latex_scripts():
                          btn.setAttribute('data-listener', 'true');
                      }
                  });
+
+                 // Chart button interactions
+                 const chartBtns = document.querySelectorAll('.chart-btn');
+                 chartBtns.forEach(btn => {
+                     if (!btn.hasAttribute('data-listener')) {
+                         btn.addEventListener('click', (e) => this.handleChartTypeChange(e));
+                         btn.setAttribute('data-listener', 'true');
+                     }
+                 });
             });
 
             observer.observe(document.body, { childList: true, subtree: true });
@@ -1432,17 +1306,22 @@ def load_latex_scripts():
          }
 
          switchContentSection(section) {
-             // Hide all sections
-             document.querySelectorAll('.content-section').forEach(sec => {
-                 sec.classList.remove('active');
-             });
-
-             // Show selected section
-             const targetSection = document.getElementById(`${section}-section`);
-             if (targetSection) {
-                 setTimeout(() => {
-                     targetSection.classList.add('active');
-                 }, 150); // Small delay for smooth transition
+             // For now, always show the main analysis section
+             // The navigation is just for visual feedback
+             console.log(`Switched to ${section} section`);
+             
+             // Ensure main content area is always visible
+             const mainContentArea = document.querySelector('.main-content-area');
+             if (mainContentArea) {
+                 mainContentArea.style.display = 'block';
+                 mainContentArea.style.opacity = '1';
+             }
+             
+             // Ensure analysis section is always visible
+             const analysisSection = document.querySelector('.analysis-section');
+             if (analysisSection) {
+                 analysisSection.style.display = 'block';
+                 analysisSection.style.opacity = '1';
              }
          }
 
@@ -1690,7 +1569,526 @@ def load_latex_scripts():
              }, 1000);
          }
 
-        refreshAllMetrics() {
+         handleChartTypeChange(event) {
+             console.log('handleChartTypeChange called', event);
+             const clickedBtn = event.target;
+             const chartType = clickedBtn.getAttribute('data-chart') || clickedBtn.textContent.toLowerCase();
+             
+             console.log('Chart type detected:', chartType, 'from button:', clickedBtn.textContent);
+             
+             // Update active state
+             document.querySelectorAll('.chart-btn').forEach(btn => {
+                 btn.classList.remove('active');
+             });
+             clickedBtn.classList.add('active');
+             
+             // Show notification
+             this.showNotification(`📊 Switched to ${clickedBtn.textContent} view`, 'info');
+             
+             // Update chart content
+             this.updateChart(chartType);
+             
+             console.log(`Chart type changed to: ${chartType}`);
+         }
+
+         updateChart(chartType, data = null) {
+             console.log('updateChart called with type:', chartType);
+             const chartContainer = document.querySelector('.line-chart');
+             if (!chartContainer) {
+                 console.error('Chart container not found!');
+                 return;
+             }
+
+             console.log('Chart container found, updating to', chartType);
+
+             // Use provided data or get current data
+             const chartData = data || this.getChartData();
+             console.log('Using chart data:', chartData);
+
+             // Add transition effect
+             chartContainer.style.opacity = '0.3';
+             chartContainer.style.transform = 'scale(0.95)';
+             
+             setTimeout(() => {
+                 // Generate chart based on type with dynamic data
+                 switch(chartType) {
+                     case 'line':
+                         console.log('Generating dynamic line chart');
+                         chartContainer.innerHTML = this.generateDynamicLineChart(chartData);
+                         break;
+                     case 'bar':
+                         console.log('Generating dynamic bar chart');
+                         chartContainer.innerHTML = this.generateDynamicBarChart(chartData);
+                         break;
+                     case 'pie':
+                         console.log('Generating dynamic pie chart');
+                         chartContainer.innerHTML = this.generateDynamicPieChart(chartData);
+                         break;
+                     case 'scatter':
+                         console.log('Generating dynamic scatter chart');
+                         chartContainer.innerHTML = this.generateDynamicScatterChart(chartData);
+                         break;
+                     default:
+                         console.log('Default: generating dynamic line chart');
+                         chartContainer.innerHTML = this.generateDynamicLineChart(chartData);
+                 }
+                 
+                 // Update legend dynamically
+                 this.updateDynamicLegend(chartData, chartType);
+                 
+                 // Restore chart appearance
+                 chartContainer.style.opacity = '1';
+                 chartContainer.style.transform = 'scale(1)';
+                 console.log('Chart updated successfully to', chartType);
+             }, 150);
+         }
+
+         getCurrentChartData() {
+             // Default sample data that can be easily replaced
+             return [
+                 { month: 'Jan', patients: 65, revenue: 45, paties: 50 },
+                 { month: 'Feb', patients: 58, revenue: 52, paties: 45 },
+                 { month: 'Mar', patients: 52, revenue: 58, paties: 40 },
+                 { month: 'Apr', patients: 45, revenue: 62, paties: 35 },
+                 { month: 'May', patients: 38, revenue: 68, paties: 30 },
+                 { month: 'Jun', patients: 45, revenue: 55, paties: 25 },
+                 { month: 'Jul', patients: 35, revenue: 48, paties: 20 }
+             ];
+         }
+
+         analyzeDataStructure(data) {
+             if (!data || data.length === 0) return { xField: null, yFields: [], colors: [] };
+             
+             const firstItem = data[0];
+             const fields = Object.keys(firstItem);
+             
+             // Detect x-axis field (typically string/category field)
+             const xField = fields.find(field => 
+                 typeof firstItem[field] === 'string' || 
+                 field.toLowerCase().includes('time') ||
+                 field.toLowerCase().includes('date') ||
+                 field.toLowerCase().includes('month') ||
+                 field.toLowerCase().includes('category') ||
+                 field.toLowerCase().includes('label')
+             ) || fields[0];
+             
+             // Detect y-axis fields (numeric fields excluding x-axis)
+             const yFields = fields.filter(field => 
+                 field !== xField && 
+                 typeof firstItem[field] === 'number'
+             );
+             
+             // Generate colors dynamically
+             const colorPalette = [
+                 '#3b82f6', '#22d3ee', '#10b981', '#f59e0b', 
+                 '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', 
+                 '#f97316', '#ec4899', '#6366f1', '#14b8a6'
+             ];
+             
+             const colors = yFields.map((field, index) => 
+                 colorPalette[index % colorPalette.length]
+             );
+             
+             return { xField, yFields, colors };
+         }
+
+         generateDynamicLineChart(data) {
+             const { xField, yFields, colors } = this.analyzeDataStructure(data);
+             console.log('Line chart structure:', { xField, yFields, colors });
+             
+             if (!xField || yFields.length === 0) {
+                 return '<div style="padding: 20px; text-align: center; color: #64748b;">No valid data structure for line chart</div>';
+             }
+
+             // Calculate scales
+             const allValues = data.flatMap(d => yFields.map(field => d[field] || 0));
+             const minValue = Math.min(...allValues);
+             const maxValue = Math.max(...allValues);
+             const valueRange = maxValue - minValue || 1;
+             
+             // Scale functions
+             const scaleY = (value) => 250 - ((value - minValue) / valueRange) * 180;
+             const scaleX = (index) => 80 + index * (440 / (data.length - 1));
+
+             return `
+                 <svg width="100%" height="400" viewBox="0 0 600 300">
+                     <!-- Grid lines -->
+                     <defs>
+                         <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
+                             <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+                         </pattern>
+                     </defs>
+                     <rect width="100%" height="100%" fill="url(#grid)" />
+                     
+                     <!-- Y-axis labels -->
+                     ${Array.from({length: 6}, (_, i) => {
+                         const value = Math.round(maxValue - (i * valueRange / 5));
+                         const y = 50 + i * 40;
+                         return `<text x="30" y="${y}" fill="#64748b" font-size="12" text-anchor="end">${value}</text>`;
+                     }).join('')}
+                     
+                     <!-- X-axis labels -->
+                     ${data.map((d, i) => `<text x="${scaleX(i)}" y="280" fill="#64748b" font-size="12" text-anchor="middle">${d[xField]}</text>`).join('')}
+                     
+                     <!-- Dynamic lines for each field -->
+                     ${yFields.map((field, fieldIndex) => {
+                         const lineColor = colors[fieldIndex];
+                         const pathData = data.map((d, i) => `${scaleX(i)} ${scaleY(d[field] || 0)}`).join(' L ');
+                         return `
+                             <!-- ${field} line -->
+                             <path d="M ${pathData}" 
+                                   stroke="${lineColor}" stroke-width="3" fill="none" stroke-linecap="round"/>
+                             
+                             <!-- Data points for ${field} -->
+                             ${data.map((d, i) => `<circle cx="${scaleX(i)}" cy="${scaleY(d[field] || 0)}" r="4" fill="${lineColor}"/>`).join('')}
+                         `;
+                     }).join('')}
+                 </svg>
+             `;
+         }
+
+         // Keep old function for backwards compatibility
+         generateLineChart() {
+             return this.generateDynamicLineChart(this.getCurrentChartData());
+         }
+
+         generateDynamicBarChart(data) {
+             const { xField, yFields, colors } = this.analyzeDataStructure(data);
+             console.log('Bar chart structure:', { xField, yFields, colors });
+             
+             if (!xField || yFields.length === 0) {
+                 return '<div style="padding: 20px; text-align: center; color: #64748b;">No valid data structure for bar chart</div>';
+             }
+
+             // Calculate scales
+             const allValues = data.flatMap(d => yFields.map(field => d[field] || 0));
+             const minValue = Math.max(0, Math.min(...allValues)); // Start from 0 for bars
+             const maxValue = Math.max(...allValues);
+             const valueRange = maxValue - minValue || 1;
+             
+             // Scale functions
+             const scaleY = (value) => 250 - ((value - minValue) / valueRange) * 180;
+             const scaleHeight = (value) => ((value - minValue) / valueRange) * 180;
+             const categoryWidth = 440 / data.length;
+             const barWidth = Math.min(15, (categoryWidth - 10) / yFields.length);
+
+             return `
+                 <svg width="100%" height="400" viewBox="0 0 600 300">
+                     <!-- Grid lines -->
+                     <defs>
+                         <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
+                             <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+                         </pattern>
+                     </defs>
+                     <rect width="100%" height="100%" fill="url(#grid)" />
+                     
+                     <!-- Y-axis labels -->
+                     ${Array.from({length: 6}, (_, i) => {
+                         const value = Math.round(maxValue - (i * valueRange / 5));
+                         const y = 50 + i * 40;
+                         return `<text x="30" y="${y}" fill="#64748b" font-size="12" text-anchor="end">${value}</text>`;
+                     }).join('')}
+                     
+                     <!-- X-axis labels -->
+                     ${data.map((d, i) => {
+                         const centerX = 80 + i * categoryWidth + categoryWidth / 2;
+                         return `<text x="${centerX}" y="280" fill="#64748b" font-size="12" text-anchor="middle">${d[xField]}</text>`;
+                     }).join('')}
+                     
+                     <!-- Dynamic bars for each field -->
+                     ${data.map((d, dataIndex) => {
+                         const baseX = 80 + dataIndex * categoryWidth;
+                         const startX = baseX + (categoryWidth - (yFields.length * barWidth + (yFields.length - 1) * 2)) / 2;
+                         
+                         return yFields.map((field, fieldIndex) => {
+                             const barColor = colors[fieldIndex];
+                             const value = d[field] || 0;
+                             const barHeight = scaleHeight(value);
+                             const barY = scaleY(value);
+                             const barX = startX + fieldIndex * (barWidth + 2);
+                             
+                             return `
+                                 <!-- ${field} bar for ${d[xField]} -->
+                                 <rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" 
+                                       fill="${barColor}" rx="2" opacity="0.9"/>
+                                 <text x="${barX + barWidth/2}" y="${barY - 5}" fill="#64748b" 
+                                       font-size="10" text-anchor="middle">${value}</text>
+                             `;
+                         }).join('');
+                     }).join('')}
+                 </svg>
+             `;
+         }
+
+         // Keep old function for backwards compatibility
+         generateBarChart() {
+             return this.generateDynamicBarChart(this.getCurrentChartData());
+         }
+
+         generateDynamicPieChart(data) {
+             console.log('Generating dynamic pie chart with data:', data);
+             
+             if (!data || data.length === 0) {
+                 return '<div style="padding: 20px; text-align: center; color: #64748b;">No data available for pie chart</div>';
+             }
+
+             // For pie charts, we can use different approaches:
+             // 1. If data has explicit value and label fields
+             // 2. If data needs to be aggregated from multiple series
+             // 3. Use the first numeric field for values
+             
+             const { xField, yFields, colors } = this.analyzeDataStructure(data);
+             
+             let pieData = [];
+             
+             // Check if we have explicit value/label structure
+             if (data[0].hasOwnProperty('value') && data[0].hasOwnProperty('label')) {
+                 pieData = data.map((d, i) => ({
+                     label: d.label,
+                     value: d.value,
+                     color: d.color || colors[i % colors.length]
+                 }));
+             } else if (yFields.length === 1) {
+                 // Single numeric field - use each data point as a slice
+                 pieData = data.map((d, i) => ({
+                     label: d[xField] || `Item ${i + 1}`,
+                     value: d[yFields[0]] || 0,
+                     color: colors[i % colors.length]
+                 }));
+             } else if (yFields.length > 1) {
+                 // Multiple numeric fields - use field names as labels, sum values
+                 pieData = yFields.map((field, i) => ({
+                     label: field.charAt(0).toUpperCase() + field.slice(1),
+                     value: data.reduce((sum, d) => sum + (d[field] || 0), 0),
+                     color: colors[i % colors.length]
+                 }));
+             } else {
+                 return '<div style="padding: 20px; text-align: center; color: #64748b;">No valid numeric data for pie chart</div>';
+             }
+
+             const total = pieData.reduce((sum, d) => sum + d.value, 0);
+             if (total === 0) {
+                 return '<div style="padding: 20px; text-align: center; color: #64748b;">All values are zero</div>';
+             }
+
+             let currentAngle = 0;
+             const radius = 80;
+             const centerX = 300;
+             const centerY = 130;
+
+             const slices = pieData.map(d => {
+                 const startAngle = currentAngle;
+                 const endAngle = currentAngle + (d.value / total) * 2 * Math.PI;
+                 currentAngle = endAngle;
+
+                 const x1 = centerX + radius * Math.cos(startAngle);
+                 const y1 = centerY + radius * Math.sin(startAngle);
+                 const x2 = centerX + radius * Math.cos(endAngle);
+                 const y2 = centerY + radius * Math.sin(endAngle);
+
+                 const largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1";
+                 const percentage = Math.round((d.value / total) * 100);
+
+                 return {
+                     ...d,
+                     percentage,
+                     path: `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`,
+                     labelX: centerX + (radius * 0.7) * Math.cos((startAngle + endAngle) / 2),
+                     labelY: centerY + (radius * 0.7) * Math.sin((startAngle + endAngle) / 2)
+                 };
+             });
+
+             return `
+                 <svg width="100%" height="400" viewBox="0 0 600 300">
+                     <!-- Pie slices -->
+                     ${slices.map(slice => `
+                         <path d="${slice.path}" fill="${slice.color}" stroke="white" stroke-width="2"/>
+                         ${slice.percentage > 5 ? `<text x="${slice.labelX}" y="${slice.labelY}" fill="white" font-size="12" text-anchor="middle" font-weight="600">${slice.percentage}%</text>` : ''}
+                     `).join('')}
+                     
+                     <!-- Legend -->
+                     ${pieData.map((d, i) => `
+                         <rect x="450" y="${50 + i * 20}" width="12" height="12" fill="${d.color}" rx="2"/>
+                         <text x="470" y="${60 + i * 20}" fill="#64748b" font-size="11">${d.label} (${Math.round((d.value / total) * 100)}%)</text>
+                     `).join('')}
+                     
+                     <!-- Title -->
+                     <text x="300" y="30" fill="#1e293b" font-size="16" text-anchor="middle" font-weight="600">Data Distribution</text>
+                 </svg>
+             `;
+         }
+
+         // Keep old function for backwards compatibility
+         generatePieChart() {
+             // Convert current data format to pie chart format for demo
+             const currentData = this.getCurrentChartData();
+             const { yFields, colors } = this.analyzeDataStructure(currentData);
+             
+             // Use field totals for pie chart
+             const pieData = yFields.map((field, i) => ({
+                 label: field.charAt(0).toUpperCase() + field.slice(1),
+                 value: currentData.reduce((sum, d) => sum + (d[field] || 0), 0),
+                 color: colors[i % colors.length]
+             }));
+             
+             return this.generateDynamicPieChart(pieData);
+         }
+
+         generateDynamicScatterChart(data) {
+             console.log('Generating dynamic scatter chart with data:', data);
+             
+             if (!data || data.length === 0) {
+                 return '<div style="padding: 20px; text-align: center; color: #64748b;">No data available for scatter chart</div>';
+             }
+
+             const { xField, yFields, colors } = this.analyzeDataStructure(data);
+             
+             if (yFields.length < 2) {
+                 return '<div style="padding: 20px; text-align: center; color: #64748b;">Scatter chart requires at least 2 numeric fields</div>';
+             }
+
+             // Use first two numeric fields for X and Y axes
+             const xAxisField = yFields[0];
+             const yAxisField = yFields[1];
+             const sizeField = yFields[2] || null; // Optional third field for bubble size
+             const labelField = xField; // Use the category field for labels
+             
+             // Calculate scales
+             const xValues = data.map(d => d[xAxisField] || 0);
+             const yValues = data.map(d => d[yAxisField] || 0);
+             const sizeValues = sizeField ? data.map(d => d[sizeField] || 0) : [];
+             
+             const xMin = Math.min(...xValues);
+             const xMax = Math.max(...xValues);
+             const yMin = Math.min(...yValues);
+             const yMax = Math.max(...yValues);
+             const sizeMin = sizeValues.length ? Math.min(...sizeValues) : 5;
+             const sizeMax = sizeValues.length ? Math.max(...sizeValues) : 10;
+             
+             const xRange = xMax - xMin || 1;
+             const yRange = yMax - yMin || 1;
+             const sizeRange = sizeMax - sizeMin || 1;
+             
+             // Scale functions
+             const scaleX = (value) => 50 + ((value - xMin) / xRange) * 500;
+             const scaleY = (value) => 250 - ((value - yMin) / yRange) * 200;
+             const scaleSize = (value) => sizeField ? 
+                 5 + ((value - sizeMin) / sizeRange) * 10 : 
+                 8; // Default size if no size field
+
+             return `
+                 <svg width="100%" height="400" viewBox="0 0 600 300">
+                     <!-- Grid lines -->
+                     <defs>
+                         <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
+                             <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+                         </pattern>
+                     </defs>
+                     <rect width="100%" height="100%" fill="url(#grid)" />
+                     
+                     <!-- X-axis -->
+                     <line x1="50" y1="250" x2="550" y2="250" stroke="#e2e8f0" stroke-width="2"/>
+                     <text x="300" y="290" fill="#64748b" font-size="12" text-anchor="middle">${xAxisField.charAt(0).toUpperCase() + xAxisField.slice(1)}</text>
+                     
+                     <!-- Y-axis -->
+                     <line x1="50" y1="50" x2="50" y2="250" stroke="#e2e8f0" stroke-width="2"/>
+                     <text x="25" y="150" fill="#64748b" font-size="12" text-anchor="middle" transform="rotate(-90 25 150)">${yAxisField.charAt(0).toUpperCase() + yAxisField.slice(1)}</text>
+                     
+                     <!-- X-axis labels -->
+                     ${Array.from({length: 6}, (_, i) => {
+                         const value = Math.round(xMin + (i * xRange / 5));
+                         const x = 50 + i * 100;
+                         return `<text x="${x}" y="265" fill="#64748b" font-size="10" text-anchor="middle">${value}</text>`;
+                     }).join('')}
+                     
+                     <!-- Y-axis labels -->
+                     ${Array.from({length: 6}, (_, i) => {
+                         const value = Math.round(yMax - (i * yRange / 5));
+                         const y = 50 + i * 40;
+                         return `<text x="35" y="${y}" fill="#64748b" font-size="10" text-anchor="end">${value}</text>`;
+                     }).join('')}
+                     
+                     <!-- Scatter points -->
+                     ${data.map((d, i) => {
+                         const x = scaleX(d[xAxisField] || 0);
+                         const y = scaleY(d[yAxisField] || 0);
+                         const size = scaleSize(sizeField ? (d[sizeField] || 0) : 8);
+                         const color = colors[i % colors.length];
+                         const label = d[labelField] || `Point ${i + 1}`;
+                         
+                         return `
+                             <circle cx="${x}" cy="${y}" r="${size}" 
+                                     fill="${color}" opacity="0.7" 
+                                     stroke="${color}" stroke-width="2"/>
+                             <text x="${x}" y="${y - size - 5}" 
+                                   fill="#64748b" font-size="10" text-anchor="middle">${label}</text>
+                         `;
+                     }).join('')}
+                     
+                     <!-- Title -->
+                     <text x="300" y="30" fill="#1e293b" font-size="16" text-anchor="middle" font-weight="600">${yAxisField.charAt(0).toUpperCase() + yAxisField.slice(1)} vs ${xAxisField.charAt(0).toUpperCase() + xAxisField.slice(1)}</text>
+                 </svg>
+             `;
+         }
+
+         // Keep old function for backwards compatibility
+         generateScatterChart() {
+             return this.generateDynamicScatterChart(this.getCurrentChartData());
+         }
+
+                 updateDynamicLegend(data, chartType) {
+             const legendContainer = document.querySelector('.chart-legend');
+             if (!legendContainer) return;
+
+             const { xField, yFields, colors } = this.analyzeDataStructure(data);
+             
+             let legendHTML = '';
+             
+             if (chartType === 'pie') {
+                 // For pie charts, show different legend format
+                 if (data[0]?.hasOwnProperty('value') && data[0]?.hasOwnProperty('label')) {
+                     legendHTML = data.map((d, i) => `
+                         <span class="legend-item">
+                             <span class="legend-color" style="background: ${d.color || colors[i % colors.length]};"></span>
+                             ${d.label}
+                         </span>
+                     `).join('');
+                 } else {
+                     legendHTML = yFields.map((field, i) => `
+                         <span class="legend-item">
+                             <span class="legend-color" style="background: ${colors[i]};"></span>
+                             ${field.charAt(0).toUpperCase() + field.slice(1)}
+                         </span>
+                     `).join('');
+                 }
+             } else if (chartType === 'scatter') {
+                 // For scatter charts, show the axes being compared
+                 if (yFields.length >= 2) {
+                     legendHTML = `
+                         <span class="legend-item">
+                             <span class="legend-color" style="background: ${colors[0]};"></span>
+                             X: ${yFields[0].charAt(0).toUpperCase() + yFields[0].slice(1)}
+                         </span>
+                         <span class="legend-item">
+                             <span class="legend-color" style="background: ${colors[1]};"></span>
+                             Y: ${yFields[1].charAt(0).toUpperCase() + yFields[1].slice(1)}
+                         </span>
+                     `;
+                 }
+             } else {
+                 // For line and bar charts, show all numeric fields
+                 legendHTML = yFields.map((field, i) => `
+                     <span class="legend-item">
+                         <span class="legend-color" style="background: ${colors[i]};"></span>
+                         ${field.charAt(0).toUpperCase() + field.slice(1)}
+                     </span>
+                 `).join('');
+             }
+             
+             legendContainer.innerHTML = legendHTML;
+         }
+
+         refreshAllMetrics() {
             this.simulateDataUpdate();
             this.showNotification('Dashboard updated successfully', 'success');
         }
@@ -1727,7 +2125,55 @@ def load_latex_scripts():
         showWelcomeMessage() {
             setTimeout(() => {
                 this.showNotification('Interactive Dashboard Loaded! 🎉', 'success');
+                
+                // Final fallback to ensure chart interactivity
+                this.ensureChartInteractivity();
             }, 1000);
+        }
+
+        ensureChartInteractivity() {
+            console.log('Ensuring chart interactivity...');
+            
+            // Force initialize chart
+            const chartContainer = document.querySelector('.line-chart');
+            if (chartContainer && !chartContainer.hasAttribute('data-initialized')) {
+                console.log('Force initializing chart...');
+                this.updateChart('line');
+                chartContainer.setAttribute('data-initialized', 'true');
+            }
+            
+            // Ensure all chart buttons have click handlers
+            const chartBtns = document.querySelectorAll('.chart-btn');
+            console.log('Found chart buttons:', chartBtns.length);
+            
+            chartBtns.forEach((btn, index) => {
+                if (!btn.hasAttribute('data-chart-listener')) {
+                    console.log('Adding listener to button', index, btn.textContent);
+                    btn.addEventListener('click', (e) => {
+                        console.log('Chart button clicked:', e.target.textContent);
+                        this.handleChartTypeChange(e);
+                    });
+                    btn.setAttribute('data-chart-listener', 'true');
+                }
+            });
+        }
+
+        // Method to update chart data externally
+        setChartData(newData) {
+            console.log('Setting new chart data:', newData);
+            this.chartData = newData;
+            
+            // Re-render current chart with new data
+            const activeBtn = document.querySelector('.chart-btn.active');
+            if (activeBtn) {
+                const chartType = activeBtn.getAttribute('data-chart') || 'line';
+                this.updateChart(chartType, newData);
+            }
+        }
+
+        // Get current chart data (with fallback)
+        getChartData() {
+            return this.chartData || this.getCurrentChartData();
         }
 
         loadDashboardData() {
@@ -1738,6 +2184,53 @@ def load_latex_scripts():
 
     // Initialize dashboard
     window.hospitalDashboard = new HospitalDashboard();
+
+    // Global function to update chart data
+    window.updateChartData = function(newData) {
+        if (window.hospitalDashboard) {
+            window.hospitalDashboard.setChartData(newData);
+            console.log('Chart data updated globally');
+        }
+    };
+
+    // Additional immediate initialization for chart interactivity
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, setting up chart interactivity immediately...');
+        
+        // Wait a moment for Gradio to finish rendering
+        setTimeout(() => {
+            // Find chart buttons and add click handlers directly
+            const chartButtons = document.querySelectorAll('.chart-btn');
+            console.log('Direct setup: Found', chartButtons.length, 'chart buttons');
+            
+            chartButtons.forEach((btn, index) => {
+                console.log('Setting up button', index, ':', btn.textContent);
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const chartType = this.getAttribute('data-chart') || this.textContent.toLowerCase();
+                    console.log('Direct click handler - Chart type:', chartType);
+                    
+                    // Update active state
+                    chartButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update chart
+                    if (window.hospitalDashboard) {
+                        window.hospitalDashboard.updateChart(chartType);
+                        window.hospitalDashboard.showNotification(`📊 Switched to ${this.textContent} view`, 'info');
+                    }
+                });
+            });
+            
+            // Initialize with line chart
+            if (window.hospitalDashboard) {
+                console.log('Direct initialization with line chart');
+                window.hospitalDashboard.updateChart('line');
+            }
+        }, 2000);
+    });
     </script>
     """
 
@@ -1764,12 +2257,14 @@ def load_modern_hospital_css():
         display: flex !important;
         height: 100vh !important;
         width: 100% !important;
-        max-width: none !important;
+        max-width: 100vw !important;
         margin: 0 !important;
         padding: 0 !important;
         gap: 0 !important;
         flex-wrap: nowrap !important;
         align-items: stretch !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
     }
     
     /* Left Sidebar - FIXED AND VISIBLE */
@@ -1984,42 +2479,50 @@ def load_modern_hospital_css():
         height: 100vh !important;
         background: #f8fafc !important;
         overflow-y: auto !important;
+        overflow-x: hidden !important;
         padding: 0 !important;
         display: flex !important;
         flex-direction: column !important;
+        position: relative !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
     
-    /* Dashboard Header with Model Selection */
-    .dashboard-header-row {
+    /* Dashboard Header - Compact */
+    .dashboard-header-compact {
         background: white !important;
-        padding: 20px 32px !important;
+        padding: 12px 32px !important;
         border-bottom: 1px solid #e2e8f0 !important;
         display: flex !important;
         align-items: center !important;
-        gap: 20px !important;
+        gap: 16px !important;
         flex-shrink: 0 !important;
+        min-height: 60px !important;
     }
     
-    .dashboard-title h1 {
-        font-size: 26px !important;
+    .dashboard-title-compact h1 {
+        font-size: 22px !important;
         font-weight: 700 !important;
         color: #1e293b !important;
         letter-spacing: -0.5px !important;
         margin: 0 0 2px 0 !important;
+        line-height: 1.2 !important;
     }
     
-    .dashboard-title p {
-        font-size: 14px !important;
+    .dashboard-title-compact p {
+        font-size: 13px !important;
         color: #64748b !important;
         font-weight: 500 !important;
         margin: 0 !important;
+        line-height: 1.2 !important;
     }
     
-    /* Header Controls - Model Selection */
-    .dashboard-controls {
+    /* Header Controls - Compact */
+    .dashboard-controls-compact {
         display: flex !important;
         align-items: center !important;
-        gap: 12px !important;
+        justify-content: flex-end !important;
     }
     
     .header-dropdown {
@@ -2051,7 +2554,7 @@ def load_modern_hospital_css():
     /* Navigation Buttons */
     .nav-buttons-container {
         background: white !important;
-        padding: 12px 32px !important;
+        padding: 8px 32px 12px 32px !important;
         border-bottom: 1px solid #e2e8f0 !important;
         display: flex !important;
         gap: 8px !important;
@@ -2439,51 +2942,246 @@ def load_modern_hospital_css():
         padding: 0 !important;
         overflow-x: hidden !important;
     }
-    /* ENHANCED MODEL DROPDOWN - FUNCTIONAL AND BEAUTIFUL */
-    .model-gr-dropdown {
-        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 8px !important;
-        box-shadow: 0 2px 6px rgba(59, 130, 246, 0.08) !important;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
-    }
-    
-    .model-gr-dropdown:hover {
-        border-color: #3b82f6 !important;
-        box-shadow: 0 4px 10px rgba(59, 130, 246, 0.12) !important;
+    /* GUIDANCE TEXT STYLING */
+    .guidance-text {
+        padding: 16px 20px !important;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+        border: 1px solid #e0f2fe !important;
+        border-radius: 12px !important;
+        margin: 16px 20px !important;
+        color: #0f172a !important;
+        font-size: 13px !important;
+        line-height: 1.5 !important;
     }
 
-    .model-gr-dropdown .options {
+    .guidance-text p {
+        margin: 0 0 8px 0 !important;
+        color: #334155 !important;
+    }
+
+    /* HELPLINE BUTTON STYLING - COMPACT */
+    .helpline-btn-compact {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 8px 14px !important;
+        font-weight: 600 !important;
+        font-size: 13px !important;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25) !important;
+        transition: all 0.2s ease !important;
+        min-width: 90px !important;
+        height: 36px !important;
+    }
+
+    .helpline-btn-compact:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35) !important;
+    }
+
+    /* MAIN CONTENT AREA STYLING */
+    .main-content-area {
+        flex: 1 !important;
+        display: block !important;
+        background: #f8fafc !important;
+        min-height: 500px !important;
+        max-height: calc(100vh - 120px) !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* ANALYSIS SECTION STYLING */
+    .analysis-section {
+        padding: 20px 24px !important;
+        background: white !important;
+        margin: 0 !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .analysis-title {
+        font-size: 20px !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+        margin: 0 0 20px 0 !important;
+        font-style: italic !important;
+    }
+
+    /* CHART CONTROLS STYLING */
+    .chart-controls {
+        display: flex !important;
+        gap: 8px !important;
+        margin-bottom: 24px !important;
+    }
+
+    .chart-btn {
         background: white !important;
         border: 1px solid #e2e8f0 !important;
         border-radius: 6px !important;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
-        margin-top: 4px !important;
-    }
-
-    .model-gr-dropdown li {
-        color: #475569 !important;
-        padding: 10px 14px !important;
-        transition: background-color 0.15s ease !important;
+        padding: 8px 16px !important;
+        font-size: 13px !important;
         font-weight: 500 !important;
-        border: none !important;
+        color: #64748b !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
     }
 
-    .model-gr-dropdown li[aria-selected="true"] {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    .chart-btn.active {
+        background: #3b82f6 !important;
         color: white !important;
+        border-color: #3b82f6 !important;
+    }
+
+    .chart-btn:hover:not(.active) {
+        background: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+        color: #475569 !important;
+    }
+
+    /* CHART CONTAINER STYLING */
+    .chart-container {
+        background: white !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 400px !important;
+        max-height: 400px !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+    }
+
+    .chart-legend {
+        margin-bottom: 16px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    .legend-item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        font-size: 14px !important;
+        color: #64748b !important;
+        font-weight: 500 !important;
+        margin-right: 20px !important;
+    }
+
+    .legend-color {
+        width: 12px !important;
+        height: 12px !important;
+        border-radius: 2px !important;
+        display: block !important;
+    }
+
+    .line-chart {
+        width: 100% !important;
+        height: 320px !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        display: block !important;
+        box-sizing: border-box !important;
+    }
+
+    .line-chart svg {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        display: block !important;
+        transition: opacity 0.3s ease, transform 0.3s ease !important;
+    }
+
+    /* Chart transition effects */
+    .line-chart {
+        transition: opacity 0.3s ease, transform 0.3s ease !important;
+    }
+
+    /* Enhanced chart button hover effects */
+    .chart-btn:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Chart interactive elements */
+    .line-chart svg circle {
+        transition: r 0.2s ease, opacity 0.2s ease !important;
+        cursor: pointer !important;
+    }
+
+    .line-chart svg circle:hover {
+        r: 6 !important;
+        opacity: 0.8 !important;
+    }
+
+    .line-chart svg rect {
+        transition: opacity 0.2s ease, transform 0.2s ease !important;
+        cursor: pointer !important;
+    }
+
+    .line-chart svg rect:hover {
+        opacity: 0.8 !important;
+        transform: scale(1.05) !important;
+    }
+
+    .line-chart svg path[fill*="#"] {
+        transition: opacity 0.2s ease !important;
+        cursor: pointer !important;
+    }
+
+    .line-chart svg path[fill*="#"]:hover {
+        opacity: 0.8 !important;
+    }
+
+    /* BOTTOM INPUT ROW STYLING */
+    .bottom-input-row {
+        margin: 16px 24px !important;
+        background: white !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        padding: 8px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+        display: flex !important;
+        gap: 8px !important;
+        align-items: center !important;
+        width: calc(100% - 48px) !important;
+        max-width: calc(100% - 48px) !important;
+        box-sizing: border-box !important;
+    }
+
+    .bottom-input {
+        border: none !important;
+        background: transparent !important;
+        outline: none !important;
+    }
+
+    .bottom-send-btn {
+        background: #3b82f6 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        width: 36px !important;
+        height: 36px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
         font-weight: 600 !important;
     }
 
-    .model-gr-dropdown li:hover:not([aria-selected="true"]) {
-        background: #f1f5f9 !important;
-        color: #1e293b !important;
+    .bottom-send-btn:hover {
+        background: #2563eb !important;
     }
 
-    .model-gr-dropdown li[aria-selected="true"]:hover {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-        color: white !important;
-    }
+    
 
     /* ENHANCED CHATBOT - PREMIUM MESSAGING INTERFACE */
     .chatbot-gr-chatbot {
@@ -2871,6 +3569,51 @@ def load_modern_hospital_css():
         
         .loading-dots::after {
             content: '...' !important;
+        }
+    }
+
+    /* Additional Responsive Design for Chart Layout */
+    @media (max-width: 1200px) {
+        .analysis-section {
+            padding: 16px 20px !important;
+        }
+        
+        .chart-container {
+            padding: 12px !important;
+            height: 350px !important;
+        }
+        
+        .line-chart {
+            height: 280px !important;
+        }
+        
+        .dashboard-container {
+            overflow-x: hidden !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .analysis-section {
+            padding: 12px 16px !important;
+        }
+        
+        .chart-container {
+            padding: 8px !important;
+            height: 300px !important;
+        }
+        
+        .line-chart {
+            height: 240px !important;
+        }
+
+        .chart-controls {
+            flex-wrap: wrap !important;
+            gap: 6px !important;
+        }
+
+        .chart-btn {
+            padding: 6px 12px !important;
+            font-size: 12px !important;
         }
     }
     """
