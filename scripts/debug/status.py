@@ -129,18 +129,28 @@ def main():
 
     # Configuration
     print(f"\n⚙️  Configuration:")
-    config_path = "config/app_config.json"
-    if os.path.exists(config_path):
-        try:
-            with open(config_path, "r") as f:
-                config = json.load(f)
-            print(f"   App Config: ✅ Loaded successfully")
-            print(f"   Server Port: {config.get('server_port', 'Not set')}")
-            print(f"   Default Model: {config.get('default_model', 'Not set')}")
-        except json.JSONDecodeError:
-            print(f"   App Config: ❌ Invalid JSON")
+    env_path = ".env"
+    if os.path.exists(env_path):
+        print(f"   Environment Config: ✅ .env file found")
+
+        # Check for key environment variables
+        key_vars = ["SERVER_PORT", "DEFAULT_MODEL", "NEBIUS_API_KEY", "NEON_HOST"]
+        for var in key_vars:
+            value = os.getenv(var)
+            if value:
+                # Hide sensitive values
+                if "API_KEY" in var or "PASSWORD" in var:
+                    display_value = (
+                        f"{'*' * 8}...{value[-4:]}" if len(value) > 8 else "***"
+                    )
+                else:
+                    display_value = value
+                print(f"   {var}: ✅ {display_value}")
+            else:
+                print(f"   {var}: ❌ Not set")
     else:
-        print(f"   App Config: ❌ Not found")
+        print(f"   Environment Config: ❌ .env file not found")
+        print("   Using default configuration values")
 
     # Development Tools
     print(f"\n🛠️  Development Tools:")

@@ -4,14 +4,25 @@ This module provides secure loading of database configuration from environment v
 """
 
 import os
-import json
+import sys
+from pathlib import Path
 from typing import Dict, Any
+
+# Add src to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+
+try:
+    from utils.env_loader import ensure_env_loaded
+
+    ensure_env_loaded()
+except ImportError:
+    # Fallback if env_loader is not available
+    pass
 
 
 def load_database_config() -> Dict[str, Any]:
     """
     Load database configuration from environment variables.
-    Falls back to neon_config.json if environment variables are not set.
 
     Returns:
         Dict containing database configuration
@@ -19,44 +30,42 @@ def load_database_config() -> Dict[str, Any]:
     Raises:
         ValueError: If required configuration is missing
     """
-    # Try to load from environment variables first (more secure)
-    if all(
-        os.getenv(key)
-        for key in ["NEON_HOST", "NEON_DATABASE", "NEON_USER", "NEON_PASSWORD"]
-    ):
-        return {
-            "database": {
-                "host": os.getenv("NEON_HOST"),
-                "database": os.getenv("NEON_DATABASE"),
-                "user": os.getenv("NEON_USER"),
-                "password": os.getenv("NEON_PASSWORD"),
-                "port": int(os.getenv("NEON_PORT", "5432")),
-                "sslmode": os.getenv("NEON_SSLMODE", "require"),
-            },
-            "upload_settings": {
-                "clear_existing_data": os.getenv("CLEAR_EXISTING_DATA", "true").lower()
-                == "true",
-                "batch_size": int(os.getenv("BATCH_SIZE", "1000")),
-                "log_level": os.getenv("LOG_LEVEL", "INFO"),
-            },
-        }
+    # Load from environment variables
+    required_vars = ["NEON_HOST", "NEON_DATABASE", "NEON_USER", "NEON_PASSWORD"]
+    missing_vars = [var for var in required_vars if not os.getenv(var)]
 
-    # Fallback to config file (less secure, for development only)
-    try:
-        config_path = os.path.join(os.path.dirname(__file__), "neon_config.json")
-        with open(config_path, "r") as f:
-            config = json.load(f)
-            print(
-                "WARNING: Using neon_config.json file. Consider using environment variables for production."
-            )
-            return config
-    except FileNotFoundError:
+    if missing_vars:
         raise ValueError(
-            "Database configuration not found. Either:\n"
-            "1. Set environment variables: NEON_HOST, NEON_DATABASE, NEON_USER, NEON_PASSWORD\n"
-            "2. Create neon_config.json from template (development only)\n"
-            "See .env.template or neon_config.template.json for reference."
+            f"Database configuration missing required environment variables: {', '.join(missing_vars)}\n"
+            "Please set the following environment variables:\n"
+            "- NEON_HOST: Your Neon database host\n"
+            "- NEON_DATABASE: Database name\n"
+            "- NEON_USER: Database username\n"
+            "- NEON_PASSWORD: Database password\n"
+            "Optional variables:\n"
+            "- NEON_PORT: Database port (default: 5432)\n"
+            "- NEON_SSLMODE: SSL mode (default: require)\n"
+            "- CLEAR_EXISTING_DATA: Clear data on upload (default: true)\n"
+            "- BATCH_SIZE: Batch size for uploads (default: 1000)\n"
+            "- LOG_LEVEL: Logging level (default: INFO)"
         )
+
+    return {
+        "database": {
+            "host": os.getenv("NEON_HOST"),
+            "database": os.getenv("NEON_DATABASE"),
+            "user": os.getenv("NEON_USER"),
+            "password": os.getenv("NEON_PASSWORD"),
+            "port": int(os.getenv("NEON_PORT", "5432")),
+            "sslmode": os.getenv("NEON_SSLMODE", "require"),
+        },
+        "upload_settings": {
+            "clear_existing_data": os.getenv("CLEAR_EXISTING_DATA", "true").lower()
+            == "true",
+            "batch_size": int(os.getenv("BATCH_SIZE", "1000")),
+            "log_level": os.getenv("LOG_LEVEL", "INFO"),
+        },
+    }
 
 
 def get_connection_string() -> str:

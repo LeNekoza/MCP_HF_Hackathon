@@ -12,8 +12,12 @@ from typing import Dict, List, Optional, Union, Generator
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
+from src.utils.env_loader import ensure_env_loaded
 from src.core.infer import NebiusInference, NebiusConfig
 from src.utils.logger import setup_logger
+
+# Ensure .env file is loaded
+ensure_env_loaded()
 
 logger = setup_logger(__name__)
 
@@ -35,26 +39,18 @@ class NebiusModel:
         try:
             # Check if API key is available
             api_key = os.getenv("NEBIUS_API_KEY")
-            if not api_key:
-                # Try to load from config file
-                config_path = Path("config/nebius_config.json")
-                if config_path.exists():
-                    import json
+            print("api_key", api_key)
+            print("OS api_key", os.getenv("NEBIUS_API_KEY"))
 
-                    with open(config_path, "r") as f:
-                        config_data = json.load(f)
-                        api_key = config_data.get("api_key")
-                        if api_key == "your-nebius-api-key-here":
-                            api_key = None
-
-            if not api_key:
+            if not api_key or api_key == "your-nebius-api-key-here":
                 logger.warning(
-                    "Nebius API key not configured. Model will be unavailable."
+                    "Nebius API key not configured. Model will be unavailable. "
+                    "Please set the NEBIUS_API_KEY environment variable."
                 )
                 return
 
             self.nebius = NebiusInference()
-            logger.info("Nebius model initialized successfully")
+            logger.info(f"Nebius model initialized successfully {api_key}")
 
         except Exception as e:
             logger.error(f"Failed to initialize Nebius model: {e}")

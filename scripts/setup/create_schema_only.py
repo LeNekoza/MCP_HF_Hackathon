@@ -11,15 +11,33 @@ import logging
 
 
 def load_config():
-    """Load configuration from JSON file"""
-    config_file = Path("config/neon_config.json")
-    if not config_file.exists():
-        print("❌ ERROR: config/neon_config.json not found!")
+    """Load configuration from environment variables"""
+    import os
+
+    # Check for required environment variables
+    required_vars = ["NEON_HOST", "NEON_DATABASE", "NEON_USER", "NEON_PASSWORD"]
+    missing_vars = [var for var in required_vars if not os.getenv(var)]
+
+    if missing_vars:
+        print(
+            f"❌ ERROR: Missing required environment variables: {', '.join(missing_vars)}"
+        )
+        print("Please set the following environment variables:")
+        for var in missing_vars:
+            print(f"  {var}")
         return None
 
     try:
-        with open(config_file, "r") as f:
-            config = json.load(f)
+        config = {
+            "database": {
+                "host": os.getenv("NEON_HOST"),
+                "database": os.getenv("NEON_DATABASE"),
+                "user": os.getenv("NEON_USER"),
+                "password": os.getenv("NEON_PASSWORD"),
+                "port": int(os.getenv("NEON_PORT", "5432")),
+                "sslmode": os.getenv("NEON_SSLMODE", "require"),
+            }
+        }
         return config
     except Exception as e:
         print(f"❌ ERROR: Failed to load configuration: {e}")

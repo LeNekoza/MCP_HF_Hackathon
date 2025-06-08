@@ -8,6 +8,11 @@ import os
 import time
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Union, Generator
+
+from src.utils.env_loader import ensure_env_loaded
+
+# Ensure .env file is loaded
+ensure_env_loaded()
 import requests
 import logging
 from pathlib import Path
@@ -39,25 +44,14 @@ class NebiusInference:
         self._setup_session()
 
     def _load_config(self) -> NebiusConfig:
-        """Load configuration from environment variables or config file"""
-        # Try to load API key from environment
+        """Load configuration from environment variables"""
+        # Load API key from environment
         api_key = os.getenv("NEBIUS_API_KEY")
+        print("api_key", api_key)
 
-        if not api_key:
-            # Try to load from config file
-            config_path = Path("config/nebius_config.json")
-            if config_path.exists():
-                try:
-                    with open(config_path, "r") as f:
-                        config_data = json.load(f)
-                        api_key = config_data.get("api_key")
-                except Exception as e:
-                    logger.warning(f"Failed to load config file: {e}")
-
-        if not api_key:
+        if not api_key or api_key == "your-nebius-api-key-here":
             raise ValueError(
-                "Nebius API key not found. Please set NEBIUS_API_KEY environment variable "
-                "or add it to config/nebius_config.json"
+                "Nebius API key not found. Please set NEBIUS_API_KEY environment variable"
             )
 
         return NebiusConfig(
@@ -294,33 +288,25 @@ Please provide helpful, accurate, and safe medical information while emphasizing
             return False
 
 
-def create_nebius_config_template():
-    """Create a template configuration file for Nebius API"""
-    config_path = Path("config/nebius_config.json")
-    config_path.parent.mkdir(exist_ok=True)
-
-    if not config_path.exists():
-        template_config = {
-            "api_key": "your-nebius-api-key-here",
-            "model": "meta-llama/Llama-3.3-70B-Instruct",
-            "max_tokens": 2048,
-            "temperature": 0.7,
-            "top_p": 0.9,
-            "timeout": 30,
-            "description": "Nebius API configuration for Hospital AI Helper",
-        }
-
-        with open(config_path, "w") as f:
-            json.dump(template_config, f, indent=2)
-
-        print(f"Created Nebius config template at: {config_path}")
-        print("Please add your Nebius API key to the configuration file.")
+def create_nebius_env_template():
+    """Display environment variables needed for Nebius API"""
+    print("Nebius API Environment Variables:")
+    print("Set the following environment variables in your .env file:")
+    print("")
+    print("NEBIUS_API_KEY=your-nebius-api-key-here")
+    print("NEBIUS_MODEL=meta-llama/Llama-3.3-70B-Instruct")
+    print("NEBIUS_MAX_TOKENS=2048")
+    print("NEBIUS_TEMPERATURE=0.7")
+    print("NEBIUS_TOP_P=0.9")
+    print("NEBIUS_TIMEOUT=30")
+    print("")
+    print("Make sure to replace 'your-nebius-api-key-here' with your actual API key.")
 
 
 def main():
     """Demo/test function for Nebius integration"""
-    # Create config template if it doesn't exist
-    create_nebius_config_template()
+    # Display environment variables needed
+    create_nebius_env_template()
 
     try:
         # Initialize the inference client
@@ -369,9 +355,7 @@ def main():
 
     except Exception as e:
         print(f"❌ Error during testing: {e}")
-        print(
-            "Make sure you have set your NEBIUS_API_KEY environment variable or configured config/nebius_config.json"
-        )
+        print("Make sure you have set your NEBIUS_API_KEY environment variable")
 
 
 if __name__ == "__main__":
