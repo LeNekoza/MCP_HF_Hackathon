@@ -54,8 +54,6 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                 """
                 )
 
-
-
                 # Chat Interface - Normal Chat
                 chatbot = gr.Chatbot(
                     type="messages",
@@ -80,15 +78,15 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                     send_btn = gr.Button("→", size="sm", scale=0, min_width=40)
 
                 # Guidance text from image
-                gr.HTML(
-                    """
+                """ gr.HTML( """
+                """
                 <div class="guidance-text">
                     <p>I'll assist you with health information and guidance. If you have any health-related questions or concerns, feel free to ask, and I'll do my best to assist you. Remember, I'm not a replacement for professional medical advice, and it's always best to consult with a healthcare professional for serious concerns.</p>
                     <br>
                     <p>What's on your mind today? Do you have a specific health topic you'd like to discuss or any questions about general medicine?</p>
                 </div>
                 """
-                )
+            """     ) """
 
             # Right Side - Dashboard
             with gr.Column(scale=2, elem_classes="dashboard-container"):
@@ -225,9 +223,15 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                         lines=1,
                         container=False,
                         scale=4,
-                        elem_classes="bottom-input"
+                        elem_classes="bottom-input",
                     )
-                    bottom_send_btn = gr.Button("→", size="sm", scale=0, min_width=40, elem_classes="bottom-send-btn")
+                    bottom_send_btn = gr.Button(
+                        "→",
+                        size="sm",
+                        scale=0,
+                        min_width=40,
+                        elem_classes="bottom-send-btn",
+                    )
 
         # Hidden status indicator
         status = gr.Textbox(visible=False)
