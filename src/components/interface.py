@@ -606,17 +606,22 @@ Make sure the user gets both the complete information they requested AND your pr
             
             if tool_name == "Go Back":
                 # Return to original chat with full history intact
-                # Add a visual divider and system message to inform user about conversation context reset
-                updated_original_chat = original_chat + [
-                    {
-                        "role": "assistant",
-                        "content": "--- 🔄 **Welcome back to the main chat!**\n\n📋 You can see your previous conversation history above, but please note that I'm starting with a fresh conversation context. I don't have access to the details from our previous messages, so feel free to provide any relevant context if you'd like to continue where we left off.\n\nHow can I assist you today?"
-                    }
-                ]
-                return "", updated_original_chat, updated_original_chat, visualize_chat, "original"
+                # Show welcome back message only if there's existing chat history
+                if original_chat:
+                    display_chat = original_chat + [
+                        {
+                            "role": "assistant",
+                            "content": "--- 🔄 **Welcome back to the main chat!**\n\n📋 You can see your previous conversation history above, but please note that I'm starting with a fresh conversation context. I don't have access to the details from our previous messages, so feel free to provide any relevant context if you'd like to continue where we left off.\n\nHow can I assist you today?"
+                        }
+                    ]
+                    stored_original_chat = original_chat  # Keep original history without welcome message
+                else:
+                    display_chat = original_chat
+                    stored_original_chat = original_chat
+                return "", display_chat, stored_original_chat, visualize_chat, "original"
             
             elif tool_name == "Visualize":
-                                # Switch to visualize mode with new chat
+                # Switch to visualize mode
                 if not visualize_chat:  # If visualize chat is empty, initialize it
                     new_visualize_chat = [
                         {
@@ -624,14 +629,23 @@ Make sure the user gets both the complete information they requested AND your pr
                             "content": "📊 **Visualization Mode Activated**\n\nI'm now in visualization mode! I can help you:\n\n• Create charts and graphs from hospital data\n• Analyze patient statistics and trends\n• Generate visual reports and dashboards\n• Visualize medical data patterns\n\nWhat would you like to visualize or analyze?"
                         }
                     ]
+                    display_chat = new_visualize_chat
+                    stored_visualize_chat = new_visualize_chat
                 else:
-                    new_visualize_chat = visualize_chat
+                    # Return to existing visualize chat with welcome back message for display only
+                    display_chat = visualize_chat + [
+                        {
+                            "role": "assistant",
+                            "content": "--- 📊 **Welcome back to Visualization Mode!**\n\n📋 You can see your previous visualization conversation history above, but please note that I'm starting with a fresh conversation context. I don't have access to the details from our previous messages, so feel free to provide any relevant context if you'd like to continue where we left off.\n\nWhat would you like to visualize or analyze today?"
+                        }
+                    ]
+                    stored_visualize_chat = visualize_chat  # Keep original history without welcome message
                 
                 # Store current chat as original if we're switching from original mode
                 if current_mode == "original":
                     original_chat = current_chat
                 
-                return "", new_visualize_chat, original_chat, new_visualize_chat, "visualize"
+                return "", display_chat, original_chat, stored_visualize_chat, "visualize"
             
             # For any other tools (shouldn't happen with current setup)
             return "", current_chat, original_chat, visualize_chat, current_mode
