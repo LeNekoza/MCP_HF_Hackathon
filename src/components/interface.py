@@ -3762,8 +3762,7 @@ def load_modern_hospital_css():
         background: #4883FF !important;
         color: white !important;
     }
-    
-    /* DROPDOWN MENU ITEMS HOVER STATES */
+      /* DROPDOWN MENU ITEMS HOVER STATES */
     .custom-test-dropdown .gradio-dropdown + div:hover,
     .custom-test-dropdown [data-testid="dropdown"] + div:hover,
     .custom-test-dropdown .dropdown-content:hover,
@@ -3785,8 +3784,8 @@ def load_modern_hospital_css():
     .custom-test-dropdown [role="listbox"] li:hover,
     .custom-test-dropdown ul li:hover,
     .custom-test-dropdown .menu li:hover {
-        background-color: #3366CC !important;
-        background: #3366CC !important;
+        background-color: #4883FF !important;
+        background: #4883FF !important;
         color: white !important;
     }
       /* DROPDOWN BUTTON ONLY - #4883FF - MAXIMUM SPECIFICITY */
@@ -3806,8 +3805,7 @@ def load_modern_hospital_css():
         color: white !important;
         border: none !important;
     }
-    
-    /* DROPDOWN HOVER STATES - MAINTAIN BLUE COLOR */
+      /* DROPDOWN HOVER STATES - MAINTAIN SAME BLUE COLOR */
     .custom-test-dropdown button:hover,
     .custom-test-dropdown .gradio-dropdown button:hover,
     .custom-test-dropdown [data-testid="dropdown"] button:hover,
@@ -3819,17 +3817,17 @@ def load_modern_hospital_css():
     .custom-test-dropdown .gradio-dropdown:hover,
     .custom-test-dropdown [data-testid="dropdown"]:hover:not([data-testid="dropdown"] + div),
     .custom-test-dropdown .svelte-select:hover:not(.svelte-select-list) {
-        background-color: #3366CC !important;
-        background: #3366CC !important;
+        background-color: #4883FF !important;
+        background: #4883FF !important;
         color: white !important;
         border: none !important;
-        transform: translateY(-1px) !important;
-        box-shadow: 0 2px 8px rgba(72, 131, 255, 0.4) !important;
-    }    
+        transform: none !important;
+        box-shadow: 0 4px 12px rgba(72, 131, 255, 0.3) !important;
+    }
     /* CLEAN UP - REMOVE ALL CONFLICTING RULES */    /* OVERRIDE ANY POTENTIAL BLACK/DARK BACKGROUNDS ON HOVER */
     .custom-test-dropdown *:hover {
-        background-color: #3366CC !important;
-        background: #3366CC !important;
+        background-color: #4883FF !important;
+        background: #4883FF !important;
         color: white !important;
     }
     
@@ -3848,20 +3846,18 @@ def load_modern_hospital_css():
     .custom-test-dropdown span[style] * {
         color: white !important;
     }
-    
-    /* SPECIFIC OVERRIDE FOR CHART BUTTON STYLES THAT MIGHT INTERFERE */
+      /* SPECIFIC OVERRIDE FOR CHART BUTTON STYLES THAT MIGHT INTERFERE */
     .custom-test-dropdown.chart-btn:hover,
     .custom-test-dropdown .chart-btn:hover {
-        background-color: #3366CC !important;
-        background: #3366CC !important;
+        background-color: #4883FF !important;
+        background: #4883FF !important;
         color: white !important;
-        border-color: #3366CC !important;
-    }
-      /* PREVENT ANY DEFAULT HOVER STYLES FROM OVERRIDING */
+        border-color: #4883FF !important;
+    }    /* PREVENT ANY DEFAULT HOVER STYLES FROM OVERRIDING */
     .custom-test-dropdown:hover,
     .custom-test-dropdown *:hover:not(svg):not(path) {
-        background-color: #3366CC !important;
-        background: #3366CC !important;
+        background-color: #4883FF !important;
+        background: #4883FF !important;
         color: white !important;
     }
     
