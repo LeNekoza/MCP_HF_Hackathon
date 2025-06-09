@@ -70,20 +70,19 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                         container=False,
                         scale=4,
                     )
-                    send_btn = gr.Button("→", size="sm", scale=0, min_width=40)
-
-                # Tools Section with Dropdown
+                    send_btn = gr.Button("→", size="sm", scale=0, min_width=40)                # Test Section with Dropdown
                 with gr.Row(elem_classes="tools-section"):
-                    with gr.Column(scale=1):                        tools_dropdown = gr.Dropdown(
+                    with gr.Column(scale=1):                        test_dropdown = gr.Dropdown(
                             choices=[
-                                "Visualize",
-                                "Go Back"
+                                "Main Chat",
+                                "Visualize"
                             ],
-                            label="⚒ Tools",
-                            value=None,
+                            label="",
+                            value="Main Chat",
                             interactive=True,
                             container=True,
-                            elem_classes="tools-dropdown"
+                            elem_classes="custom-test-dropdown",
+                            show_label=False
                         )
 
                 # Guidance text from image
@@ -595,16 +594,15 @@ Make sure the user gets both the complete information they requested AND your pr
         helpline_btn.click(
             fn=handle_helpline_with_state,
             inputs=[original_chat_state, visualize_chat_state, current_mode_state],
-            outputs=[msg, chatbot, original_chat_state, visualize_chat_state, current_mode_state],
-        )
+            outputs=[msg, chatbot, original_chat_state, visualize_chat_state, current_mode_state],        )
 
-        # Tools dropdown handler
+        # Test dropdown handler
         def handle_tool_selection(tool_name, current_chat, original_chat, visualize_chat, current_mode):
             """Handle tool selection from dropdown with separate chat flows"""
             if not tool_name:
                 return "", current_chat, original_chat, visualize_chat, current_mode
             
-            if tool_name == "Go Back":
+            if tool_name == "Main Chat":
                 # Return to original chat with full history intact
                 # Show welcome back message only if there's existing chat history
                 if original_chat:
@@ -646,17 +644,14 @@ Make sure the user gets both the complete information they requested AND your pr
                     original_chat = current_chat
                 
                 return "", display_chat, original_chat, stored_visualize_chat, "visualize"
-            
-            # For any other tools (shouldn't happen with current setup)
+              # For any other tools (shouldn't happen with current setup)
             return "", current_chat, original_chat, visualize_chat, current_mode
 
-        tools_dropdown.change(
+        test_dropdown.change(
             fn=handle_tool_selection,
-            inputs=[tools_dropdown, chatbot, original_chat_state, visualize_chat_state, current_mode_state],
+            inputs=[test_dropdown, chatbot, original_chat_state, visualize_chat_state, current_mode_state],
             outputs=[msg, chatbot, original_chat_state, visualize_chat_state, current_mode_state],
-        )
-
-        # Load welcome message
+        )        # Load welcome message
         demo.load(
             fn=lambda: [
                 {
@@ -664,8 +659,7 @@ Make sure the user gets both the complete information they requested AND your pr
                     "content": "🏥 Welcome to Health AI Hospital Aid (H.A.H.A)! I'm your Medical Assistant powered by advanced AI.\n\n**I can help you with:**\n• Health information and medical guidance\n• Hospital services and patient support\n• Medical consultations and advice\n• Health monitoring and analysis\n• Emergency assistance coordination\n\nFeel free to ask me any health-related questions or concerns!",
                 }
             ],
-            outputs=chatbot,
-        )
+            outputs=chatbot,        )
 
     return demo
 
@@ -2435,12 +2429,9 @@ def load_modern_hospital_css():
         border: none !important;
         font-weight: 500 !important;
     }
-    
-    /* Force all elements in dropdown to be blue with white text (ONLY DROPDOWN) */
+      /* Force all elements in dropdown to be blue with white text (ONLY DROPDOWN) */
     .sidebar-container .gradio-dropdown *:not([data-testid="chatbot"]):not([class*="chatbot"]),
-    .sidebar-container [class*="dropdown"]:not([class*="chatbot"]) *,
-     {
-
+    .sidebar-container [class*="dropdown"]:not([class*="chatbot"]) * {
         color: white !important;
     }
     
@@ -3467,10 +3458,6 @@ def load_modern_hospital_css():
         100% { background-position: 200% 0; }
     }
 
-    .gradio-container-5-32-1 .user .prose * {
-        color: #1e293b !important; /* Set a consistent color for body text */
-    }
-
     /* ===== CHATBOT LOADER INTEGRATION STYLES ===== */
     
     /* Loading Indicator Container */
@@ -3646,9 +3633,7 @@ def load_modern_hospital_css():
         
         .line-chart {
             height: 240px !important;
-        }
-
-        .chart-controls {
+        }        .chart-controls {
             flex-wrap: wrap !important;
             gap: 6px !important;
         }
@@ -3657,5 +3642,264 @@ def load_modern_hospital_css():
             padding: 6px 12px !important;
             font-size: 12px !important;
         }
+    }    /* CUSTOM TEST DROPDOWN STYLES - COMPREHENSIVE GRADIO TARGETING */
+    .custom-dropdown-container {
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 9999 !important;
+        width: 200px !important;
+        background: none !important;
+        border: none !important;
     }
+      /* DROPDOWN BUTTON - TARGET ALL POSSIBLE GRADIO SELECTORS */
+    .custom-test-dropdown,
+    .custom-test-dropdown .gradio-dropdown,
+    .custom-test-dropdown [data-testid="dropdown"],
+    .custom-test-dropdown .svelte-select,
+    .custom-test-dropdown button,
+    .custom-test-dropdown select {
+        background-color: #4883FF !important;
+        border-radius: 8px !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(72, 131, 255, 0.3) !important;
+        width: 100% !important;
+        color: white !important;
+        font-weight: 500 !important;
+        padding: 8px 12px 8px 32px !important;
+        background-image: url('static/images/tools.svg') !important;
+        background-repeat: no-repeat !important;
+        background-position: 8px center !important;
+        background-size: 16px 16px !important;
+    }
+      /* REMOVE WRAPPER STYLING - CLEAN BUTTON APPEARANCE */
+    .custom-test-dropdown .wrap,
+    .custom-test-dropdown .wrap > div:first-child {
+        background: none !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+    
+    /* REMOVE ALL ADDITIONAL CONTAINER STYLING */
+    .custom-test-dropdown > div,
+    .custom-test-dropdown .wrap > div,
+    .custom-test-dropdown [data-testid="dropdown"] > div,
+    .custom-test-dropdown .dropdown-container,
+    .custom-test-dropdown .dropdown-wrapper {
+        background: none !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        outline: none !important;
+    }
+      /* DROPDOWN TEXT/CONTENT STYLING */
+    .custom-test-dropdown span,
+    .custom-test-dropdown .wrap span,
+    .custom-test-dropdown [data-testid="dropdown"] span,
+    .custom-test-dropdown button span,
+    .custom-test-dropdown select option,
+    .custom-test-dropdown .value,
+    .custom-test-dropdown .selected-value,
+    .custom-test-dropdown .dropdown-text,
+    .custom-test-dropdown .selection,
+    .custom-test-dropdown .current-selection {
+        background-color: transparent !important;
+        color: white !important;
+        font-weight: 500 !important;
+    }
+      /* FORCE WHITE TEXT ON ALL DROPDOWN ELEMENTS INCLUDING SELECTED VALUE */
+    .custom-test-dropdown *,
+    .custom-test-dropdown *:not(.svelte-select-list):not(.dropdown-menu):not(.options),
+    .custom-test-dropdown .gradio-dropdown *,
+    .custom-test-dropdown [data-testid="dropdown"] *,
+    .custom-test-dropdown button *,
+    .custom-test-dropdown span,
+    .custom-test-dropdown div,
+    .custom-test-dropdown p,
+    .custom-test-dropdown .selected-item,
+    .custom-test-dropdown .current-value,
+    .custom-test-dropdown .display-value {
+        color: white !important;
+        background-color: transparent !important;
+    }
+    
+    /* HIDE LABEL */
+    .custom-test-dropdown label,
+    .custom-test-dropdown .wrap > label {
+        display: none !important;
+    }
+    
+    /* FOCUS STATES */
+    .custom-test-dropdown .gradio-dropdown:focus,
+    .custom-test-dropdown [data-testid="dropdown"]:focus,
+    .custom-test-dropdown .wrap:focus-within,
+    .custom-test-dropdown button:focus,
+    .custom-test-dropdown select:focus {
+        outline: none !important;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(72, 131, 255, 0.4) !important;
+    }    /* DROPDOWN MENU CONTAINER - TARGET ALL POSSIBLE MENU SELECTORS */
+    .custom-test-dropdown .gradio-dropdown + div,
+    .custom-test-dropdown [data-testid="dropdown"] + div,
+    .custom-test-dropdown .dropdown-content,
+    .custom-test-dropdown .dropdown-menu,
+    .custom-test-dropdown .options,
+    .custom-test-dropdown .svelte-select-list,
+    .custom-test-dropdown [role="listbox"],
+    .custom-test-dropdown ul,
+    .custom-test-dropdown .menu,
+    .custom-test-dropdown div[class*="dropdown"],
+    .custom-test-dropdown div[class*="options"],
+    .custom-test-dropdown div[class*="menu"] {
+        background-color: #4883FF !important;
+        background: #4883FF !important;
+        color: white !important;
+    }
+    
+    /* DROPDOWN MENU ITEMS HOVER STATES */
+    .custom-test-dropdown .gradio-dropdown + div:hover,
+    .custom-test-dropdown [data-testid="dropdown"] + div:hover,
+    .custom-test-dropdown .dropdown-content:hover,
+    .custom-test-dropdown .dropdown-menu:hover,
+    .custom-test-dropdown .options:hover,
+    .custom-test-dropdown .svelte-select-list:hover,
+    .custom-test-dropdown [role="listbox"]:hover,
+    .custom-test-dropdown ul:hover,
+    .custom-test-dropdown .menu:hover,
+    .custom-test-dropdown div[class*="dropdown"]:hover,
+    .custom-test-dropdown div[class*="options"]:hover,
+    .custom-test-dropdown div[class*="menu"]:hover,
+    .custom-test-dropdown .gradio-dropdown + div li:hover,
+    .custom-test-dropdown [data-testid="dropdown"] + div li:hover,
+    .custom-test-dropdown .dropdown-content li:hover,
+    .custom-test-dropdown .dropdown-menu li:hover,
+    .custom-test-dropdown .options li:hover,
+    .custom-test-dropdown .svelte-select-list li:hover,
+    .custom-test-dropdown [role="listbox"] li:hover,
+    .custom-test-dropdown ul li:hover,
+    .custom-test-dropdown .menu li:hover {
+        background-color: #3366CC !important;
+        background: #3366CC !important;
+        color: white !important;
+    }
+      /* DROPDOWN BUTTON ONLY - #4883FF - MAXIMUM SPECIFICITY */
+    .custom-test-dropdown button,
+    .custom-test-dropdown .gradio-dropdown button,
+    .custom-test-dropdown [data-testid="dropdown"] button,
+    .custom-test-dropdown .svelte-select button,
+    .custom-test-dropdown .wrap button,
+    .custom-test-dropdown button[type="button"],
+    .custom-test-dropdown input[type="button"],
+    .custom-test-dropdown select,
+    .custom-test-dropdown .gradio-dropdown,
+    .custom-test-dropdown [data-testid="dropdown"]:not([data-testid="dropdown"] + div),
+    .custom-test-dropdown .svelte-select:not(.svelte-select-list) {
+        background-color: #4883FF !important;
+        background: #4883FF !important;
+        color: white !important;
+        border: none !important;
+    }
+    
+    /* DROPDOWN HOVER STATES - MAINTAIN BLUE COLOR */
+    .custom-test-dropdown button:hover,
+    .custom-test-dropdown .gradio-dropdown button:hover,
+    .custom-test-dropdown [data-testid="dropdown"] button:hover,
+    .custom-test-dropdown .svelte-select button:hover,
+    .custom-test-dropdown .wrap button:hover,
+    .custom-test-dropdown button[type="button"]:hover,
+    .custom-test-dropdown input[type="button"]:hover,
+    .custom-test-dropdown select:hover,
+    .custom-test-dropdown .gradio-dropdown:hover,
+    .custom-test-dropdown [data-testid="dropdown"]:hover:not([data-testid="dropdown"] + div),
+    .custom-test-dropdown .svelte-select:hover:not(.svelte-select-list) {
+        background-color: #3366CC !important;
+        background: #3366CC !important;
+        color: white !important;
+        border: none !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 2px 8px rgba(72, 131, 255, 0.4) !important;
+    }    
+    /* CLEAN UP - REMOVE ALL CONFLICTING RULES */    /* OVERRIDE ANY POTENTIAL BLACK/DARK BACKGROUNDS ON HOVER */
+    .custom-test-dropdown *:hover {
+        background-color: #3366CC !important;
+        background: #3366CC !important;
+        color: white !important;
+    }
+    
+    /* NUCLEAR OPTION: FORCE WHITE TEXT ON SELECTED OPTION */
+    .custom-test-dropdown [class],
+    .custom-test-dropdown [class] *,
+    .custom-test-dropdown .gradio-dropdown [class],
+    .custom-test-dropdown .gradio-dropdown [class] *,
+    .custom-test-dropdown [data-testid="dropdown"] [class],
+    .custom-test-dropdown [data-testid="dropdown"] [class] *,
+    .custom-test-dropdown button[class],
+    .custom-test-dropdown button[class] *,
+    .custom-test-dropdown div[style],
+    .custom-test-dropdown span[style],
+    .custom-test-dropdown div[style] *,
+    .custom-test-dropdown span[style] * {
+        color: white !important;
+    }
+    
+    /* SPECIFIC OVERRIDE FOR CHART BUTTON STYLES THAT MIGHT INTERFERE */
+    .custom-test-dropdown.chart-btn:hover,
+    .custom-test-dropdown .chart-btn:hover {
+        background-color: #3366CC !important;
+        background: #3366CC !important;
+        color: white !important;
+        border-color: #3366CC !important;
+    }
+      /* PREVENT ANY DEFAULT HOVER STYLES FROM OVERRIDING */
+    .custom-test-dropdown:hover,
+    .custom-test-dropdown *:hover:not(svg):not(path) {
+        background-color: #3366CC !important;
+        background: #3366CC !important;
+        color: white !important;
+    }
+    
+    /* ULTIMATE OVERRIDE FOR INLINE STYLES - MAXIMUM SPECIFICITY */
+    .custom-test-dropdown[style*="color"] *,
+    .custom-test-dropdown *[style*="color"],
+    .custom-test-dropdown [style*="background"] *,
+    .custom-test-dropdown *[style*="background"] {
+        color: white !important;
+        background-color: transparent !important;
+    }
+      /* FORCE WHITE TEXT ON BUTTON AND SELECTED CONTENT */
+    .custom-test-dropdown button,
+    .custom-test-dropdown button *,
+    .custom-test-dropdown .gradio-dropdown button,
+    .custom-test-dropdown .gradio-dropdown button *,
+    .custom-test-dropdown [data-testid="dropdown"] button,
+    .custom-test-dropdown [data-testid="dropdown"] button * {
+        color: white !important;
+        background: transparent !important;
+    }
+    
+    /* ADDITIONAL SPECIFICITY FOR SELECTED VALUE TEXT */
+    .custom-test-dropdown button span,
+    .custom-test-dropdown .gradio-dropdown button span,
+    .custom-test-dropdown [data-testid="dropdown"] button span,
+    .custom-test-dropdown .selected-option,
+    .custom-test-dropdown .current-option,
+    .custom-test-dropdown .dropdown-value,
+    .custom-test-dropdown [role="combobox"],
+    .custom-test-dropdown [role="combobox"] *,
+    .custom-test-dropdown [class*="value"],
+    .custom-test-dropdown [class*="value"] *,
+    .custom-test-dropdown [class*="selected"],
+    .custom-test-dropdown [class*="selected"] * {
+        color: white !important;
+        background-color: transparent !important;
+    }
+    
+    /* NO MORE UNIVERSAL OVERRIDES THAT COULD INTERFERE */
     """
