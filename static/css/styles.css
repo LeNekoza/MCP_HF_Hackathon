@@ -37,7 +37,7 @@
     display: flex !important;
     flex-direction: column !important;
     flex-shrink: 0 !important;
-    overflow: visible !important;
+    overflow: scroll !important;
     position: relative !important;
 }
 
@@ -1725,3 +1725,259 @@ body {
     align-items: center;
     justify-content: center;
    }
+ /* CUSTOM TEST DROPDOWN STYLES - COMPREHENSIVE GRADIO TARGETING */
+ .custom-dropdown-container {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 9999 !important;
+    width: 200px !important;
+    background: none !important;
+    border: none !important;
+}
+  /* DROPDOWN BUTTON - TARGET ALL POSSIBLE GRADIO SELECTORS */
+.custom-test-dropdown,
+.custom-test-dropdown .gradio-dropdown,
+.custom-test-dropdown [data-testid="dropdown"],
+.custom-test-dropdown .svelte-select,
+.custom-test-dropdown button,
+.custom-test-dropdown select {
+    background-color: #4883FF !important;
+    border-radius: 8px !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(72, 131, 255, 0.3) !important;
+    width: 100% !important;
+    color: white !important;
+    font-weight: 500 !important;
+    padding: 8px 12px 8px 32px !important;
+    background-image: url('static/images/tools.svg') !important;
+    background-repeat: no-repeat !important;
+    background-position: 8px center !important;
+    background-size: 16px 16px !important;
+}
+  /* REMOVE WRAPPER STYLING - CLEAN BUTTON APPEARANCE */
+.custom-test-dropdown .wrap,
+.custom-test-dropdown .wrap > div:first-child {
+    background: none !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+
+/* REMOVE ALL ADDITIONAL CONTAINER STYLING */
+.custom-test-dropdown > div,
+.custom-test-dropdown .wrap > div,
+.custom-test-dropdown [data-testid="dropdown"] > div,
+.custom-test-dropdown .dropdown-container,
+.custom-test-dropdown .dropdown-wrapper {
+    background: none !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    outline: none !important;
+}
+  /* DROPDOWN TEXT/CONTENT STYLING */
+.custom-test-dropdown span,
+.custom-test-dropdown .wrap span,
+.custom-test-dropdown [data-testid="dropdown"] span,
+.custom-test-dropdown button span,
+.custom-test-dropdown select option,
+.custom-test-dropdown .value,
+.custom-test-dropdown .selected-value,
+.custom-test-dropdown .dropdown-text,
+.custom-test-dropdown .selection,
+.custom-test-dropdown .current-selection {
+    background-color: transparent !important;
+    color: white !important;
+    font-weight: 500 !important;
+}
+  /* FORCE WHITE TEXT ON ALL DROPDOWN ELEMENTS INCLUDING SELECTED VALUE */
+.custom-test-dropdown *,
+.custom-test-dropdown *:not(.svelte-select-list):not(.dropdown-menu):not(.options),
+.custom-test-dropdown .gradio-dropdown *,
+.custom-test-dropdown [data-testid="dropdown"] *,
+.custom-test-dropdown button *,
+.custom-test-dropdown span,
+.custom-test-dropdown div,
+.custom-test-dropdown p,
+.custom-test-dropdown .selected-item,
+.custom-test-dropdown .current-value,
+.custom-test-dropdown .display-value {
+    color: white !important;
+    background-color: transparent !important;
+}
+
+/* HIDE LABEL */
+.custom-test-dropdown label,
+.custom-test-dropdown .wrap > label {
+    display: none !important;
+}
+
+/* FOCUS STATES */
+.custom-test-dropdown .gradio-dropdown:focus,
+.custom-test-dropdown [data-testid="dropdown"]:focus,
+.custom-test-dropdown .wrap:focus-within,
+.custom-test-dropdown button:focus,
+.custom-test-dropdown select:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(72, 131, 255, 0.4) !important;
+}    /* DROPDOWN MENU CONTAINER - TARGET ALL POSSIBLE MENU SELECTORS */
+.custom-test-dropdown .gradio-dropdown + div,
+.custom-test-dropdown [data-testid="dropdown"] + div,
+.custom-test-dropdown .dropdown-content,
+.custom-test-dropdown .dropdown-menu,
+.custom-test-dropdown .options,
+.custom-test-dropdown .svelte-select-list,
+.custom-test-dropdown [role="listbox"],
+.custom-test-dropdown ul,
+.custom-test-dropdown .menu,
+.custom-test-dropdown div[class*="dropdown"],
+.custom-test-dropdown div[class*="options"],
+.custom-test-dropdown div[class*="menu"] {
+    background-color: #4883FF !important;
+    background: #4883FF !important;
+    color: white !important;
+}
+  /* DROPDOWN MENU ITEMS HOVER STATES */
+.custom-test-dropdown .gradio-dropdown + div:hover,
+.custom-test-dropdown [data-testid="dropdown"] + div:hover,
+.custom-test-dropdown .dropdown-content:hover,
+.custom-test-dropdown .dropdown-menu:hover,
+.custom-test-dropdown .options:hover,
+.custom-test-dropdown .svelte-select-list:hover,
+.custom-test-dropdown [role="listbox"]:hover,
+.custom-test-dropdown ul:hover,
+.custom-test-dropdown .menu:hover,
+.custom-test-dropdown div[class*="dropdown"]:hover,
+.custom-test-dropdown div[class*="options"]:hover,
+.custom-test-dropdown div[class*="menu"]:hover,
+.custom-test-dropdown .gradio-dropdown + div li:hover,
+.custom-test-dropdown [data-testid="dropdown"] + div li:hover,
+.custom-test-dropdown .dropdown-content li:hover,
+.custom-test-dropdown .dropdown-menu li:hover,
+.custom-test-dropdown .options li:hover,
+.custom-test-dropdown .svelte-select-list li:hover,
+.custom-test-dropdown [role="listbox"] li:hover,
+.custom-test-dropdown ul li:hover,
+.custom-test-dropdown .menu li:hover {
+    background-color: #4883FF !important;
+    background: #4883FF !important;
+    color: white !important;
+}
+  /* DROPDOWN BUTTON ONLY - #4883FF - MAXIMUM SPECIFICITY */
+.custom-test-dropdown button,
+.custom-test-dropdown .gradio-dropdown button,
+.custom-test-dropdown [data-testid="dropdown"] button,
+.custom-test-dropdown .svelte-select button,
+.custom-test-dropdown .wrap button,
+.custom-test-dropdown button[type="button"],
+.custom-test-dropdown input[type="button"],
+.custom-test-dropdown select,
+.custom-test-dropdown .gradio-dropdown,
+.custom-test-dropdown [data-testid="dropdown"]:not([data-testid="dropdown"] + div),
+.custom-test-dropdown .svelte-select:not(.svelte-select-list) {
+    background-color: #4883FF !important;
+    background: #4883FF !important;
+    color: white !important;
+    border: none !important;
+}
+  /* DROPDOWN HOVER STATES - MAINTAIN SAME BLUE COLOR */
+.custom-test-dropdown button:hover,
+.custom-test-dropdown .gradio-dropdown button:hover,
+.custom-test-dropdown [data-testid="dropdown"] button:hover,
+.custom-test-dropdown .svelte-select button:hover,
+.custom-test-dropdown .wrap button:hover,
+.custom-test-dropdown button[type="button"]:hover,
+.custom-test-dropdown input[type="button"]:hover,
+.custom-test-dropdown select:hover,
+.custom-test-dropdown .gradio-dropdown:hover,
+.custom-test-dropdown [data-testid="dropdown"]:hover:not([data-testid="dropdown"] + div),
+.custom-test-dropdown .svelte-select:hover:not(.svelte-select-list) {
+    background-color: #4883FF !important;
+    background: #4883FF !important;
+    color: white !important;
+    border: none !important;
+    transform: none !important;
+    box-shadow: 0 4px 12px rgba(72, 131, 255, 0.3) !important;
+}
+/* CLEAN UP - REMOVE ALL CONFLICTING RULES */    /* OVERRIDE ANY POTENTIAL BLACK/DARK BACKGROUNDS ON HOVER */
+.custom-test-dropdown *:hover {
+    background-color: #4883FF !important;
+    background: #4883FF !important;
+    color: white !important;
+}
+
+/* NUCLEAR OPTION: FORCE WHITE TEXT ON SELECTED OPTION */
+.custom-test-dropdown [class],
+.custom-test-dropdown [class] *,
+.custom-test-dropdown .gradio-dropdown [class],
+.custom-test-dropdown .gradio-dropdown [class] *,
+.custom-test-dropdown [data-testid="dropdown"] [class],
+.custom-test-dropdown [data-testid="dropdown"] [class] *,
+.custom-test-dropdown button[class],
+.custom-test-dropdown button[class] *,
+.custom-test-dropdown div[style],
+.custom-test-dropdown span[style],
+.custom-test-dropdown div[style] *,
+.custom-test-dropdown span[style] * {
+    color: white !important;
+}
+  /* SPECIFIC OVERRIDE FOR CHART BUTTON STYLES THAT MIGHT INTERFERE */
+.custom-test-dropdown.chart-btn:hover,
+.custom-test-dropdown .chart-btn:hover {
+    background-color: #4883FF !important;
+    background: #4883FF !important;
+    color: white !important;
+    border-color: #4883FF !important;
+}    /* PREVENT ANY DEFAULT HOVER STYLES FROM OVERRIDING */
+.custom-test-dropdown:hover,
+.custom-test-dropdown *:hover:not(svg):not(path) {
+    background-color: #4883FF !important;
+    background: #4883FF !important;
+    color: white !important;
+}
+
+/* ULTIMATE OVERRIDE FOR INLINE STYLES - MAXIMUM SPECIFICITY */
+.custom-test-dropdown[style*="color"] *,
+.custom-test-dropdown *[style*="color"],
+.custom-test-dropdown [style*="background"] *,
+.custom-test-dropdown *[style*="background"] {
+    color: white !important;
+    background-color: transparent !important;
+}
+  /* FORCE WHITE TEXT ON BUTTON AND SELECTED CONTENT */
+.custom-test-dropdown button,
+.custom-test-dropdown button *,
+.custom-test-dropdown .gradio-dropdown button,
+.custom-test-dropdown .gradio-dropdown button *,
+.custom-test-dropdown [data-testid="dropdown"] button,
+.custom-test-dropdown [data-testid="dropdown"] button * {
+    color: white !important;
+    background: transparent !important;
+}
+
+/* ADDITIONAL SPECIFICITY FOR SELECTED VALUE TEXT */
+.custom-test-dropdown button span,
+.custom-test-dropdown .gradio-dropdown button span,
+.custom-test-dropdown [data-testid="dropdown"] button span,
+.custom-test-dropdown .selected-option,
+.custom-test-dropdown .current-option,
+.custom-test-dropdown .dropdown-value,
+.custom-test-dropdown [role="combobox"],
+.custom-test-dropdown [role="combobox"] *,
+.custom-test-dropdown [class*="value"],
+.custom-test-dropdown [class*="value"] *,
+.custom-test-dropdown [class*="selected"],
+.custom-test-dropdown [class*="selected"] * {
+    color: white !important;
+    background-color: transparent !important;
+}
+
+/* NO MORE UNIVERSAL OVERRIDES THAT COULD INTERFERE */
