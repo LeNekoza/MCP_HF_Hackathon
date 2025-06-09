@@ -1,7 +1,3 @@
-"""
-Main Gradio Interface Components - Modern Hospital Dashboard Interface
-"""
-
 import asyncio
 import time
 from typing import Any, Dict, List
@@ -119,7 +115,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
 
                 # Dashboard Header - Compact
                 with gr.Row(elem_classes="dashboard-header-compact"):
-                    with gr.Column(scale=3):
+                    with gr.Column():
                         gr.HTML(
                             """
                         <div class="dashboard-title-compact">
@@ -138,104 +134,253 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                             scale=1,
                         )
 
-                # Main Content Area - Always Visible Analysis Section
-                gr.HTML(
-                    """
+                # Main Content Area - Navigation and Sections
+                with gr.Column(elem_classes="main-content-area"):
+                    # Navigation Buttons
+                    gr.HTML(
+                        """
+                        <div class="nav-buttons-container">
+                            <button class="nav-btn active" data-section="dashboard">Dashboard</button>
+                            <button class="nav-btn" data-section="data">Data</button>
+                        </div>
+                        """
+                    )
 
-                <div class="main-content-area">
-                       <div class="nav-buttons-container">
-                    <button class="nav-btn active" data-section="dashboard">Dashboard</button>
-                    <button class="nav-btn" data-section="alerts">Alerts</button>
-                    <button class="nav-btn" data-section="resources">Resources</button>
-                    <button class="nav-btn" data-section="data">Data</button>
-                </div>
-                    <div class="analysis-section">
-                        <h2 class="analysis-title">Analysis Title</h2>
-                        
-                        <!-- Chart Type Controls -->
-                        <div class="chart-controls">
-                            <button class="chart-btn active" data-chart="line">Line</button>
-                            <button class="chart-btn" data-chart="bar">Bar</button>
-                            <button class="chart-btn" data-chart="pie">Pie</button>
-                            <button class="chart-btn" data-chart="scatter">Scatter</button>
+                    # Dashboard Section (with charts and controls)
+                    gr.HTML(
+                        """
+                        <div id="dashboard-section" class="dashboard-section" style="display: block;">
+                            <h2 class="analysis-title">Dashboard Analytics</h2>
+                            <div class="analysis-selector-container">
+                                <select class="analysis-selector" name="analysis-selector" id="analysis-selector">
+                                    <option value="bed-occupancy">Real-time bed occupancy by ward & ICU</option>
+                                    <option value="alos">Average Length-of-Stay (ALOS) by procedure / ward</option>
+                                    <option value="staff-workload">Staff workload dashboard</option>
+                                    <option value="tool-utilisation">Tool utilisation & idle time</option>
+                                    <option value="inventory-expiry">Inventory expiry radar</option>
+                                    <option value="bed-census">Short-horizon bed census</option>
+                                    <option value="elective-emergency">Elective vs emergency</option>
+                                    <option value="los-prediction">Length-of-stay prediction</option>
+                                </select>
+                                <div class="selector-icon">▼</div>
                             </div>
-                            
-                        <!-- Chart Container -->
-                        <div class="chart-container">
-                            <div class="chart-legend">
-                                <span class="legend-item">
-                                    <span class="legend-color" style="background: #3b82f6;"></span>
-                                    Patient Count
-                                </span>
-                                <span class="legend-item">
-                                    <span class="legend-color" style="background: #22d3ee;"></span>
-                                    Revenue Data
-                                </span>
+                        
+                            <!-- Chart Type Controls -->
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-chart="line">Line</button>
+                                <button class="chart-btn" data-chart="bar">Bar</button>
+                                <button class="chart-btn" data-chart="pie">Pie</button>
+                                <button class="chart-btn" data-chart="scatter">Scatter</button>
+                            </div>
+                                
+                            <!-- Chart Container -->
+                            <div class="chart-container">
+                                <div class="chart-legend">
+                                    <span class="legend-item">
+                                        <span class="legend-color" style="background: #3b82f6;"></span>
+                                        Patient Count
+                                    </span>
+                                    <span class="legend-item">
+                                        <span class="legend-color" style="background: #22d3ee;"></span>
+                                        Revenue Data
+                                    </span>
+                                </div>
+                                    
+                                <div class="line-chart">
+                                    <svg width="100%" height="400" viewBox="0 0 600 300">
+                                        <!-- Grid lines -->
+                                        <defs>
+                                            <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
+                                                <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+                                            </pattern>
+                                        </defs>
+                                        <rect width="100%" height="100%" fill="url(#grid)" />
+                                        
+                                        <!-- Y-axis labels -->
+                                        <text x="30" y="50" fill="#64748b" font-size="12" text-anchor="end">65</text>
+                                        <text x="30" y="88" fill="#64748b" font-size="12" text-anchor="end">60</text>
+                                        <text x="30" y="125" fill="#64748b" font-size="12" text-anchor="end">55</text>
+                                        <text x="30" y="163" fill="#64748b" font-size="12" text-anchor="end">50</text>
+                                        <text x="30" y="200" fill="#64748b" font-size="12" text-anchor="end">45</text>
+                                        <text x="30" y="238" fill="#64748b" font-size="12" text-anchor="end">40</text>
+                                        
+                                        <!-- X-axis labels -->
+                                        <text x="80" y="280" fill="#64748b" font-size="12" text-anchor="middle">January</text>
+                                        <text x="160" y="280" fill="#64748b" font-size="12" text-anchor="middle">February</text>
+                                        <text x="240" y="280" fill="#64748b" font-size="12" text-anchor="middle">March</text>
+                                        <text x="320" y="280" fill="#64748b" font-size="12" text-anchor="middle">April</text>
+                                        <text x="400" y="280" fill="#64748b" font-size="12" text-anchor="middle">May</text>
+                                        <text x="480" y="280" fill="#64748b" font-size="12" text-anchor="middle">June</text>
+                                        <text x="560" y="280" fill="#64748b" font-size="12" text-anchor="middle">July</text>
+                                        
+                                        <!-- Red line (declining) -->
+                                        <path d="M 80 50 L 160 88 L 240 125 L 320 163 L 400 200 L 480 163 L 560 238" 
+                                              stroke="#ef4444" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                        
+                                        <!-- Cyan/Teal line (rising then declining) -->
+                                        <path d="M 80 238 L 160 225 L 240 200 L 320 175 L 400 138 L 480 125 L 560 163" 
+                                              stroke="#22d3ee" stroke-width="3" fill="none" stroke-linecap="round"/>
+                                        
+                                        <!-- Gray dotted line -->
+                                        <path d="M 80 88 L 160 125 L 240 138 L 320 150 L 400 175 L 480 188 L 560 200" 
+                                              stroke="#94a3b8" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                                        
+                                        <!-- Data points -->
+                                        <circle cx="80" cy="50" r="4" fill="#ef4444"/>
+                                        <circle cx="160" cy="88" r="4" fill="#ef4444"/>
+                                        <circle cx="240" cy="125" r="4" fill="#ef4444"/>
+                                        <circle cx="320" cy="163" r="4" fill="#ef4444"/>
+                                        <circle cx="400" cy="200" r="4" fill="#ef4444"/>
+                                        <circle cx="480" cy="163" r="4" fill="#ef4444"/>
+                                        <circle cx="560" cy="238" r="4" fill="#ef4444"/>
+                                        
+                                        <circle cx="80" cy="238" r="4" fill="#22d3ee"/>
+                                        <circle cx="160" cy="225" r="4" fill="#22d3ee"/>
+                                        <circle cx="240" cy="200" r="4" fill="#22d3ee"/>
+                                        <circle cx="320" cy="175" r="4" fill="#22d3ee"/>
+                                        <circle cx="400" cy="138" r="4" fill="#22d3ee"/>
+                                        <circle cx="480" cy="125" r="4" fill="#22d3ee"/>
+                                        <circle cx="560" cy="163" r="4" fill="#22d3ee"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        """
+                    )
+
+                    # Data Section (separate component without charts)
+                    gr.HTML(
+                        """
+                        <div id="data-section" class="data-section" style="display: none;">
+                            <div class="data-component">
+                                <div class="data-header">
+                                    <h2>Data Management</h2>
+                                    <p>Manage and view hospital data records</p>
                                 </div>
                                 
-                            <div class="line-chart">
-                                <svg width="100%" height="400" viewBox="0 0 600 300">
-                                    <!-- Grid lines -->
-                                            <defs>
-                                        <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
-                                            <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#f1f5f9" stroke-width="1"/>
-                                        </pattern>
-                                            </defs>
-                                    <rect width="100%" height="100%" fill="url(#grid)" />
+                                <div class="data-content">
+                                    <div class="data-tabs">
+                                        <button class="data-tab active" data-tab="patients">Patients</button>
+                                        <button class="data-tab" data-tab="staff">Staff</button>
+                                        <button class="data-tab" data-tab="rooms">Rooms</button>
+                                        <button class="data-tab" data-tab="equipment">Equipment</button>
+                                    </div>
                                     
-                                    <!-- Y-axis labels -->
-                                    <text x="30" y="50" fill="#64748b" font-size="12" text-anchor="end">65</text>
-                                    <text x="30" y="88" fill="#64748b" font-size="12" text-anchor="end">60</text>
-                                    <text x="30" y="125" fill="#64748b" font-size="12" text-anchor="end">55</text>
-                                    <text x="30" y="163" fill="#64748b" font-size="12" text-anchor="end">50</text>
-                                    <text x="30" y="200" fill="#64748b" font-size="12" text-anchor="end">45</text>
-                                    <text x="30" y="238" fill="#64748b" font-size="12" text-anchor="end">40</text>
-                                    
-                                    <!-- X-axis labels -->
-                                    <text x="80" y="280" fill="#64748b" font-size="12" text-anchor="middle">January</text>
-                                    <text x="160" y="280" fill="#64748b" font-size="12" text-anchor="middle">February</text>
-                                    <text x="240" y="280" fill="#64748b" font-size="12" text-anchor="middle">March</text>
-                                    <text x="320" y="280" fill="#64748b" font-size="12" text-anchor="middle">April</text>
-                                    <text x="400" y="280" fill="#64748b" font-size="12" text-anchor="middle">May</text>
-                                    <text x="480" y="280" fill="#64748b" font-size="12" text-anchor="middle">June</text>
-                                    <text x="560" y="280" fill="#64748b" font-size="12" text-anchor="middle">July</text>
-                                    
-                                    <!-- Red line (declining) -->
-                                    <path d="M 80 50 L 160 88 L 240 125 L 320 163 L 400 200 L 480 163 L 560 238" 
-                                          stroke="#ef4444" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                    
-                                    <!-- Cyan/Teal line (rising then declining) -->
-                                    <path d="M 80 238 L 160 225 L 240 200 L 320 175 L 400 138 L 480 125 L 560 163" 
-                                          stroke="#22d3ee" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                    
-                                    <!-- Gray dotted line -->
-                                    <path d="M 80 88 L 160 125 L 240 138 L 320 150 L 400 175 L 480 188 L 560 200" 
-                                          stroke="#94a3b8" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
-                                    
-                                    <!-- Data points -->
-                                    <circle cx="80" cy="50" r="4" fill="#ef4444"/>
-                                    <circle cx="160" cy="88" r="4" fill="#ef4444"/>
-                                    <circle cx="240" cy="125" r="4" fill="#ef4444"/>
-                                    <circle cx="320" cy="163" r="4" fill="#ef4444"/>
-                                    <circle cx="400" cy="200" r="4" fill="#ef4444"/>
-                                    <circle cx="480" cy="163" r="4" fill="#ef4444"/>
-                                    <circle cx="560" cy="238" r="4" fill="#ef4444"/>
-                                    
-                                    <circle cx="80" cy="238" r="4" fill="#22d3ee"/>
-                                    <circle cx="160" cy="225" r="4" fill="#22d3ee"/>
-                                    <circle cx="240" cy="200" r="4" fill="#22d3ee"/>
-                                    <circle cx="320" cy="175" r="4" fill="#22d3ee"/>
-                                    <circle cx="400" cy="138" r="4" fill="#22d3ee"/>
-                                    <circle cx="480" cy="125" r="4" fill="#22d3ee"/>
-                                    <circle cx="560" cy="163" r="4" fill="#22d3ee"/>
-                                </svg>
+                                    <div class="data-table-container">
+                                        <div id="patients-data" class="data-table-section active">
+                                            <h3>Patient Records</h3>
+                                            <div class="data-table">
+                                                <div class="table-header">
+                                                    <span>ID</span>
+                                                    <span>Name</span>
+                                                    <span>Age</span>
+                                                    <span>Room</span>
+                                                    <span>Status</span>
+                                                </div>
+                                                <div class="table-row">
+                                                    <span>P001</span>
+                                                    <span>John Smith</span>
+                                                    <span>45</span>
+                                                    <span>101</span>
+                                                    <span class="status-active">Active</span>
+                                                </div>
+                                                <div class="table-row">
+                                                    <span>P002</span>
+                                                    <span>Emma Johnson</span>
+                                                    <span>32</span>
+                                                    <span>205</span>
+                                                    <span class="status-discharged">Discharged</span>
+                                                </div>
+                                                <div class="table-row">
+                                                    <span>P003</span>
+                                                    <span>Michael Brown</span>
+                                                    <span>67</span>
+                                                    <span>150</span>
+                                                    <span class="status-active">Active</span>
+                                                </div>
                                             </div>
                                         </div>
-                    </div>
-                </div>
-                """
-                )
-
+                                        
+                                        <div id="staff-data" class="data-table-section" style="display: none;">
+                                            <h3>Staff Records</h3>
+                                            <div class="data-table">
+                                                <div class="table-header">
+                                                    <span>ID</span>
+                                                    <span>Name</span>
+                                                    <span>Role</span>
+                                                    <span>Department</span>
+                                                    <span>Status</span>
+                                                </div>
+                                                <div class="table-row">
+                                                    <span>S001</span>
+                                                    <span>Dr. Sarah Wilson</span>
+                                                    <span>Doctor</span>
+                                                    <span>Cardiology</span>
+                                                    <span class="status-active">On Duty</span>
+                                                </div>
+                                                <div class="table-row">
+                                                    <span>S002</span>
+                                                    <span>Nurse Linda Davis</span>
+                                                    <span>Nurse</span>
+                                                    <span>Emergency</span>
+                                                    <span class="status-active">On Duty</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="rooms-data" class="data-table-section" style="display: none;">
+                                            <h3>Room Management</h3>
+                                            <div class="data-table">
+                                                <div class="table-header">
+                                                    <span>Room</span>
+                                                    <span>Type</span>
+                                                    <span>Occupancy</span>
+                                                    <span>Status</span>
+                                                </div>
+                                                <div class="table-row">
+                                                    <span>101</span>
+                                                    <span>General</span>
+                                                    <span>1/2</span>
+                                                    <span class="status-active">Available</span>
+                                                </div>
+                                                <div class="table-row">
+                                                    <span>205</span>
+                                                    <span>Private</span>
+                                                    <span>0/1</span>
+                                                    <span class="status-discharged">Empty</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="equipment-data" class="data-table-section" style="display: none;">
+                                            <h3>Equipment Status</h3>
+                                            <div class="data-table">
+                                                <div class="table-header">
+                                                    <span>ID</span>
+                                                    <span>Equipment</span>
+                                                    <span>Location</span>
+                                                    <span>Status</span>
+                                                </div>
+                                                <div class="table-row">
+                                                    <span>E001</span>
+                                                    <span>MRI Scanner</span>
+                                                    <span>Radiology</span>
+                                                    <span class="status-active">Operational</span>
+                                                </div>
+                                                <div class="table-row">
+                                                    <span>E002</span>
+                                                    <span>X-Ray Machine</span>
+                                                    <span>Emergency</span>
+                                                    <span class="status-active">Operational</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        """
+                    )
         # Hidden status indicator
         status = gr.Textbox(visible=False)
 
@@ -916,10 +1061,6 @@ def load_latex_scripts():
     <script src="static/js/latex-renderer.js"></script>
     <script src="static/js/app.js"></script>
     
-    <!-- Dashboard Enhancement Styles -->
-    
-
-    <!-- Dashboard Enhancement JavaScript -->
     <script>
     class HospitalDashboard {
         constructor() {
@@ -949,10 +1090,7 @@ def load_latex_scripts():
         }
 
         createSectionContainers() {
-            // The HTML structure uses a single analysis-section for all content
-            // We just need to ensure the dashboard section is active by default
             setTimeout(() => {
-                // Make sure the analysis section is visible
                 const analysisSection = document.querySelector('.analysis-section');
                 const mainContentArea = document.querySelector('.main-content-area');
                 
@@ -966,18 +1104,15 @@ def load_latex_scripts():
                     mainContentArea.style.opacity = '1';
                 }
                 
-                // Initialize with dashboard section
                 this.switchToSection('dashboard');
-                console.log('Section containers initialized with analysis-section approach');
+                console.log('Section containers initialized');
             }, 100);
         }
 
         initializeInteractiveChart() {
-            // Initialize chart with default line chart
             setTimeout(() => {
                 this.updateChart('line');
                 
-                // Ensure chart buttons are properly connected
                 const chartButtons = document.querySelectorAll('.chart-btn');
                 chartButtons.forEach(btn => {
                     btn.addEventListener('click', (e) => {
@@ -992,7 +1127,6 @@ def load_latex_scripts():
         }
 
         setupEventListeners() {
-            // Navigation buttons
             const observer = new MutationObserver(() => {
                 const navBtns = document.querySelectorAll('.nav-btn');
                 navBtns.forEach(btn => {
@@ -1002,300 +1136,658 @@ def load_latex_scripts():
                     }
                 });
 
-                // Metric cards hover effects
-                const cards = document.querySelectorAll('.metric-card');
-                cards.forEach(card => {
-                    if (!card.hasAttribute('data-listener')) {
-                        card.addEventListener('mouseenter', (e) => this.animateCard(e.target, true));
-                        card.addEventListener('mouseleave', (e) => this.animateCard(e.target, false));
-                        card.setAttribute('data-listener', 'true');
+                const chartBtns = document.querySelectorAll('.chart-btn');
+                chartBtns.forEach(btn => {
+                    if (!btn.hasAttribute('data-listener')) {
+                        btn.addEventListener('click', (e) => this.handleChartTypeChange(e));
+                        btn.setAttribute('data-listener', 'true');
                     }
                 });
-
-                                 // Quick action buttons
-                 const actionBtns = document.querySelectorAll('.quick-action-btn, .header-action-btn');
-                 actionBtns.forEach(btn => {
-                     if (!btn.hasAttribute('data-listener')) {
-                         btn.addEventListener('click', (e) => this.handleQuickAction(e));
-                         btn.setAttribute('data-listener', 'true');
-                     }
-                 });
-
-                 // Alert action buttons
-                 const alertBtns = document.querySelectorAll('.alert-btn');
-                 alertBtns.forEach(btn => {
-                     if (!btn.hasAttribute('data-listener')) {
-                         btn.addEventListener('click', (e) => this.handleAlertAction(e));
-                         btn.setAttribute('data-listener', 'true');
-                     }
-                 });
-
-                 // Chart button interactions
-                 const chartBtns = document.querySelectorAll('.chart-btn');
-                 chartBtns.forEach(btn => {
-                     if (!btn.hasAttribute('data-listener')) {
-                         btn.addEventListener('click', (e) => this.handleChartTypeChange(e));
-                         btn.setAttribute('data-listener', 'true');
-                     }
-                 });
             });
 
             observer.observe(document.body, { childList: true, subtree: true });
         }
 
         setupNavigation() {
-            // Wait for elements to be available
             setTimeout(() => {
                 const navBtns = document.querySelectorAll('.nav-btn');
                 console.log('Setting up navigation, found buttons:', navBtns.length);
                 
-                // Set first button as active by default if none are active
                 const hasActiveBtn = Array.from(navBtns).some(btn => btn.classList.contains('active'));
                 if (navBtns.length > 0 && !hasActiveBtn) {
                     navBtns[0].classList.add('active');
                     console.log('Set first button as active');
                 }
                 
-                // Ensure dashboard section is shown by default
                 this.switchToSection('dashboard');
             }, 500);
         }
 
-                 handleNavigation(event) {
-             const clickedBtn = event.target;
-             const section = clickedBtn.getAttribute('data-section') || clickedBtn.textContent.toLowerCase();
+        handleNavigation(event) {
+            const clickedBtn = event.target;
+            const section = clickedBtn.getAttribute('data-section') || clickedBtn.textContent.toLowerCase();
 
-             // Update active state
-             document.querySelectorAll('.nav-btn').forEach(btn => {
-                 btn.classList.remove('active');
-             });
-             clickedBtn.classList.add('active');
+            // Update active state
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            clickedBtn.classList.add('active');
 
-             // Switch to the selected section
-             this.switchToSection(section);
-             
-             // Show notification
-             this.showNotification(`📊 Switched to ${clickedBtn.textContent} section`, 'info');
-         }
+            // Switch to the selected section
+            this.switchToSection(section);
+            
+            // Show notification
+            this.showNotification(`📊 Switched to ${clickedBtn.textContent} section`, 'info');
+        }
 
-         switchToSection(section) {
-             console.log('Switching to section:', section);
-             
-             // Update current section
-             this.currentSection = section;
-             
-             const analysisSection = document.querySelector('.analysis-section');
-             const analysisTitle = document.querySelector('.analysis-title');
-             const chartControls = document.querySelector('.chart-controls');
-             const chartContainer = document.querySelector('.chart-container');
-             
-             if (analysisSection && analysisTitle) {
-                 console.log('Found analysis section, updating content for:', section);
-                 
-                 // Add a subtle animation to indicate section change
-                 analysisSection.style.opacity = '0.7';
-                 
-                 setTimeout(() => {
-                     if (section === 'dashboard') {
-                         // Show full dashboard with charts
-                         analysisTitle.textContent = 'Dashboard Analytics';
-                         if (chartControls) chartControls.style.display = 'block';
-                         if (chartContainer) chartContainer.style.display = 'block';
-                     } else {
-                         // Show only title for other sections
-                         switch(section) {
-                             case 'alerts':
-                                 analysisTitle.textContent = 'Alert Management';
-                                 break;
-                             case 'resources':
-                                 analysisTitle.textContent = 'Resource Management';
-                                 break;
-                             case 'data':
-                                 analysisTitle.textContent = 'Data Analytics';
-                                 break;
-                             default:
-                                 analysisTitle.textContent = 'Dashboard Analytics';
-                         }
-                         // Hide chart controls and container for non-dashboard sections
-                         if (chartControls) chartControls.style.display = 'none';
-                         if (chartContainer) chartContainer.style.display = 'none';
-                     }
-                     
-                     analysisSection.style.opacity = '1';
-                 }, 200);
-                 
-                 console.log('Section switched successfully to:', section);
-             } else {
-                 console.log('Analysis section not found, section switching disabled');
-             }
-             
-             // Load section-specific data
-             this.loadSectionData(section);
-         }
+        switchToSection(section) {
+            console.log('Switching to section:', section);
+            
+            this.currentSection = section;
+            
+            // Get the new separate sections
+            const dashboardSection = document.querySelector('#dashboard-section');
+            const dataSection = document.querySelector('#data-section');
+            
+            // Apply transition effect
+            if (dashboardSection) dashboardSection.style.opacity = '0.7';
+            if (dataSection) dataSection.style.opacity = '0.7';
+            
+            setTimeout(() => {
+                if (section === 'dashboard') {
+                    // Show dashboard section, hide data section
+                    if (dashboardSection) {
+                        dashboardSection.style.display = 'block';
+                        dashboardSection.style.opacity = '1';
+                    }
+                    if (dataSection) {
+                        dataSection.style.display = 'none';
+                    }
+                    console.log('Dashboard section activated');
+                } else if (section === 'data') {
+                    // Show data section, hide dashboard section
+                    if (dashboardSection) {
+                        dashboardSection.style.display = 'none';
+                    }
+                    if (dataSection) {
+                        dataSection.style.display = 'block';
+                        dataSection.style.opacity = '1';
+                    }
+                    console.log('Data section activated');
+                    
+                    // Initialize data tabs functionality
+                    this.initializeDataTabs();
+                } else {
+                    // Hide both sections for other potential sections
+                    if (dashboardSection) dashboardSection.style.display = 'none';
+                    if (dataSection) dataSection.style.display = 'none';
+                }
+            }, 200);
+            
+            this.loadSectionData(section);
+        }
 
-         async loadSectionData(section) {
-             console.log(`Loading ${section} section with simulated data...`);
-             
-             switch(section) {
-                 case 'dashboard':
-                     this.loadDashboardData();
-                     this.updateChartForSection('dashboard');
-                     this.showNotification('📊 Dashboard refreshed', 'success');
-                     break;
-                 case 'alerts':
-                     this.loadAlertsData();
-                     this.showNotification('🚨 Alerts panel loaded', 'info');
-                     break;
-                 case 'resources':
-                     this.loadResourcesData();
-                     this.showNotification('🏥 Resources data loaded', 'info');
-                     break;
-                 case 'data':
-                     this.loadDataAnalyticsData();
-                     this.showNotification('📈 Data analytics updated', 'info');
-                     break;
-                 default:
-                     this.loadDashboardData();
-                     this.updateChartForSection('dashboard');
-                     this.showNotification('📊 Dashboard refreshed', 'success');
-                     break;
-             }
-         }
+        initializeDataTabs() {
+            // Set up data tab switching functionality
+            const dataTabs = document.querySelectorAll('.data-tab');
+            const dataTableSections = document.querySelectorAll('.data-table-section');
+            
+            dataTabs.forEach(tab => {
+                if (!tab.hasAttribute('data-tab-listener')) {
+                    tab.addEventListener('click', (e) => {
+                        const targetTab = e.target.getAttribute('data-tab');
+                        
+                        // Update active tab
+                        dataTabs.forEach(t => t.classList.remove('active'));
+                        e.target.classList.add('active');
+                        
+                        // Show corresponding data section
+                        dataTableSections.forEach(section => {
+                            const sectionId = section.id.replace('-data', '');
+                            if (sectionId === targetTab) {
+                                section.style.display = 'block';
+                                section.classList.add('active');
+                            } else {
+                                section.style.display = 'none';
+                                section.classList.remove('active');
+                            }
+                        });
+                        
+                        console.log(`Switched to ${targetTab} data tab`);
+                        this.showNotification(`📋 Viewing ${targetTab} data`, 'info');
+                    });
+                    tab.setAttribute('data-tab-listener', 'true');
+                }
+            });
+        }
 
-         updateChartForSection(section) {
-             // Update chart data and legend based on the selected section
-             let sectionData;
-             
-             switch(section) {
-                 case 'dashboard':
-                     sectionData = [
-                         { month: 'Jan', patients: 65, revenue: 45, satisfaction: 50 },
-                         { month: 'Feb', patients: 58, revenue: 52, satisfaction: 45 },
-                         { month: 'Mar', patients: 52, revenue: 58, satisfaction: 40 },
-                         { month: 'Apr', patients: 45, revenue: 62, satisfaction: 35 },
-                         { month: 'May', patients: 38, revenue: 68, satisfaction: 30 },
-                         { month: 'Jun', patients: 45, revenue: 55, satisfaction: 25 },
-                         { month: 'Jul', patients: 35, revenue: 48, satisfaction: 20 }
-                     ];
-                     this.updateLegendForSection(['Patient Count', 'Revenue Data', 'Satisfaction']);
-                     break;
-                 case 'alerts':
-                     sectionData = [
-                         { month: 'Jan', critical: 3, warning: 7, info: 12 },
-                         { month: 'Feb', critical: 5, warning: 9, info: 15 },
-                         { month: 'Mar', critical: 2, warning: 6, info: 10 },
-                         { month: 'Apr', critical: 4, warning: 8, info: 14 },
-                         { month: 'May', critical: 1, warning: 4, info: 8 },
-                         { month: 'Jun', critical: 3, warning: 7, info: 11 },
-                         { month: 'Jul', critical: 2, warning: 5, info: 9 }
-                     ];
-                     this.updateLegendForSection(['Critical Alerts', 'Warning Alerts', 'Info Alerts']);
-                     break;
-                 case 'resources':
-                     sectionData = [
-                         { month: 'Jan', beds: 85, staff: 67, equipment: 92 },
-                         { month: 'Feb', beds: 78, staff: 72, equipment: 89 },
-                         { month: 'Mar', beds: 82, staff: 65, equipment: 94 },
-                         { month: 'Apr', beds: 88, staff: 70, equipment: 87 },
-                         { month: 'May', beds: 75, staff: 68, equipment: 91 },
-                         { month: 'Jun', beds: 80, staff: 73, equipment: 93 },
-                         { month: 'Jul', beds: 83, staff: 69, equipment: 88 }
-                     ];
-                     this.updateLegendForSection(['Bed Occupancy %', 'Staff Availability %', 'Equipment Status %']);
-                     break;
-                 case 'data':
-                     sectionData = [
-                         { month: 'Jan', admissions: 120, avgStay: 4.2, revenue: 280 },
-                         { month: 'Feb', admissions: 135, avgStay: 3.8, revenue: 310 },
-                         { month: 'Mar', admissions: 115, avgStay: 4.5, revenue: 265 },
-                         { month: 'Apr', admissions: 142, avgStay: 3.9, revenue: 325 },
-                         { month: 'May', admissions: 128, avgStay: 4.1, revenue: 295 },
-                         { month: 'Jun', admissions: 138, avgStay: 3.7, revenue: 315 },
-                         { month: 'Jul', admissions: 125, avgStay: 4.3, revenue: 285 }
-                     ];
-                     this.updateLegendForSection(['Admissions', 'Avg Stay (days)', 'Revenue ($K)']);
-                     break;
-                 default:
-                     return;
-             }
-             
-             // Update the chart with new data
-             if (this.setChartData) {
-                 this.setChartData(sectionData);
-             }
-         }
+        loadSectionData(section) {
+            console.log(`Loading ${section} section with simulated data...`);
+            
+            switch(section) {
+                case 'dashboard':
+                    this.loadDashboardData();
+                    this.updateChartForSection('dashboard');
+                    this.showNotification('📊 Dashboard refreshed', 'success');
+                    break;
+                case 'data':
+                    this.loadDataContent();
+                    this.showNotification('📋 Data section loaded', 'info');
+                    break;
+                default:
+                    this.loadDashboardData();
+                    this.updateChartForSection('dashboard');
+                    this.showNotification('📊 Dashboard refreshed', 'success');
+                    break;
+            }
+        }
 
-         updateLegendForSection(labels) {
-             const legendContainer = document.querySelector('.chart-legend');
-             if (!legendContainer || !labels) return;
+        loadDataContent() {
+            console.log('Loading data content...');
+            // Initialize data section - no charts needed
+            // This method can be expanded to fetch real data from the backend
+            this.showNotification('📊 Data tables ready', 'success');
+        }
 
-             const colors = ['#3b82f6', '#22d3ee', '#10b981'];
-             
-             const legendHTML = labels.map((label, i) => `
-                 <span class="legend-item">
-                     <span class="legend-color" style="background: ${colors[i % colors.length]};"></span>
-                     ${label}
-                 </span>
-             `).join('');
-             
-             legendContainer.innerHTML = legendHTML;
-         }
+        updateChartForSection(section) {
+            let sectionData;
+            
+            switch(section) {
+                case 'dashboard':
+                    sectionData = [
+                        { month: 'Jan', patients: 65, revenue: 45, satisfaction: 50 },
+                        { month: 'Feb', patients: 58, revenue: 52, satisfaction: 45 },
+                        { month: 'Mar', patients: 52, revenue: 58, satisfaction: 40 },
+                        { month: 'Apr', patients: 45, revenue: 62, satisfaction: 35 },
+                        { month: 'May', patients: 38, revenue: 68, satisfaction: 30 },
+                        { month: 'Jun', patients: 45, revenue: 55, satisfaction: 25 },
+                        { month: 'Jul', patients: 35, revenue: 48, satisfaction: 20 }
+                    ];
+                    this.updateLegendForSection(['Patient Count', 'Revenue Data', 'Satisfaction']);
+                    break;
+                case 'data':
+                    sectionData = [
+                        { month: 'Jan', admissions: 120, avgStay: 4.2, revenue: 280 },
+                        { month: 'Feb', admissions: 135, avgStay: 3.8, revenue: 310 },
+                        { month: 'Mar', admissions: 115, avgStay: 4.5, revenue: 265 },
+                        { month: 'Apr', admissions: 142, avgStay: 3.9, revenue: 325 },
+                        { month: 'May', admissions: 128, avgStay: 4.1, revenue: 295 },
+                        { month: 'Jun', admissions: 138, avgStay: 3.7, revenue: 315 },
+                        { month: 'Jul', admissions: 125, avgStay: 4.3, revenue: 285 }
+                    ];
+                    this.updateLegendForSection(['Admissions', 'Avg Stay (days)', 'Revenue ($K)']);
+                    break;
+                default:
+                    return;
+            }
+            
+            if (this.setChartData) {
+                this.setChartData(sectionData);
+            }
+        }
 
-         loadAlertsData() {
-             console.log('Loading alerts data...');
-             // Update alert counts with random numbers
-             const criticalCount = Math.floor(Math.random() * 5) + 1;
-             const warningCount = Math.floor(Math.random() * 10) + 3;
-             const infoCount = Math.floor(Math.random() * 15) + 8;
+        updateLegendForSection(labels) {
+            const legendContainer = document.querySelector('.chart-legend');
+            if (!legendContainer || !labels) return;
 
-             const criticalEl = document.querySelector('.alert-count.critical');
-             const warningEl = document.querySelector('.alert-count.warning');
-             const infoEl = document.querySelector('.alert-count.info');
+            const colors = ['#3b82f6', '#22d3ee', '#10b981'];
+            
+            const legendHTML = labels.map((label, i) => `
+                <span class="legend-item">
+                    <span class="legend-color" style="background: ${colors[i % colors.length]};"></span>
+                    ${label}
+                </span>
+            `).join('');
+            
+            legendContainer.innerHTML = legendHTML;
+        }
 
-             if (criticalEl) criticalEl.textContent = `${criticalCount} Critical`;
-             if (warningEl) warningEl.textContent = `${warningCount} Warnings`;
-             if (infoEl) infoEl.textContent = `${infoCount} Info`;
-         }
+        loadDashboardData() {
+            console.log('Loading dashboard data...');
+            this.simulateDataUpdate();
+        }
 
-         loadResourcesData() {
-             console.log('Loading resources data...');
-             // Animate inventory bars
-             const inventoryFills = document.querySelectorAll('.inventory-fill');
-             inventoryFills.forEach((fill, index) => {
-                 const currentWidth = fill.style.width;
-                 fill.style.width = '0%';
-                 setTimeout(() => {
-                     fill.style.width = currentWidth;
-                 }, index * 200);
-             });
-         }
+        loadDataAnalyticsData() {
+            console.log('Loading data analytics...');
+            this.refreshAllMetrics();
+        }
 
-         loadDataAnalyticsData() {
-             console.log('Loading data analytics...');
-             // Here you could implement data analytics specific updates
-             this.refreshAllMetrics();
-         }
+        handleChartTypeChange(event) {
+            console.log('handleChartTypeChange called', event);
+            const clickedBtn = event.target;
+            const chartType = clickedBtn.getAttribute('data-chart') || clickedBtn.textContent.toLowerCase();
+            
+            console.log('Chart type detected:', chartType, 'from button:', clickedBtn.textContent);
+            
+            document.querySelectorAll('.chart-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            clickedBtn.classList.add('active');
+            
+            this.showNotification(`📊 Switched to ${clickedBtn.textContent} view`, 'info');
+            this.updateChart(chartType);
+            
+            console.log(`Chart type changed to: ${chartType}`);
+        }
 
-                  showLoadingState(section) {
-             // Add subtle loading animation
-             const currentSection = document.querySelector(`.section-${this.currentSection}`);
-             if (currentSection) {
-                 currentSection.style.opacity = '0.7';
-                 setTimeout(() => {
-                     currentSection.style.opacity = '1';
-                 }, 500);
-             }
-             
-             // Also animate metrics container if available
-             const metricsContainer = document.querySelector('.metrics-container');
-             if (metricsContainer) {
-                 metricsContainer.style.opacity = '0.7';
-                 setTimeout(() => {
-                     metricsContainer.style.opacity = '1';
-                 }, 500);
-             }
-         }
+        updateChart(chartType, data = null) {
+            console.log('updateChart called with type:', chartType);
+            const chartContainer = document.querySelector('.line-chart');
+            if (!chartContainer) {
+                console.error('Chart container not found!');
+                return;
+            }
 
+            console.log('Chart container found, updating to', chartType);
+
+            const chartData = data || this.getChartData();
+            console.log('Using chart data:', chartData);
+
+            chartContainer.style.opacity = '0.3';
+            chartContainer.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+                switch(chartType) {
+                    case 'line':
+                        console.log('Generating dynamic line chart');
+                        chartContainer.innerHTML = this.generateDynamicLineChart(chartData);
+                        break;
+                    case 'bar':
+                        console.log('Generating dynamic bar chart');
+                        chartContainer.innerHTML = this.generateDynamicBarChart(chartData);
+                        break;
+                    case 'pie':
+                        console.log('Generating dynamic pie chart');
+                        chartContainer.innerHTML = this.generateDynamicPieChart(chartData);
+                        break;
+                    case 'scatter':
+                        console.log('Generating dynamic scatter chart');
+                        chartContainer.innerHTML = this.generateDynamicScatterChart(chartData);
+                        break;
+                    default:
+                        console.log('Default: generating dynamic line chart');
+                        chartContainer.innerHTML = this.generateDynamicLineChart(chartData);
+                }
+                
+                this.updateDynamicLegend(chartData, chartType);
+                
+                chartContainer.style.opacity = '1';
+                chartContainer.style.transform = 'scale(1)';
+                console.log('Chart updated successfully to', chartType);
+            }, 150);
+        }
+
+        getCurrentChartData() {
+            return [
+                { month: 'Jan', patients: 65, revenue: 45, satisfaction: 50 },
+                { month: 'Feb', patients: 58, revenue: 52, satisfaction: 45 },
+                { month: 'Mar', patients: 52, revenue: 58, satisfaction: 40 },
+                { month: 'Apr', patients: 45, revenue: 62, satisfaction: 35 },
+                { month: 'May', patients: 38, revenue: 68, satisfaction: 30 },
+                { month: 'Jun', patients: 45, revenue: 55, satisfaction: 25 },
+                { month: 'Jul', patients: 35, revenue: 48, satisfaction: 20 }
+            ];
+        }
+
+        analyzeDataStructure(data) {
+            if (!data || data.length === 0) return { xField: null, yFields: [], colors: [] };
+            
+            const firstItem = data[0];
+            const fields = Object.keys(firstItem);
+            
+            const xField = fields.find(field => 
+                typeof firstItem[field] === 'string' || 
+                field.toLowerCase().includes('time') ||
+                field.toLowerCase().includes('date') ||
+                field.toLowerCase().includes('month') ||
+                field.toLowerCase().includes('category') ||
+                field.toLowerCase().includes('label')
+            ) || fields[0];
+            
+            const yFields = fields.filter(field => 
+                field !== xField && 
+                typeof firstItem[field] === 'number'
+            );
+            
+            const colorPalette = [
+                '#3b82f6', '#22d3ee', '#10b981', '#f59e0b', 
+                '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', 
+                '#f97316', '#ec4899', '#6366f1', '#14b8a6'
+            ];
+            
+            const colors = yFields.map((field, index) => 
+                colorPalette[index % colorPalette.length]
+            );
+            
+            return { xField, yFields, colors };
+        }
+
+        generateDynamicLineChart(data) {
+            const { xField, yFields, colors } = this.analyzeDataStructure(data);
+            console.log('Line chart structure:', { xField, yFields, colors });
+            
+            if (!xField || yFields.length === 0) {
+                return '<div style="padding: 20px; text-align: center; color: #64748b;">No valid data structure for line chart</div>';
+            }
+
+            const allValues = data.flatMap(d => yFields.map(field => d[field] || 0));
+            const minValue = Math.min(...allValues);
+            const maxValue = Math.max(...allValues);
+            const valueRange = maxValue - minValue || 1;
+            
+            const scaleY = (value) => 250 - ((value - minValue) / valueRange) * 180;
+            const scaleX = (index) => 80 + index * (440 / (data.length - 1));
+
+            return `
+                <svg width="100%" height="400" viewBox="0 0 600 300">
+                    <defs>
+                        <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
+                            <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#grid)" />
+                    
+                    ${Array.from({length: 6}, (_, i) => {
+                        const value = Math.round(maxValue - (i * valueRange / 5));
+                        const y = 50 + i * 40;
+                        return `<text x="30" y="${y}" fill="#64748b" font-size="12" text-anchor="end">${value}</text>`;
+                    }).join('')}
+                    
+                    ${data.map((d, i) => `<text x="${scaleX(i)}" y="280" fill="#64748b" font-size="12" text-anchor="middle">${d[xField]}</text>`).join('')}
+                    
+                    ${yFields.map((field, fieldIndex) => {
+                        const lineColor = colors[fieldIndex];
+                        const pathData = data.map((d, i) => `${scaleX(i)} ${scaleY(d[field] || 0)}`).join(' L ');
+                        return `
+                            <path d="M ${pathData}" 
+                                  stroke="${lineColor}" stroke-width="3" fill="none" stroke-linecap="round"/>
+                            
+                            ${data.map((d, i) => `<circle cx="${scaleX(i)}" cy="${scaleY(d[field] || 0)}" r="4" fill="${lineColor}"/>`).join('')}
+                        `;
+                    }).join('')}
+                </svg>
+            `;
+        }
+
+        generateDynamicBarChart(data) {
+            const { xField, yFields, colors } = this.analyzeDataStructure(data);
+            
+            if (!xField || yFields.length === 0) {
+                return '<div style="padding: 20px; text-align: center; color: #64748b;">No valid data structure for bar chart</div>';
+            }
+
+            const allValues = data.flatMap(d => yFields.map(field => d[field] || 0));
+            const minValue = Math.max(0, Math.min(...allValues));
+            const maxValue = Math.max(...allValues);
+            const valueRange = maxValue - minValue || 1;
+            
+            const scaleY = (value) => 250 - ((value - minValue) / valueRange) * 180;
+            const scaleHeight = (value) => ((value - minValue) / valueRange) * 180;
+            const categoryWidth = 440 / data.length;
+            const barWidth = Math.min(15, (categoryWidth - 10) / yFields.length);
+
+            return `
+                <svg width="100%" height="400" viewBox="0 0 600 300">
+                    <defs>
+                        <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
+                            <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#grid)" />
+                    
+                    ${Array.from({length: 6}, (_, i) => {
+                        const value = Math.round(maxValue - (i * valueRange / 5));
+                        const y = 50 + i * 40;
+                        return `<text x="30" y="${y}" fill="#64748b" font-size="12" text-anchor="end">${value}</text>`;
+                    }).join('')}
+                    
+                    ${data.map((d, i) => {
+                        const centerX = 80 + i * categoryWidth + categoryWidth / 2;
+                        return `<text x="${centerX}" y="280" fill="#64748b" font-size="12" text-anchor="middle">${d[xField]}</text>`;
+                    }).join('')}
+                    
+                    ${data.map((d, dataIndex) => {
+                        const baseX = 80 + dataIndex * categoryWidth;
+                        const startX = baseX + (categoryWidth - (yFields.length * barWidth + (yFields.length - 1) * 2)) / 2;
+                        
+                        return yFields.map((field, fieldIndex) => {
+                            const barColor = colors[fieldIndex];
+                            const value = d[field] || 0;
+                            const barHeight = scaleHeight(value);
+                            const barY = scaleY(value);
+                            const barX = startX + fieldIndex * (barWidth + 2);
+                            
+                            return `
+                                <rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" 
+                                      fill="${barColor}" rx="2" opacity="0.9"/>
+                                <text x="${barX + barWidth/2}" y="${barY - 5}" fill="#64748b" 
+                                      font-size="10" text-anchor="middle">${value}</text>
+                            `;
+                        }).join('');
+                    }).join('')}
+                </svg>
+            `;
+        }
+
+        generateDynamicPieChart(data) {
+            console.log('Generating dynamic pie chart with data:', data);
+            
+            if (!data || data.length === 0) {
+                return '<div style="padding: 20px; text-align: center; color: #64748b;">No data available for pie chart</div>';
+            }
+
+            const { xField, yFields, colors } = this.analyzeDataStructure(data);
+            
+            let pieData = [];
+            
+            if (data[0].hasOwnProperty('value') && data[0].hasOwnProperty('label')) {
+                pieData = data.map((d, i) => ({
+                    label: d.label,
+                    value: d.value,
+                    color: d.color || colors[i % colors.length]
+                }));
+            } else if (yFields.length === 1) {
+                pieData = data.map((d, i) => ({
+                    label: d[xField] || `Item ${i + 1}`,
+                    value: d[yFields[0]] || 0,
+                    color: colors[i % colors.length]
+                }));
+            } else if (yFields.length > 1) {
+                pieData = yFields.map((field, i) => ({
+                    label: field.charAt(0).toUpperCase() + field.slice(1),
+                    value: data.reduce((sum, d) => sum + (d[field] || 0), 0),
+                    color: colors[i % colors.length]
+                }));
+            } else {
+                return '<div style="padding: 20px; text-align: center; color: #64748b;">No valid numeric data for pie chart</div>';
+            }
+
+            const total = pieData.reduce((sum, d) => sum + d.value, 0);
+            if (total === 0) {
+                return '<div style="padding: 20px; text-align: center; color: #64748b;">All values are zero</div>';
+            }
+
+            let currentAngle = 0;
+            const radius = 80;
+            const centerX = 300;
+            const centerY = 130;
+
+            const slices = pieData.map(d => {
+                const startAngle = currentAngle;
+                const endAngle = currentAngle + (d.value / total) * 2 * Math.PI;
+                currentAngle = endAngle;
+
+                const x1 = centerX + radius * Math.cos(startAngle);
+                const y1 = centerY + radius * Math.sin(startAngle);
+                const x2 = centerX + radius * Math.cos(endAngle);
+                const y2 = centerY + radius * Math.sin(endAngle);
+
+                const largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1";
+                const percentage = Math.round((d.value / total) * 100);
+
+                return {
+                    ...d,
+                    percentage,
+                    path: `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`,
+                    labelX: centerX + (radius * 0.7) * Math.cos((startAngle + endAngle) / 2),
+                    labelY: centerY + (radius * 0.7) * Math.sin((startAngle + endAngle) / 2)
+                };
+            });
+
+            return `
+                <svg width="100%" height="400" viewBox="0 0 600 300">
+                    ${slices.map(slice => `
+                        <path d="${slice.path}" fill="${slice.color}" stroke="white" stroke-width="2"/>
+                        ${slice.percentage > 5 ? `<text x="${slice.labelX}" y="${slice.labelY}" fill="white" font-size="12" text-anchor="middle" font-weight="600">${slice.percentage}%</text>` : ''}
+                    `).join('')}
+                    
+                    ${pieData.map((d, i) => `
+                        <rect x="450" y="${50 + i * 20}" width="12" height="12" fill="${d.color}" rx="2"/>
+                        <text x="470" y="${60 + i * 20}" fill="#64748b" font-size="11">${d.label} (${Math.round((d.value / total) * 100)}%)</text>
+                    `).join('')}
+                    
+                    <text x="300" y="30" fill="#1e293b" font-size="16" text-anchor="middle" font-weight="600">Data Distribution</text>
+                </svg>
+            `;
+        }
+
+        generateDynamicScatterChart(data) {
+            console.log('Generating dynamic scatter chart with data:', data);
+            
+            if (!data || data.length === 0) {
+                return '<div style="padding: 20px; text-align: center; color: #64748b;">No data available for scatter chart</div>';
+            }
+
+            const { xField, yFields, colors } = this.analyzeDataStructure(data);
+            
+            if (yFields.length < 2) {
+                return '<div style="padding: 20px; text-align: center; color: #64748b;">Scatter chart requires at least 2 numeric fields</div>';
+            }
+
+            const xAxisField = yFields[0];
+            const yAxisField = yFields[1];
+            const sizeField = yFields[2] || null;
+            const labelField = xField;
+            
+            const xValues = data.map(d => d[xAxisField] || 0);
+            const yValues = data.map(d => d[yAxisField] || 0);
+            const sizeValues = sizeField ? data.map(d => d[sizeField] || 0) : [];
+            
+            const xMin = Math.min(...xValues);
+            const xMax = Math.max(...xValues);
+            const yMin = Math.min(...yValues);
+            const yMax = Math.max(...yValues);
+            const sizeMin = sizeValues.length ? Math.min(...sizeValues) : 5;
+            const sizeMax = sizeValues.length ? Math.max(...sizeValues) : 10;
+            
+            const xRange = xMax - xMin || 1;
+            const yRange = yMax - yMin || 1;
+            const sizeRange = sizeMax - sizeMin || 1;
+            
+            const scaleX = (value) => 50 + ((value - xMin) / xRange) * 500;
+            const scaleY = (value) => 250 - ((value - yMin) / yRange) * 200;
+            const scaleSize = (value) => sizeField ? 
+                5 + ((value - sizeMin) / sizeRange) * 10 : 
+                8;
+
+            return `
+                <svg width="100%" height="400" viewBox="0 0 600 300">
+                    <defs>
+                        <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
+                            <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#f1f5f9" stroke-width="1"/>
+                        </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#grid)" />
+                    
+                    <line x1="50" y1="250" x2="550" y2="250" stroke="#e2e8f0" stroke-width="2"/>
+                    <text x="300" y="290" fill="#64748b" font-size="12" text-anchor="middle">${xAxisField.charAt(0).toUpperCase() + xAxisField.slice(1)}</text>
+                    
+                    <line x1="50" y1="50" x2="50" y2="250" stroke="#e2e8f0" stroke-width="2"/>
+                    <text x="25" y="150" fill="#64748b" font-size="12" text-anchor="middle" transform="rotate(-90 25 150)">${yAxisField.charAt(0).toUpperCase() + yAxisField.slice(1)}</text>
+                    
+                    ${Array.from({length: 6}, (_, i) => {
+                        const value = Math.round(xMin + (i * xRange / 5));
+                        const x = 50 + i * 100;
+                        return `<text x="${x}" y="265" fill="#64748b" font-size="10" text-anchor="middle">${value}</text>`;
+                    }).join('')}
+                    
+                    ${Array.from({length: 6}, (_, i) => {
+                        const value = Math.round(yMax - (i * yRange / 5));
+                        const y = 50 + i * 40;
+                        return `<text x="35" y="${y}" fill="#64748b" font-size="10" text-anchor="end">${value}</text>`;
+                    }).join('')}
+                    
+                    ${data.map((d, i) => {
+                        const x = scaleX(d[xAxisField] || 0);
+                        const y = scaleY(d[yAxisField] || 0);
+                        const size = scaleSize(sizeField ? (d[sizeField] || 0) : 8);
+                        const color = colors[i % colors.length];
+                        const label = d[labelField] || `Point ${i + 1}`;
+                        
+                        return `
+                            <circle cx="${x}" cy="${y}" r="${size}" 
+                                    fill="${color}" opacity="0.7" 
+                                    stroke="${color}" stroke-width="2"/>
+                            <text x="${x}" y="${y - size - 5}" 
+                                  fill="#64748b" font-size="10" text-anchor="middle">${label}</text>
+                        `;
+                    }).join('')}
+                    
+                    <text x="300" y="30" fill="#1e293b" font-size="16" text-anchor="middle" font-weight="600">${yAxisField.charAt(0).toUpperCase() + yAxisField.slice(1)} vs ${xAxisField.charAt(0).toUpperCase() + xAxisField.slice(1)}</text>
+                </svg>
+            `;
+        }
+
+        updateDynamicLegend(data, chartType) {
+            const legendContainer = document.querySelector('.chart-legend');
+            if (!legendContainer) return;
+
+            const { xField, yFields, colors } = this.analyzeDataStructure(data);
+            
+            let legendHTML = '';
+            
+            if (chartType === 'pie') {
+                if (data[0]?.hasOwnProperty('value') && data[0]?.hasOwnProperty('label')) {
+                    legendHTML = data.map((d, i) => `
+                        <span class="legend-item">
+                            <span class="legend-color" style="background: ${d.color || colors[i % colors.length]};"></span>
+                            ${d.label}
+                        </span>
+                    `).join('');
+                } else {
+                    legendHTML = yFields.map((field, i) => `
+                        <span class="legend-item">
+                            <span class="legend-color" style="background: ${colors[i]};"></span>
+                            ${field.charAt(0).toUpperCase() + field.slice(1)}
+                        </span>
+                    `).join('');
+                }
+            } else if (chartType === 'scatter') {
+                if (yFields.length >= 2) {
+                    legendHTML = `
+                        <span class="legend-item">
+                            <span class="legend-color" style="background: ${colors[0]};"></span>
+                            X: ${yFields[0].charAt(0).toUpperCase() + yFields[0].slice(1)}
+                        </span>
+                        <span class="legend-item">
+                            <span class="legend-color" style="background: ${colors[1]};"></span>
+                            Y: ${yFields[1].charAt(0).toUpperCase() + yFields[1].slice(1)}
+                        </span>
+                    `;
+                }
+            } else {
+                legendHTML = yFields.map((field, i) => `
+                    <span class="legend-item">
+                        <span class="legend-color" style="background: ${colors[i]};"></span>
+                        ${field.charAt(0).toUpperCase() + field.slice(1)}
+                    </span>
+                `).join('');
+            }
+            
+            legendContainer.innerHTML = legendHTML;
+        }
+
+        // Initialize and update methods
         initializeCharts() {
             this.initICUOccupancyChart();
             this.initEmergencyLoadChart();
@@ -1348,7 +1840,6 @@ def load_latex_scripts():
                         doctorsProgress.style.width = doctorValue + '%';
                         nursesProgress.style.width = nurseValue + '%';
                         
-                        // Update percentage displays
                         const doctorPercentage = document.querySelector('.staff-item:first-child .staff-percentage');
                         const nursePercentage = document.querySelector('.staff-item:last-child .staff-percentage');
                         if (doctorPercentage) doctorPercentage.textContent = doctorValue + '%';
@@ -1388,25 +1879,21 @@ def load_latex_scripts():
         }
 
         simulateDataUpdate() {
-            // Simulate ICU occupancy changes
             const currentICU = this.metrics.icuOccupancy?.value || 71;
             const newICU = Math.max(50, Math.min(95, currentICU + (Math.random() - 0.5) * 10));
             this.updateICUOccupancy(Math.round(newICU));
 
-            // Simulate staff availability changes
             const currentDoctors = this.metrics.staffAvailability?.doctors.value || 75;
             const currentNurses = this.metrics.staffAvailability?.nurses.value || 60;
             const newDoctors = Math.max(40, Math.min(90, currentDoctors + (Math.random() - 0.5) * 15));
             const newNurses = Math.max(30, Math.min(85, currentNurses + (Math.random() - 0.5) * 20));
             this.updateStaffAvailability(Math.round(newDoctors), Math.round(newNurses));
 
-            // Simulate tool usage changes
             const newToolUsage = this.metrics.toolUsage?.values.map(val => 
                 Math.max(20, Math.min(90, val + (Math.random() - 0.5) * 20))
             ) || [60, 40, 70, 35, 85];
             this.updateToolUsage(newToolUsage.map(val => Math.round(val)));
 
-            // Simulate emergency load changes
             const newEmergencyData = Array.from({length: 7}, () => 
                 Math.max(20, Math.min(80, 50 + (Math.random() - 0.5) * 40))
             );
@@ -1435,580 +1922,24 @@ def load_latex_scripts():
             }
         }
 
-        animateCard(card, isHovering) {
-            if (isHovering) {
-                card.style.transform = 'translateY(-4px) scale(1.02)';
-                card.style.boxShadow = '0 8px 25px rgba(0, 0, 0, 0.15)';
-            } else {
-                card.style.transform = 'translateY(0) scale(1)';
-                card.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
+        updateEmergencyLoad(data) {
+            if (this.metrics.emergencyLoad) {
+                this.metrics.emergencyLoad.data = data;
+                this.metrics.emergencyLoad.animate(data);
             }
         }
 
-                 handleQuickAction(event) {
-             const button = event.target;
-             const action = button.textContent.toLowerCase();
-             
-             const originalText = button.textContent;
-             button.style.opacity = '0.7';
-             button.textContent = 'Loading...';
-             
-             setTimeout(() => {
-                 button.style.opacity = '1';
-                 button.textContent = originalText;
-                 
-                 if (action.includes('status')) {
-                     this.refreshAllMetrics();
-                 }
-             }, 1000);
-         }
+        generateLoadPath(data) {
+            const points = data.map((value, index) => {
+                const x = 10 + (index * 30);
+                const y = 70 - (value * 0.8);
+                return `${x} ${y}`;
+            });
+            
+            return `M ${points[0]} Q ${points[1]} T ${points.slice(2).join(' T ')}`;
+        }
 
-         handleAlertAction(event) {
-             const button = event.target;
-             const action = button.textContent.toLowerCase();
-             const alertItem = button.closest('.alert-item');
-             
-             const originalText = button.textContent;
-             button.style.opacity = '0.7';
-             button.textContent = 'Processing...';
-             
-             setTimeout(() => {
-                 button.style.opacity = '1';
-                 button.textContent = originalText;
-                 
-                 if (action.includes('acknowledge') || action.includes('dispatch')) {
-                     // Fade out the alert
-                     alertItem.style.opacity = '0.5';
-                     alertItem.style.transform = 'translateX(20px)';
-                     this.showNotification(`Alert ${action}d successfully`, 'success');
-                 } else if (action.includes('reorder')) {
-                     this.showNotification('Reorder request submitted', 'success');
-                 } else {
-                     this.showNotification(`${action} action completed`, 'info');
-                 }
-             }, 1000);
-         }
-
-         handleChartTypeChange(event) {
-             console.log('handleChartTypeChange called', event);
-             const clickedBtn = event.target;
-             const chartType = clickedBtn.getAttribute('data-chart') || clickedBtn.textContent.toLowerCase();
-             
-             console.log('Chart type detected:', chartType, 'from button:', clickedBtn.textContent);
-             
-             // Update active state
-             document.querySelectorAll('.chart-btn').forEach(btn => {
-                 btn.classList.remove('active');
-             });
-             clickedBtn.classList.add('active');
-             
-             // Show notification
-             this.showNotification(`📊 Switched to ${clickedBtn.textContent} view`, 'info');
-             
-             // Update chart content
-             this.updateChart(chartType);
-             
-             console.log(`Chart type changed to: ${chartType}`);
-         }
-
-         updateChart(chartType, data = null) {
-             console.log('updateChart called with type:', chartType);
-             const chartContainer = document.querySelector('.line-chart');
-             if (!chartContainer) {
-                 console.error('Chart container not found!');
-                 return;
-             }
-
-             console.log('Chart container found, updating to', chartType);
-
-             // Use provided data or get current data
-             const chartData = data || this.getChartData();
-             console.log('Using chart data:', chartData);
-
-             // Add transition effect
-             chartContainer.style.opacity = '0.3';
-             chartContainer.style.transform = 'scale(0.95)';
-             
-             setTimeout(() => {
-                 // Generate chart based on type with dynamic data
-                 switch(chartType) {
-                     case 'line':
-                         console.log('Generating dynamic line chart');
-                         chartContainer.innerHTML = this.generateDynamicLineChart(chartData);
-                         break;
-                     case 'bar':
-                         console.log('Generating dynamic bar chart');
-                         chartContainer.innerHTML = this.generateDynamicBarChart(chartData);
-                         break;
-                     case 'pie':
-                         console.log('Generating dynamic pie chart');
-                         chartContainer.innerHTML = this.generateDynamicPieChart(chartData);
-                         break;
-                     case 'scatter':
-                         console.log('Generating dynamic scatter chart');
-                         chartContainer.innerHTML = this.generateDynamicScatterChart(chartData);
-                         break;
-                     default:
-                         console.log('Default: generating dynamic line chart');
-                         chartContainer.innerHTML = this.generateDynamicLineChart(chartData);
-                 }
-                 
-                 // Update legend dynamically
-                 this.updateDynamicLegend(chartData, chartType);
-                 
-                 // Restore chart appearance
-                 chartContainer.style.opacity = '1';
-                 chartContainer.style.transform = 'scale(1)';
-                 console.log('Chart updated successfully to', chartType);
-             }, 150);
-         }
-
-         getCurrentChartData() {
-             // Default sample data that can be easily replaced
-             return [
-                 { month: 'Jan', patients: 65, revenue: 45, paties: 50 },
-                 { month: 'Feb', patients: 58, revenue: 52, paties: 45 },
-                 { month: 'Mar', patients: 52, revenue: 58, paties: 40 },
-                 { month: 'Apr', patients: 45, revenue: 62, paties: 35 },
-                 { month: 'May', patients: 38, revenue: 68, paties: 30 },
-                 { month: 'Jun', patients: 45, revenue: 55, paties: 25 },
-                 { month: 'Jul', patients: 35, revenue: 48, paties: 20 }
-             ];
-         }
-
-         analyzeDataStructure(data) {
-             if (!data || data.length === 0) return { xField: null, yFields: [], colors: [] };
-             
-             const firstItem = data[0];
-             const fields = Object.keys(firstItem);
-             
-             // Detect x-axis field (typically string/category field)
-             const xField = fields.find(field => 
-                 typeof firstItem[field] === 'string' || 
-                 field.toLowerCase().includes('time') ||
-                 field.toLowerCase().includes('date') ||
-                 field.toLowerCase().includes('month') ||
-                 field.toLowerCase().includes('category') ||
-                 field.toLowerCase().includes('label')
-             ) || fields[0];
-             
-             // Detect y-axis fields (numeric fields excluding x-axis)
-             const yFields = fields.filter(field => 
-                 field !== xField && 
-                 typeof firstItem[field] === 'number'
-             );
-             
-             // Generate colors dynamically
-             const colorPalette = [
-                 '#3b82f6', '#22d3ee', '#10b981', '#f59e0b', 
-                 '#ef4444', '#8b5cf6', '#06b6d4', '#84cc16', 
-                 '#f97316', '#ec4899', '#6366f1', '#14b8a6'
-             ];
-             
-             const colors = yFields.map((field, index) => 
-                 colorPalette[index % colorPalette.length]
-             );
-             
-             return { xField, yFields, colors };
-         }
-
-         generateDynamicLineChart(data) {
-             const { xField, yFields, colors } = this.analyzeDataStructure(data);
-             console.log('Line chart structure:', { xField, yFields, colors });
-             
-             if (!xField || yFields.length === 0) {
-                 return '<div style="padding: 20px; text-align: center; color: #64748b;">No valid data structure for line chart</div>';
-             }
-
-             // Calculate scales
-             const allValues = data.flatMap(d => yFields.map(field => d[field] || 0));
-             const minValue = Math.min(...allValues);
-             const maxValue = Math.max(...allValues);
-             const valueRange = maxValue - minValue || 1;
-             
-             // Scale functions
-             const scaleY = (value) => 250 - ((value - minValue) / valueRange) * 180;
-             const scaleX = (index) => 80 + index * (440 / (data.length - 1));
-
-             return `
-                 <svg width="100%" height="400" viewBox="0 0 600 300">
-                     <!-- Grid lines -->
-                     <defs>
-                         <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
-                             <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#f1f5f9" stroke-width="1"/>
-                         </pattern>
-                     </defs>
-                     <rect width="100%" height="100%" fill="url(#grid)" />
-                     
-                     <!-- Y-axis labels -->
-                     ${Array.from({length: 6}, (_, i) => {
-                         const value = Math.round(maxValue - (i * valueRange / 5));
-                         const y = 50 + i * 40;
-                         return `<text x="30" y="${y}" fill="#64748b" font-size="12" text-anchor="end">${value}</text>`;
-                     }).join('')}
-                     
-                     <!-- X-axis labels -->
-                     ${data.map((d, i) => `<text x="${scaleX(i)}" y="280" fill="#64748b" font-size="12" text-anchor="middle">${d[xField]}</text>`).join('')}
-                     
-                     <!-- Dynamic lines for each field -->
-                     ${yFields.map((field, fieldIndex) => {
-                         const lineColor = colors[fieldIndex];
-                         const pathData = data.map((d, i) => `${scaleX(i)} ${scaleY(d[field] || 0)}`).join(' L ');
-                         return `
-                             <!-- ${field} line -->
-                             <path d="M ${pathData}" 
-                                   stroke="${lineColor}" stroke-width="3" fill="none" stroke-linecap="round"/>
-                             
-                             <!-- Data points for ${field} -->
-                             ${data.map((d, i) => `<circle cx="${scaleX(i)}" cy="${scaleY(d[field] || 0)}" r="4" fill="${lineColor}"/>`).join('')}
-                         `;
-                     }).join('')}
-                 </svg>
-             `;
-         }
-
-         // Keep old function for backwards compatibility
-         generateLineChart() {
-             return this.generateDynamicLineChart(this.getCurrentChartData());
-         }
-
-         generateDynamicBarChart(data) {
-             const { xField, yFields, colors } = this.analyzeDataStructure(data);
-             console.log('Bar chart structure:', { xField, yFields, colors });
-             
-             if (!xField || yFields.length === 0) {
-                 return '<div style="padding: 20px; text-align: center; color: #64748b;">No valid data structure for bar chart</div>';
-             }
-
-             // Calculate scales
-             const allValues = data.flatMap(d => yFields.map(field => d[field] || 0));
-             const minValue = Math.max(0, Math.min(...allValues)); // Start from 0 for bars
-             const maxValue = Math.max(...allValues);
-             const valueRange = maxValue - minValue || 1;
-             
-             // Scale functions
-             const scaleY = (value) => 250 - ((value - minValue) / valueRange) * 180;
-             const scaleHeight = (value) => ((value - minValue) / valueRange) * 180;
-             const categoryWidth = 440 / data.length;
-             const barWidth = Math.min(15, (categoryWidth - 10) / yFields.length);
-
-             return `
-                 <svg width="100%" height="400" viewBox="0 0 600 300">
-                     <!-- Grid lines -->
-                     <defs>
-                         <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
-                             <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#f1f5f9" stroke-width="1"/>
-                         </pattern>
-                     </defs>
-                     <rect width="100%" height="100%" fill="url(#grid)" />
-                     
-                     <!-- Y-axis labels -->
-                     ${Array.from({length: 6}, (_, i) => {
-                         const value = Math.round(maxValue - (i * valueRange / 5));
-                         const y = 50 + i * 40;
-                         return `<text x="30" y="${y}" fill="#64748b" font-size="12" text-anchor="end">${value}</text>`;
-                     }).join('')}
-                     
-                     <!-- X-axis labels -->
-                     ${data.map((d, i) => {
-                         const centerX = 80 + i * categoryWidth + categoryWidth / 2;
-                         return `<text x="${centerX}" y="280" fill="#64748b" font-size="12" text-anchor="middle">${d[xField]}</text>`;
-                     }).join('')}
-                     
-                     <!-- Dynamic bars for each field -->
-                     ${data.map((d, dataIndex) => {
-                         const baseX = 80 + dataIndex * categoryWidth;
-                         const startX = baseX + (categoryWidth - (yFields.length * barWidth + (yFields.length - 1) * 2)) / 2;
-                         
-                         return yFields.map((field, fieldIndex) => {
-                             const barColor = colors[fieldIndex];
-                             const value = d[field] || 0;
-                             const barHeight = scaleHeight(value);
-                             const barY = scaleY(value);
-                             const barX = startX + fieldIndex * (barWidth + 2);
-                             
-                             return `
-                                 <!-- ${field} bar for ${d[xField]} -->
-                                 <rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" 
-                                       fill="${barColor}" rx="2" opacity="0.9"/>
-                                 <text x="${barX + barWidth/2}" y="${barY - 5}" fill="#64748b" 
-                                       font-size="10" text-anchor="middle">${value}</text>
-                             `;
-                         }).join('');
-                     }).join('')}
-                 </svg>
-             `;
-         }
-
-         // Keep old function for backwards compatibility
-         generateBarChart() {
-             return this.generateDynamicBarChart(this.getCurrentChartData());
-         }
-
-         generateDynamicPieChart(data) {
-             console.log('Generating dynamic pie chart with data:', data);
-             
-             if (!data || data.length === 0) {
-                 return '<div style="padding: 20px; text-align: center; color: #64748b;">No data available for pie chart</div>';
-             }
-
-             // For pie charts, we can use different approaches:
-             // 1. If data has explicit value and label fields
-             // 2. If data needs to be aggregated from multiple series
-             // 3. Use the first numeric field for values
-             
-             const { xField, yFields, colors } = this.analyzeDataStructure(data);
-             
-             let pieData = [];
-             
-             // Check if we have explicit value/label structure
-             if (data[0].hasOwnProperty('value') && data[0].hasOwnProperty('label')) {
-                 pieData = data.map((d, i) => ({
-                     label: d.label,
-                     value: d.value,
-                     color: d.color || colors[i % colors.length]
-                 }));
-             } else if (yFields.length === 1) {
-                 // Single numeric field - use each data point as a slice
-                 pieData = data.map((d, i) => ({
-                     label: d[xField] || `Item ${i + 1}`,
-                     value: d[yFields[0]] || 0,
-                     color: colors[i % colors.length]
-                 }));
-             } else if (yFields.length > 1) {
-                 // Multiple numeric fields - use field names as labels, sum values
-                 pieData = yFields.map((field, i) => ({
-                     label: field.charAt(0).toUpperCase() + field.slice(1),
-                     value: data.reduce((sum, d) => sum + (d[field] || 0), 0),
-                     color: colors[i % colors.length]
-                 }));
-             } else {
-                 return '<div style="padding: 20px; text-align: center; color: #64748b;">No valid numeric data for pie chart</div>';
-             }
-
-             const total = pieData.reduce((sum, d) => sum + d.value, 0);
-             if (total === 0) {
-                 return '<div style="padding: 20px; text-align: center; color: #64748b;">All values are zero</div>';
-             }
-
-             let currentAngle = 0;
-             const radius = 80;
-             const centerX = 300;
-             const centerY = 130;
-
-             const slices = pieData.map(d => {
-                 const startAngle = currentAngle;
-                 const endAngle = currentAngle + (d.value / total) * 2 * Math.PI;
-                 currentAngle = endAngle;
-
-                 const x1 = centerX + radius * Math.cos(startAngle);
-                 const y1 = centerY + radius * Math.sin(startAngle);
-                 const x2 = centerX + radius * Math.cos(endAngle);
-                 const y2 = centerY + radius * Math.sin(endAngle);
-
-                 const largeArcFlag = endAngle - startAngle <= Math.PI ? "0" : "1";
-                 const percentage = Math.round((d.value / total) * 100);
-
-                 return {
-                     ...d,
-                     percentage,
-                     path: `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2} Z`,
-                     labelX: centerX + (radius * 0.7) * Math.cos((startAngle + endAngle) / 2),
-                     labelY: centerY + (radius * 0.7) * Math.sin((startAngle + endAngle) / 2)
-                 };
-             });
-
-             return `
-                 <svg width="100%" height="400" viewBox="0 0 600 300">
-                     <!-- Pie slices -->
-                     ${slices.map(slice => `
-                         <path d="${slice.path}" fill="${slice.color}" stroke="white" stroke-width="2"/>
-                         ${slice.percentage > 5 ? `<text x="${slice.labelX}" y="${slice.labelY}" fill="white" font-size="12" text-anchor="middle" font-weight="600">${slice.percentage}%</text>` : ''}
-                     `).join('')}
-                     
-                     <!-- Legend -->
-                     ${pieData.map((d, i) => `
-                         <rect x="450" y="${50 + i * 20}" width="12" height="12" fill="${d.color}" rx="2"/>
-                         <text x="470" y="${60 + i * 20}" fill="#64748b" font-size="11">${d.label} (${Math.round((d.value / total) * 100)}%)</text>
-                     `).join('')}
-                     
-                     <!-- Title -->
-                     <text x="300" y="30" fill="#1e293b" font-size="16" text-anchor="middle" font-weight="600">Data Distribution</text>
-                 </svg>
-             `;
-         }
-
-         // Keep old function for backwards compatibility
-         generatePieChart() {
-             // Convert current data format to pie chart format for demo
-             const currentData = this.getCurrentChartData();
-             const { yFields, colors } = this.analyzeDataStructure(currentData);
-             
-             // Use field totals for pie chart
-             const pieData = yFields.map((field, i) => ({
-                 label: field.charAt(0).toUpperCase() + field.slice(1),
-                 value: currentData.reduce((sum, d) => sum + (d[field] || 0), 0),
-                 color: colors[i % colors.length]
-             }));
-             
-             return this.generateDynamicPieChart(pieData);
-         }
-
-         generateDynamicScatterChart(data) {
-             console.log('Generating dynamic scatter chart with data:', data);
-             
-             if (!data || data.length === 0) {
-                 return '<div style="padding: 20px; text-align: center; color: #64748b;">No data available for scatter chart</div>';
-             }
-
-             const { xField, yFields, colors } = this.analyzeDataStructure(data);
-             
-             if (yFields.length < 2) {
-                 return '<div style="padding: 20px; text-align: center; color: #64748b;">Scatter chart requires at least 2 numeric fields</div>';
-             }
-
-             // Use first two numeric fields for X and Y axes
-             const xAxisField = yFields[0];
-             const yAxisField = yFields[1];
-             const sizeField = yFields[2] || null; // Optional third field for bubble size
-             const labelField = xField; // Use the category field for labels
-             
-             // Calculate scales
-             const xValues = data.map(d => d[xAxisField] || 0);
-             const yValues = data.map(d => d[yAxisField] || 0);
-             const sizeValues = sizeField ? data.map(d => d[sizeField] || 0) : [];
-             
-             const xMin = Math.min(...xValues);
-             const xMax = Math.max(...xValues);
-             const yMin = Math.min(...yValues);
-             const yMax = Math.max(...yValues);
-             const sizeMin = sizeValues.length ? Math.min(...sizeValues) : 5;
-             const sizeMax = sizeValues.length ? Math.max(...sizeValues) : 10;
-             
-             const xRange = xMax - xMin || 1;
-             const yRange = yMax - yMin || 1;
-             const sizeRange = sizeMax - sizeMin || 1;
-             
-             // Scale functions
-             const scaleX = (value) => 50 + ((value - xMin) / xRange) * 500;
-             const scaleY = (value) => 250 - ((value - yMin) / yRange) * 200;
-             const scaleSize = (value) => sizeField ? 
-                 5 + ((value - sizeMin) / sizeRange) * 10 : 
-                 8; // Default size if no size field
-
-             return `
-                 <svg width="100%" height="400" viewBox="0 0 600 300">
-                     <!-- Grid lines -->
-                     <defs>
-                         <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
-                             <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#f1f5f9" stroke-width="1"/>
-                         </pattern>
-                     </defs>
-                     <rect width="100%" height="100%" fill="url(#grid)" />
-                     
-                     <!-- X-axis -->
-                     <line x1="50" y1="250" x2="550" y2="250" stroke="#e2e8f0" stroke-width="2"/>
-                     <text x="300" y="290" fill="#64748b" font-size="12" text-anchor="middle">${xAxisField.charAt(0).toUpperCase() + xAxisField.slice(1)}</text>
-                     
-                     <!-- Y-axis -->
-                     <line x1="50" y1="50" x2="50" y2="250" stroke="#e2e8f0" stroke-width="2"/>
-                     <text x="25" y="150" fill="#64748b" font-size="12" text-anchor="middle" transform="rotate(-90 25 150)">${yAxisField.charAt(0).toUpperCase() + yAxisField.slice(1)}</text>
-                     
-                     <!-- X-axis labels -->
-                     ${Array.from({length: 6}, (_, i) => {
-                         const value = Math.round(xMin + (i * xRange / 5));
-                         const x = 50 + i * 100;
-                         return `<text x="${x}" y="265" fill="#64748b" font-size="10" text-anchor="middle">${value}</text>`;
-                     }).join('')}
-                     
-                     <!-- Y-axis labels -->
-                     ${Array.from({length: 6}, (_, i) => {
-                         const value = Math.round(yMax - (i * yRange / 5));
-                         const y = 50 + i * 40;
-                         return `<text x="35" y="${y}" fill="#64748b" font-size="10" text-anchor="end">${value}</text>`;
-                     }).join('')}
-                     
-                     <!-- Scatter points -->
-                     ${data.map((d, i) => {
-                         const x = scaleX(d[xAxisField] || 0);
-                         const y = scaleY(d[yAxisField] || 0);
-                         const size = scaleSize(sizeField ? (d[sizeField] || 0) : 8);
-                         const color = colors[i % colors.length];
-                         const label = d[labelField] || `Point ${i + 1}`;
-                         
-                         return `
-                             <circle cx="${x}" cy="${y}" r="${size}" 
-                                     fill="${color}" opacity="0.7" 
-                                     stroke="${color}" stroke-width="2"/>
-                             <text x="${x}" y="${y - size - 5}" 
-                                   fill="#64748b" font-size="10" text-anchor="middle">${label}</text>
-                         `;
-                     }).join('')}
-                     
-                     <!-- Title -->
-                     <text x="300" y="30" fill="#1e293b" font-size="16" text-anchor="middle" font-weight="600">${yAxisField.charAt(0).toUpperCase() + yAxisField.slice(1)} vs ${xAxisField.charAt(0).toUpperCase() + xAxisField.slice(1)}</text>
-                 </svg>
-             `;
-         }
-
-         // Keep old function for backwards compatibility
-         generateScatterChart() {
-             return this.generateDynamicScatterChart(this.getCurrentChartData());
-         }
-
-                 updateDynamicLegend(data, chartType) {
-             const legendContainer = document.querySelector('.chart-legend');
-             if (!legendContainer) return;
-
-             const { xField, yFields, colors } = this.analyzeDataStructure(data);
-             
-             let legendHTML = '';
-             
-             if (chartType === 'pie') {
-                 // For pie charts, show different legend format
-                 if (data[0]?.hasOwnProperty('value') && data[0]?.hasOwnProperty('label')) {
-                     legendHTML = data.map((d, i) => `
-                         <span class="legend-item">
-                             <span class="legend-color" style="background: ${d.color || colors[i % colors.length]};"></span>
-                             ${d.label}
-                         </span>
-                     `).join('');
-                 } else {
-                     legendHTML = yFields.map((field, i) => `
-                         <span class="legend-item">
-                             <span class="legend-color" style="background: ${colors[i]};"></span>
-                             ${field.charAt(0).toUpperCase() + field.slice(1)}
-                         </span>
-                     `).join('');
-                 }
-             } else if (chartType === 'scatter') {
-                 // For scatter charts, show the axes being compared
-                 if (yFields.length >= 2) {
-                     legendHTML = `
-                         <span class="legend-item">
-                             <span class="legend-color" style="background: ${colors[0]};"></span>
-                             X: ${yFields[0].charAt(0).toUpperCase() + yFields[0].slice(1)}
-                         </span>
-                         <span class="legend-item">
-                             <span class="legend-color" style="background: ${colors[1]};"></span>
-                             Y: ${yFields[1].charAt(0).toUpperCase() + yFields[1].slice(1)}
-                         </span>
-                     `;
-                 }
-             } else {
-                 // For line and bar charts, show all numeric fields
-                 legendHTML = yFields.map((field, i) => `
-                     <span class="legend-item">
-                         <span class="legend-color" style="background: ${colors[i]};"></span>
-                         ${field.charAt(0).toUpperCase() + field.slice(1)}
-                     </span>
-                 `).join('');
-             }
-             
-             legendContainer.innerHTML = legendHTML;
-         }
-
-         refreshAllMetrics() {
+        refreshAllMetrics() {
             this.simulateDataUpdate();
             this.showNotification('Dashboard updated successfully', 'success');
         }
@@ -2045,8 +1976,6 @@ def load_latex_scripts():
         showWelcomeMessage() {
             setTimeout(() => {
                 this.showNotification('Interactive Dashboard Loaded! 🎉', 'success');
-                
-                // Final fallback to ensure chart interactivity
                 this.ensureChartInteractivity();
             }, 1000);
         }
@@ -2054,7 +1983,6 @@ def load_latex_scripts():
         ensureChartInteractivity() {
             console.log('Ensuring chart interactivity...');
             
-            // Force initialize chart
             const chartContainer = document.querySelector('.line-chart');
             if (chartContainer && !chartContainer.hasAttribute('data-initialized')) {
                 console.log('Force initializing chart...');
@@ -2062,7 +1990,6 @@ def load_latex_scripts():
                 chartContainer.setAttribute('data-initialized', 'true');
             }
             
-            // Ensure all chart buttons have click handlers
             const chartBtns = document.querySelectorAll('.chart-btn');
             console.log('Found chart buttons:', chartBtns.length);
             
@@ -2076,14 +2003,155 @@ def load_latex_scripts():
                     btn.setAttribute('data-chart-listener', 'true');
                 }
             });
+
+            // Initialize analysis selector functionality
+            this.initializeAnalysisSelector();
         }
 
-        // Method to update chart data externally
+        initializeAnalysisSelector() {
+            const analysisSelector = document.querySelector('#analysis-selector');
+            
+            if (analysisSelector && !analysisSelector.hasAttribute('data-initialized')) {
+                console.log('Initializing analysis selector...');
+                
+                // Set default selection
+                analysisSelector.value = 'bed-occupancy';
+                
+                analysisSelector.addEventListener('change', (e) => {
+                    this.handleAnalysisSelection(e.target.value, e.target.selectedOptions[0].text);
+                });
+                
+                analysisSelector.setAttribute('data-initialized', 'true');
+                console.log('Analysis selector initialized with default value:', analysisSelector.value);
+                
+                // Load initial data for default selection
+                this.handleAnalysisSelection('bed-occupancy', 'Real-time bed occupancy by ward & ICU');
+            }
+        }
+
+        handleAnalysisSelection(value, text) {
+            console.log('Analysis selection changed to:', value, text);
+            
+            // Show notification about the selection
+            this.showNotification(`📊 Loading ${text} analysis...`, 'info');
+            
+            // Update chart data based on selection
+            let analysisData = this.getAnalysisData(value);
+            
+            // Update chart legend based on analysis type
+            this.updateAnalysisLegend(value);
+            
+            // Update the chart with new data
+            const activeBtn = document.querySelector('.chart-btn.active');
+            const chartType = activeBtn ? activeBtn.getAttribute('data-chart') || 'line' : 'line';
+            
+            this.updateChart(chartType, analysisData);
+            
+            // Show completion notification
+            setTimeout(() => {
+                this.showNotification(`✅ ${text} analysis loaded`, 'success');
+            }, 800);
+        }
+
+        getAnalysisData(analysisType) {
+            const dataTemplates = {
+                'bed-occupancy': [
+                    { department: 'ICU', current: 85, capacity: 100, occupancy: 85 },
+                    { department: 'Emergency', current: 42, capacity: 50, occupancy: 84 },
+                    { department: 'Surgery', current: 38, capacity: 45, occupancy: 84 },
+                    { department: 'Cardiology', current: 28, capacity: 35, occupancy: 80 },
+                    { department: 'Pediatrics', current: 22, capacity: 30, occupancy: 73 },
+                    { department: 'Maternity', current: 15, capacity: 25, occupancy: 60 },
+                    { department: 'Orthopedics', current: 18, capacity: 25, occupancy: 72 }
+                ],
+                'alos': [
+                    { procedure: 'Cardiac Surgery', ward: 'ICU', alos: 5.2, target: 4.5 },
+                    { procedure: 'Hip Replacement', ward: 'Orthopedics', alos: 3.8, target: 3.5 },
+                    { procedure: 'Appendectomy', ward: 'Surgery', alos: 2.1, target: 2.0 },
+                    { procedure: 'Normal Birth', ward: 'Maternity', alos: 1.8, target: 1.5 },
+                    { procedure: 'Pneumonia', ward: 'Internal', alos: 4.5, target: 4.0 },
+                    { procedure: 'Broken Arm', ward: 'Emergency', alos: 0.8, target: 0.5 },
+                    { procedure: 'Stroke', ward: 'Neurology', alos: 7.2, target: 6.5 }
+                ],
+                'staff-workload': [
+                    { shift: 'Night', doctors: 12, nurses: 35, workload: 85, efficiency: 78 },
+                    { shift: 'Morning', doctors: 45, nurses: 78, workload: 92, efficiency: 85 },
+                    { shift: 'Afternoon', doctors: 38, nurses: 65, workload: 88, efficiency: 82 },
+                    { shift: 'Evening', doctors: 22, nurses: 48, workload: 75, efficiency: 80 },
+                    { shift: 'Weekend', doctors: 18, nurses: 42, workload: 68, efficiency: 75 },
+                    { shift: 'Holiday', doctors: 15, nurses: 38, workload: 65, efficiency: 72 },
+                    { shift: 'Emergency', doctors: 8, nurses: 25, workload: 95, efficiency: 88 }
+                ],
+                'tool-utilisation': [
+                    { equipment: 'MRI', utilization: 78, idle: 22, maintenance: 5 },
+                    { equipment: 'CT Scanner', utilization: 85, idle: 15, maintenance: 8 },
+                    { equipment: 'X-Ray', utilization: 92, idle: 8, maintenance: 3 },
+                    { equipment: 'Ultrasound', utilization: 68, idle: 32, maintenance: 6 },
+                    { equipment: 'ECG', utilization: 55, idle: 45, maintenance: 2 },
+                    { equipment: 'Ventilators', utilization: 72, idle: 28, maintenance: 12 },
+                    { equipment: 'Dialysis', utilization: 88, idle: 12, maintenance: 15 }
+                ],
+                'inventory-expiry': [
+                    { category: 'Medications', expiring: 15, total: 250, urgent: 3 },
+                    { category: 'Surgical', expiring: 8, total: 120, urgent: 1 },
+                    { category: 'Consumables', expiring: 22, total: 450, urgent: 5 },
+                    { category: 'Lab Supplies', expiring: 12, total: 180, urgent: 2 },
+                    { category: 'Blood Products', expiring: 6, total: 85, urgent: 4 },
+                    { category: 'Vaccines', expiring: 4, total: 95, urgent: 1 },
+                    { category: 'PPE', expiring: 18, total: 320, urgent: 2 }
+                ],
+                'bed-census': [
+                    { timeframe: '6 Hours', predicted: 245, actual: 238, confidence: 95 },
+                    { timeframe: '12 Hours', predicted: 252, actual: 248, confidence: 92 },
+                    { timeframe: '24 Hours', predicted: 268, actual: null, confidence: 88 },
+                    { timeframe: '48 Hours', predicted: 275, actual: null, confidence: 82 },
+                    { timeframe: '72 Hours', predicted: 282, actual: null, confidence: 78 },
+                    { timeframe: '1 Week', predicted: 295, actual: null, confidence: 72 },
+                    { timeframe: '2 Weeks', predicted: 285, actual: null, confidence: 65 }
+                ],
+                'elective-emergency': [
+                    { category: 'Elective Surgery', count: 125, revenue: 450, satisfaction: 92 },
+                    { category: 'Emergency Surgery', count: 78, revenue: 320, satisfaction: 85 },
+                    { category: 'Elective Cardio', count: 45, revenue: 380, satisfaction: 94 },
+                    { category: 'Emergency Cardio', count: 32, revenue: 280, satisfaction: 88 },
+                    { category: 'Elective Ortho', count: 68, revenue: 290, satisfaction: 91 },
+                    { category: 'Emergency Ortho', count: 42, revenue: 185, satisfaction: 82 },
+                    { category: 'Planned Admission', count: 156, revenue: 220, satisfaction: 89 }
+                ],
+                'los-prediction': [
+                    { patient: 'P001', predicted: 4.2, actual: 3.8, accuracy: 95, condition: 'Pneumonia' },
+                    { patient: 'P002', predicted: 6.5, actual: 6.8, accuracy: 92, condition: 'Surgery' },
+                    { patient: 'P003', predicted: 2.1, actual: 2.0, accuracy: 98, condition: 'Observation' },
+                    { patient: 'P004', predicted: 8.2, actual: null, accuracy: 88, condition: 'Cardiac' },
+                    { patient: 'P005', predicted: 3.5, actual: null, accuracy: 90, condition: 'Orthopedic' },
+                    { patient: 'P006', predicted: 5.8, actual: null, accuracy: 85, condition: 'Neurological' },
+                    { patient: 'P007', predicted: 1.2, actual: null, accuracy: 94, condition: 'Emergency' }
+                ]
+            };
+            
+            return dataTemplates[analysisType] || this.getCurrentChartData();
+        }
+
+        updateAnalysisLegend(analysisType) {
+            const legendMappings = {
+                'bed-occupancy': ['Current Occupancy', 'Capacity', 'Occupancy Rate'],
+                'alos': ['Average LOS', 'Target LOS', 'Efficiency'],
+                'staff-workload': ['Doctor Count', 'Nurse Count', 'Workload %'],
+                'tool-utilisation': ['Utilization %', 'Idle Time %', 'Maintenance %'],
+                'inventory-expiry': ['Expiring Items', 'Total Items', 'Urgent Items'],
+                'bed-census': ['Predicted', 'Actual', 'Confidence %'],
+                'elective-emergency': ['Patient Count', 'Revenue ($K)', 'Satisfaction %'],
+                'los-prediction': ['Predicted LOS', 'Actual LOS', 'Accuracy %']
+            };
+            
+            const labels = legendMappings[analysisType] || ['Patient Count', 'Revenue Data', 'Satisfaction'];
+            this.updateLegendForSection(labels);
+        }
+
         setChartData(newData) {
             console.log('Setting new chart data:', newData);
             this.chartData = newData;
             
-            // Re-render current chart with new data
             const activeBtn = document.querySelector('.chart-btn.active');
             if (activeBtn) {
                 const chartType = activeBtn.getAttribute('data-chart') || 'line';
@@ -2091,62 +2159,8 @@ def load_latex_scripts():
             }
         }
 
-        // Get current chart data (with fallback)
         getChartData() {
             return this.chartData || this.getCurrentChartData();
-        }
-
-        loadDashboardData() {
-            console.log('Loading dashboard data...');
-            this.simulateDataUpdate();
-        }
-
-        updateSectionContent(section, data) {
-            // Update the dashboard content based on section and data
-            console.log(`Updating ${section} with data:`, data);
-            
-            if (section === 'dashboard') {
-                this.updateMetrics(data);
-            } else {
-                // For other sections, you could update different parts of the UI
-                // This is where you'd implement section-specific UI updates
-                this.showNotification(`${section.charAt(0).toUpperCase() + section.slice(1)} data updated`, 'info');
-            }
-        }
-
-        updateMetrics(data) {
-            if (data.icuOccupancy !== undefined) {
-                this.updateICUOccupancy(data.icuOccupancy);
-            }
-            if (data.staffAvailability) {
-                this.updateStaffAvailability(
-                    data.staffAvailability.doctors, 
-                    data.staffAvailability.nurses
-                );
-            }
-            if (data.toolUsage) {
-                this.updateToolUsage(data.toolUsage);
-            }
-            if (data.emergencyLoad) {
-                this.updateEmergencyLoad(data.emergencyLoad);
-            }
-        }
-
-        updateEmergencyLoad(data) {
-            if (this.metrics.emergencyLoad) {
-                this.metrics.emergencyLoad.data = data;
-                this.metrics.emergencyLoad.animate(data);
-            }
-        }
-
-        generateLoadPath(data) {
-            const points = data.map((value, index) => {
-                const x = 10 + (index * 30);
-                const y = 70 - (value * 0.8);
-                return `${x} ${y}`;
-            });
-            
-            return `M ${points[0]} Q ${points[1]} T ${points.slice(2).join(' T ')}`;
         }
     }
 
@@ -2161,13 +2175,11 @@ def load_latex_scripts():
         }
     };
 
-    // Additional immediate initialization for chart interactivity
+    // Direct initialization for chart interactivity
     document.addEventListener('DOMContentLoaded', function() {
         console.log('DOM loaded, setting up chart interactivity immediately...');
         
-        // Wait a moment for Gradio to finish rendering
         setTimeout(() => {
-            // Find chart buttons and add click handlers directly
             const chartButtons = document.querySelectorAll('.chart-btn');
             console.log('Direct setup: Found', chartButtons.length, 'chart buttons');
             
@@ -2180,11 +2192,9 @@ def load_latex_scripts():
                     const chartType = this.getAttribute('data-chart') || this.textContent.toLowerCase();
                     console.log('Direct click handler - Chart type:', chartType);
                     
-                    // Update active state
                     chartButtons.forEach(b => b.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // Update chart
                     if (window.hospitalDashboard) {
                         window.hospitalDashboard.updateChart(chartType);
                         window.hospitalDashboard.showNotification(`📊 Switched to ${this.textContent} view`, 'info');
@@ -2192,7 +2202,24 @@ def load_latex_scripts():
                 });
             });
             
-            // Initialize with line chart
+            // Direct setup for analysis selector
+            const analysisSelector = document.querySelector('#analysis-selector');
+            if (analysisSelector && !analysisSelector.hasAttribute('data-direct-listener')) {
+                console.log('Direct setup: Setting up analysis selector');
+                analysisSelector.value = 'bed-occupancy';
+                
+                analysisSelector.addEventListener('change', function(e) {
+                    console.log('Direct analysis selector change:', e.target.value);
+                    if (window.hospitalDashboard) {
+                        const selectedText = e.target.selectedOptions[0].text;
+                        window.hospitalDashboard.handleAnalysisSelection(e.target.value, selectedText);
+                    }
+                });
+                
+                analysisSelector.setAttribute('data-direct-listener', 'true');
+                console.log('Analysis selector direct setup complete');
+            }
+            
             if (window.hospitalDashboard) {
                 console.log('Direct initialization with line chart');
                 window.hospitalDashboard.updateChart('line');
