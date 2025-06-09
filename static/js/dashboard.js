@@ -8,6 +8,7 @@ class HospitalDashboard {
         this.updateInterval = 30000; // 30 seconds
         this.charts = {};
         this.metrics = {};
+        this.currentSection = 'dashboard'; // Track current section
         this.init();
     }
 
@@ -16,38 +17,114 @@ class HospitalDashboard {
         this.initializeCharts();
         this.startDataUpdates();
         this.setupNavigation();
+        this.createSectionContainers();
+    }
+
+    createSectionContainers() {
+        // The HTML structure is now pre-built in interface.py
+        // We just need to ensure the dashboard section is active by default
+        setTimeout(() => {
+            this.switchToSection('dashboard');
+        }, 100);
+    }
+
+    switchToSection(section) {
+        console.log('Switching to section:', section);
+        
+        // Hide all section containers
+        const allSections = document.querySelectorAll('.section-container');
+        console.log('Found sections:', allSections.length);
+        allSections.forEach((sec, index) => {
+            console.log(`Section ${index}:`, sec.className);
+            sec.classList.remove('active');
+            sec.style.display = 'none'; // Force hide with inline style
+        });
+        
+        // Show the selected section
+        const targetSection = document.querySelector(`.section-${section}`);
+        console.log('Target section:', targetSection);
+        if (targetSection) {
+            targetSection.classList.add('active');
+            targetSection.style.display = 'block'; // Force show with inline style
+            console.log('Section switched successfully to:', section);
+        } else {
+            console.error('Section not found:', section);
+            // List all available sections for debugging
+            const availableSections = document.querySelectorAll('[class*="section-"]');
+            console.log('Available sections:', Array.from(availableSections).map(s => s.className));
+        }
+        
+        // Update current section
+        this.currentSection = section;
+        
+        // Load section-specific data
+        this.loadSectionData(section);
     }
 
     setupEventListeners() {
-        // Navigation buttons
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => this.handleNavigation(e));
+        // Navigation buttons - Use MutationObserver to handle dynamically created buttons
+        const observer = new MutationObserver(() => {
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => {
+                if (!btn.hasAttribute('data-listener')) {
+                    btn.addEventListener('click', (e) => this.handleNavigation(e));
+                    btn.setAttribute('data-listener', 'true');
+                }
+            });
+
+            // Metric cards hover effects
+            const cards = document.querySelectorAll('.metric-card');
+            cards.forEach(card => {
+                if (!card.hasAttribute('data-listener')) {
+                    card.addEventListener('mouseenter', (e) => this.animateCard(e.target, true));
+                    card.addEventListener('mouseleave', (e) => this.animateCard(e.target, false));
+                    card.setAttribute('data-listener', 'true');
+                }
+            });
+
+            // Quick action buttons
+            const actionBtns = document.querySelectorAll('.quick-action-btn, .header-action-btn');
+            actionBtns.forEach(btn => {
+                if (!btn.hasAttribute('data-listener')) {
+                    btn.addEventListener('click', (e) => this.handleQuickAction(e));
+                    btn.setAttribute('data-listener', 'true');
+                }
+            });
+
+            // Alert action buttons
+            const alertBtns = document.querySelectorAll('.alert-btn');
+            alertBtns.forEach(btn => {
+                if (!btn.hasAttribute('data-listener')) {
+                    btn.addEventListener('click', (e) => this.handleAlertAction(e));
+                    btn.setAttribute('data-listener', 'true');
+                }
+            });
         });
 
-        // Metric cards hover effects
-        document.querySelectorAll('.metric-card').forEach(card => {
-            card.addEventListener('mouseenter', (e) => this.animateCard(e.target, true));
-            card.addEventListener('mouseleave', (e) => this.animateCard(e.target, false));
-        });
-
-        // Quick action buttons
-        document.querySelectorAll('.quick-action-btn, .header-action-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => this.handleQuickAction(e));
-        });
+        observer.observe(document.body, { childList: true, subtree: true });
     }
 
     setupNavigation() {
-        const navBtns = document.querySelectorAll('.nav-btn');
-        
-        // Set first button as active by default
-        if (navBtns.length > 0) {
-            navBtns[0].classList.add('active');
-        }
+        // Wait for elements to be available
+        setTimeout(() => {
+            const navBtns = document.querySelectorAll('.nav-btn');
+            console.log('Setting up navigation, found buttons:', navBtns.length);
+            
+            // Set first button as active by default if none are active
+            const hasActiveBtn = Array.from(navBtns).some(btn => btn.classList.contains('active'));
+            if (navBtns.length > 0 && !hasActiveBtn) {
+                navBtns[0].classList.add('active');
+                console.log('Set first button as active');
+            }
+            
+            // Ensure dashboard section is shown by default
+            this.switchToSection('dashboard');
+        }, 500);
     }
 
     handleNavigation(event) {
         const clickedBtn = event.target;
-        const section = clickedBtn.textContent.toLowerCase();
+        const section = clickedBtn.getAttribute('data-section') || clickedBtn.textContent.toLowerCase();
 
         // Update active state
         document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -55,24 +132,19 @@ class HospitalDashboard {
         });
         clickedBtn.classList.add('active');
 
-        // Load section data
-        this.loadSectionData(section);
+        // Switch to the selected section
+        this.switchToSection(section);
         
-        // Add visual feedback
-        this.showLoadingState(section);
+        // Show notification
+        this.showNotification(`📊 Switched to ${clickedBtn.textContent} section`, 'info');
     }
 
     async loadSectionData(section) {
-        // Use simulated data for different sections
-        // In a production environment, this would fetch section-specific data from API
         console.log(`Loading ${section} section with simulated data...`);
         
         switch(section) {
             case 'dashboard':
                 this.loadDashboardData();
-                break;
-            case 'forecasting':
-                this.loadForecastingData();
                 break;
             case 'alerts':
                 this.loadAlertsData();
@@ -80,18 +152,88 @@ class HospitalDashboard {
             case 'resources':
                 this.loadResourcesData();
                 break;
+            case 'data':
+                this.loadDataAnalyticsData();
+                break;
         }
     }
 
     showLoadingState(section) {
         // Add subtle loading animation
-        const metricsContainer = document.querySelector('.metrics-container');
-        if (metricsContainer) {
-            metricsContainer.style.opacity = '0.7';
+        const currentSection = document.querySelector(`.section-${this.currentSection}`);
+        if (currentSection) {
+            currentSection.style.opacity = '0.7';
             setTimeout(() => {
-                metricsContainer.style.opacity = '1';
+                currentSection.style.opacity = '1';
             }, 500);
         }
+    }
+
+    handleAlertAction(event) {
+        const button = event.target;
+        const action = button.textContent.toLowerCase();
+        const alertItem = button.closest('.alert-item');
+        
+        const originalText = button.textContent;
+        button.style.opacity = '0.7';
+        button.textContent = 'Processing...';
+        
+        setTimeout(() => {
+            button.style.opacity = '1';
+            button.textContent = originalText;
+            
+            if (action.includes('acknowledge') || action.includes('dispatch')) {
+                // Fade out the alert
+                alertItem.style.opacity = '0.5';
+                alertItem.style.transform = 'translateX(20px)';
+                this.showNotification(`Alert ${action}d successfully`, 'success');
+            } else if (action.includes('reorder')) {
+                this.showNotification('Reorder request submitted', 'success');
+            } else {
+                this.showNotification(`${action} action completed`, 'info');
+            }
+        }, 1000);
+    }
+
+    // Load different section data
+    loadDashboardData() {
+        console.log('Loading dashboard data...');
+        this.simulateDataUpdate();
+    }
+
+    loadAlertsData() {
+        console.log('Loading alerts data...');
+        // Update alert counts with random numbers
+        const criticalCount = Math.floor(Math.random() * 5) + 1;
+        const warningCount = Math.floor(Math.random() * 10) + 3;
+        const infoCount = Math.floor(Math.random() * 15) + 8;
+
+        const criticalEl = document.querySelector('.alert-count.critical');
+        const warningEl = document.querySelector('.alert-count.warning');
+        const infoEl = document.querySelector('.alert-count.info');
+
+        if (criticalEl) criticalEl.textContent = `${criticalCount} Critical`;
+        if (warningEl) warningEl.textContent = `${warningCount} Warnings`;
+        if (infoEl) infoEl.textContent = `${infoCount} Info`;
+    }
+
+    loadResourcesData() {
+        console.log('Loading resources data...');
+        // Animate inventory bars
+        const inventoryFills = document.querySelectorAll('.inventory-fill');
+        inventoryFills.forEach((fill, index) => {
+            const currentWidth = fill.style.width;
+            fill.style.width = '0%';
+            setTimeout(() => {
+                fill.style.width = currentWidth;
+            }, index * 200);
+        });
+    }
+
+    loadDataAnalyticsData() {
+        console.log('Loading data analytics...');
+        // Here you could implement data analytics specific updates
+        this.showNotification('📈 Analytics data refreshed', 'success');
     }
 
     initializeCharts() {
@@ -338,27 +480,6 @@ class HospitalDashboard {
                 document.body.removeChild(notification);
             }, 300);
         }, 3000);
-    }
-
-    // Load different section data (placeholder implementations)
-    loadDashboardData() {
-        console.log('Loading dashboard data...');
-        this.simulateDataUpdate();
-    }
-
-    loadForecastingData() {
-        console.log('Loading forecasting data...');
-        // Here you would implement forecasting-specific metrics
-    }
-
-    loadAlertsData() {
-        console.log('Loading alerts data...');
-        // Here you would implement alerts-specific content
-    }
-
-    loadResourcesData() {
-        console.log('Loading resources data...');
-        // Here you would implement resources-specific content
     }
 
     updateSectionContent(section, data) {
