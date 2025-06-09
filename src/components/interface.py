@@ -88,29 +88,19 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                         container=False,
                         scale=4,
                     )
-                    send_btn = gr.Button("→", size="sm", scale=0, min_width=40)
-
-                # Tools Section with Dropdown
+                    send_btn = gr.Button(
+                        "→", size="sm", scale=0, min_width=40
+                    )  # Test Section with Dropdown
                 with gr.Row(elem_classes="tools-section"):
                     with gr.Column(scale=1):
-                        tools_dropdown = gr.Dropdown(
-                            choices=[
-                                "Patient Search",
-                                "Room Status",
-                                "Staff Directory",
-                                "Equipment Inventory",
-                                "Medication Lookup",
-                                "Lab Results",
-                                "Appointment Scheduler",
-                                "Emergency Protocols",
-                                "Medical Calculator",
-                                "Report Generator",
-                            ],
-                            label="🔧 Tools",
-                            value=None,
+                        test_dropdown = gr.Dropdown(
+                            choices=["Main Chat", "Visualize"],
+                            label="",
+                            value="Main Chat",
                             interactive=True,
                             container=True,
-                            elem_classes="tools-dropdown",
+                            elem_classes="custom-test-dropdown",
+                            show_label=False,
                         )
 
                 # Guidance text from image
@@ -523,35 +513,44 @@ Make sure the user gets both the complete information they requested AND your pr
                 },
             ]
 
-        def handle_tool_selection(tool_name):
-            """Handle tool selection from dropdown"""
-            if not tool_name:
-                return "", []
+        # Chat state management
+        original_chat_state = gr.State([])  # Store original chat history
+        visualize_chat_state = gr.State([])  # Store visualize chat history
+        current_mode_state = gr.State(
+            "original"
+        )  # Track current mode: "original" or "visualize"
 
-            tool_messages = {
-                "Patient Search": "Please search for patient information. What patient details would you like me to look up?",
-                "Room Status": "I'll check the current room occupancy and availability status for you.",
-                "Staff Directory": "Let me show you the staff directory and current availability.",
-                "Equipment Inventory": "I'll retrieve the current medical equipment inventory status.",
-                "Medication Lookup": "What medication information would you like me to look up?",
-                "Lab Results": "I'll help you access and review lab results. Which patient or test are you looking for?",
-                "Appointment Scheduler": "I can help you check appointments and scheduling. What would you like to know?",
-                "Emergency Protocols": "I'll provide emergency protocol information. What type of emergency are you asking about?",
-                "Medical Calculator": "I can help with medical calculations. What would you like to calculate?",
-                "Report Generator": "I'll help you generate reports. What type of report do you need?",
-            }
+        # Wrapper function to handle state management for streaming
+        def stream_response_with_state(
+            message: str,
+            history: List[Dict],
+            model: str,
+            temp: float,
+            max_tok: int,
+            specialty: str,
+            context: str,
+            original_chat,
+            visualize_chat,
+            current_mode,
+        ):
+            """Stream response and update appropriate chat state"""
+            # Use the existing stream_response function
+            for updated_history, cleared_input in stream_response(
+                message, history, model, temp, max_tok, specialty, context
+            ):
+                # Update the appropriate chat state based on current mode
+                if current_mode == "visualize":
+                    new_visualize_chat = updated_history
+                    new_original_chat = original_chat
+                else:
+                    new_original_chat = updated_history
+                    new_visualize_chat = visualize_chat
 
-            return "", [
-                {"role": "user", "content": f"I selected the {tool_name} tool"},
-                {
-                    "role": "assistant",
-                    "content": f"🔧 **{tool_name} Tool Activated**\n\n{tool_messages.get(tool_name, 'Tool activated. How can I assist you?')}",
-                },
-            ]
+                yield updated_history, cleared_input, new_original_chat, new_visualize_chat, current_mode
 
-        # Connect events for sidebar chat
+        # Connect events for sidebar chat with state management
         msg.submit(
-            fn=stream_response,
+            fn=stream_response_with_state,
             inputs=[
                 msg,
                 chatbot,
@@ -560,66 +559,173 @@ Make sure the user gets both the complete information they requested AND your pr
                 gr.State(1000),  # max_tokens
                 gr.State("General Medicine"),  # medical_specialty
                 gr.State(""),  # context_input
+                original_chat_state,
+                visualize_chat_state,
+                current_mode_state,
             ],
-            outputs=[chatbot, msg],
+            outputs=[
+                chatbot,
+                msg,
+                original_chat_state,
+                visualize_chat_state,
+                current_mode_state,
+            ],
             show_progress="hidden",
         )
 
         send_btn.click(
-            fn=stream_response,
+            fn=stream_response_with_state,
             inputs=[
                 msg,
                 chatbot,
                 gr.State("nebius-llama-3.3-70b"),  # default model
                 gr.State(0.4),  # temperature
-                gr.State(
-                    1000
-                ),  # max_tokens                gr.State("General Medicine"),  # medical_specialty
+                gr.State(1000),  # max_tokens
+                gr.State("General Medicine"),  # medical_specialty
                 gr.State(""),  # context_input
+                original_chat_state,
+                visualize_chat_state,
+                current_mode_state,
             ],
-            outputs=[chatbot, msg],
+            outputs=[
+                chatbot,
+                msg,
+                original_chat_state,
+                visualize_chat_state,
+                current_mode_state,
+            ],
             show_progress="hidden",
-        )
+        )  # Update helpline handler to work with state management
 
-        helpline_btn.click(
-            fn=handle_helpline,
-            outputs=[msg, chatbot],
-        )
-
-        # Tools dropdown handler
-        def handle_tool_selection(tool_name):
-            """Handle tool selection from dropdown"""
-            if not tool_name:
-                return "", []
-
-            tool_messages = {
-                "Patient Search": "Please search for patient information. What patient details would you like me to look up?",
-                "Room Status": "I'll check the current room occupancy and availability status for you.",
-                "Staff Directory": "Let me show you the staff directory and current availability.",
-                "Equipment Inventory": "I'll retrieve the current medical equipment inventory status.",
-                "Medication Lookup": "What medication information would you like me to look up?",
-                "Lab Results": "I'll help you access and review lab results. Which patient or test are you looking for?",
-                "Appointment Scheduler": "I can help you check appointments and scheduling. What would you like to know?",
-                "Emergency Protocols": "I'll provide emergency protocol information. What type of emergency are you asking about?",
-                "Medical Calculator": "I can help with medical calculations. What would you like to calculate?",
-                "Report Generator": "I'll help you generate reports. What type of report do you need?",
-            }
-
-            return "", [
-                {"role": "user", "content": f"I selected the {tool_name} tool"},
+        def handle_helpline_with_state(original_chat, visualize_chat, current_mode):
+            """Handle helpline with state management"""
+            helpline_response = [
+                {
+                    "role": "user",
+                    "content": "Connect me to the hospital helpline for urgent assistance",
+                },
                 {
                     "role": "assistant",
-                    "content": f"🔧 **{tool_name} Tool Activated**\n\n{tool_messages.get(tool_name, 'Tool activated. How can I assist you?')}",
+                    "content": "📞 The helpline number of the hospital is **555-HELP (555-4357)**.\n\nOur helpline is available 24/7 for urgent assistance. Please call immediately if you have any medical emergencies or need immediate support.",
                 },
             ]
 
-        tools_dropdown.change(
-            fn=handle_tool_selection,
-            inputs=[tools_dropdown],
-            outputs=[msg, chatbot],
+            # Update the appropriate chat state
+            if current_mode == "visualize":
+                new_visualize_chat = visualize_chat + helpline_response
+                new_original_chat = original_chat
+                new_chat_display = new_visualize_chat
+            else:
+                new_original_chat = original_chat + helpline_response
+                new_visualize_chat = visualize_chat
+                new_chat_display = new_original_chat
+
+            return (
+                "",
+                new_chat_display,
+                new_original_chat,
+                new_visualize_chat,
+                current_mode,
+            )
+
+        helpline_btn.click(
+            fn=handle_helpline_with_state,
+            inputs=[original_chat_state, visualize_chat_state, current_mode_state],
+            outputs=[
+                msg,
+                chatbot,
+                original_chat_state,
+                visualize_chat_state,
+                current_mode_state,
+            ],
         )
 
-        # Load welcome message
+        # Test dropdown handler
+        def handle_tool_selection(
+            tool_name, current_chat, original_chat, visualize_chat, current_mode
+        ):
+            """Handle tool selection from dropdown with separate chat flows"""
+            if not tool_name:
+                return "", current_chat, original_chat, visualize_chat, current_mode
+
+            if tool_name == "Main Chat":
+                # Return to original chat with full history intact
+                # Show welcome back message only if there's existing chat history
+                if original_chat:
+                    display_chat = original_chat + [
+                        {
+                            "role": "assistant",
+                            "content": "--- 🔄 **Welcome back to the main chat!**\n\n📋 You can see your previous conversation history above, but please note that I'm starting with a fresh conversation context. I don't have access to the details from our previous messages, so feel free to provide any relevant context if you'd like to continue where we left off.\n\nHow can I assist you today?",
+                        }
+                    ]
+                    stored_original_chat = (
+                        original_chat  # Keep original history without welcome message
+                    )
+                else:
+                    display_chat = original_chat
+                    stored_original_chat = original_chat
+                return (
+                    "",
+                    display_chat,
+                    stored_original_chat,
+                    visualize_chat,
+                    "original",
+                )
+
+            elif tool_name == "Visualize":
+                # Switch to visualize mode
+                if not visualize_chat:  # If visualize chat is empty, initialize it
+                    new_visualize_chat = [
+                        {
+                            "role": "assistant",
+                            "content": "📊 **Visualization Mode Activated**\n\nI'm now in visualization mode! I can help you:\n\n• Create charts and graphs from hospital data\n• Analyze patient statistics and trends\n• Generate visual reports and dashboards\n• Visualize medical data patterns\n\nWhat would you like to visualize or analyze?",
+                        }
+                    ]
+                    display_chat = new_visualize_chat
+                    stored_visualize_chat = new_visualize_chat
+                else:
+                    # Return to existing visualize chat with welcome back message for display only
+                    display_chat = visualize_chat + [
+                        {
+                            "role": "assistant",
+                            "content": "--- 📊 **Welcome back to Visualization Mode!**\n\n📋 You can see your previous visualization conversation history above, but please note that I'm starting with a fresh conversation context. I don't have access to the details from our previous messages, so feel free to provide any relevant context if you'd like to continue where we left off.\n\nWhat would you like to visualize or analyze today?",
+                        }
+                    ]
+                    stored_visualize_chat = (
+                        visualize_chat  # Keep original history without welcome message
+                    )
+
+                # Store current chat as original if we're switching from original mode
+                if current_mode == "original":
+                    original_chat = current_chat
+
+                return (
+                    "",
+                    display_chat,
+                    original_chat,
+                    stored_visualize_chat,
+                    "visualize",
+                )
+            # For any other tools (shouldn't happen with current setup)
+            return "", current_chat, original_chat, visualize_chat, current_mode
+
+        test_dropdown.change(
+            fn=handle_tool_selection,
+            inputs=[
+                test_dropdown,
+                chatbot,
+                original_chat_state,
+                visualize_chat_state,
+                current_mode_state,
+            ],
+            outputs=[
+                msg,
+                chatbot,
+                original_chat_state,
+                visualize_chat_state,
+                current_mode_state,
+            ],
+        )  # Load welcome message
         demo.load(
             fn=lambda: [
                 {
@@ -2094,4 +2200,1590 @@ def load_latex_scripts():
         }, 2000);
     });
     </script>
+    """
+
+
+def load_modern_hospital_css():
+    """Load modern hospital CSS for the interface"""
+    return """
+    /* HOSPITAL DASHBOARD - OPTIMIZED LAYOUT */
+    
+    /* Reset and force proper layout */
+    .gradio-container {
+        max-width: 100vw !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        background: #f8fafc !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    
+    /* Main container - FIXED LAYOUT */
+    .main-container {
+        display: flex !important;
+        height: 100vh !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        flex-wrap: nowrap !important;
+        align-items: stretch !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Left Sidebar - FIXED AND VISIBLE */
+    .sidebar-container {
+        width: 350px !important;
+        min-width: 350px !important;
+        max-width: 350px !important;
+        height: 100vh !important;
+        background: white !important;
+        border-right: 1px solid #e2e8f0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        flex-shrink: 0 !important;
+        overflow: visible !important;
+        position: relative !important;
+    }
+    
+    /* Assistant Header - Compact and clean */
+    .assistant-header {
+        padding: 20px !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+        background: white !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .avatar-circle {
+        width: 50px !important;
+        height: 50px !important;
+        border-radius: 50% !important;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: white !important;
+        font-size: 20px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .assistant-text h3 {
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+        margin: 0 0 2px 0 !important;
+    }
+    
+    .assistant-text p {
+        font-size: 13px !important;
+        color: #64748b !important;
+        margin: 0 !important;
+    }
+    
+    /* Model Dropdown - Blue Background with White Text (STRONGER TARGETING) */
+    .sidebar-container .gradio-dropdown,
+    .sidebar-container .gradio-dropdown > div,
+    .sidebar-container .gradio-dropdown div,
+    .sidebar-container [data-testid="dropdown"],
+    .sidebar-container [data-testid="dropdown"] > div,
+    .sidebar-container [data-testid="dropdown"] div,
+    .sidebar-container .wrap,
+    .sidebar-container .wrap > div {
+        background: #3b82f6 !important;
+        background-color: #3b82f6 !important;
+        border: none !important;
+        border-radius: 8px !important;
+        margin: 16px 20px 12px 20px !important;
+    }
+    
+    .sidebar-container .gradio-dropdown button,
+    .sidebar-container .gradio-dropdown select,
+    .sidebar-container [data-testid="dropdown"] button,
+    .sidebar-container [data-testid="dropdown"] div,
+    .sidebar-container .wrap button,
+    .sidebar-container [role="button"],
+    .sidebar-container .svelte-select,
+    .sidebar-container .svelte-select button {
+        background: #3b82f6 !important;
+        background-color: #3b82f6 !important;
+        color: white !important;
+        border: none !important;
+        font-weight: 500 !important;
+    }
+      /* Force all elements in dropdown to be blue with white text (ONLY DROPDOWN) */
+    .sidebar-container .gradio-dropdown *:not([data-testid="chatbot"]):not([class*="chatbot"]),
+    .sidebar-container [class*="dropdown"]:not([class*="chatbot"]) * {
+        color: white !important;
+    }
+    
+    /* ENSURE model dropdown area only affects dropdown, not chat */
+    .sidebar-container > *:first-child .gradio-dropdown,
+    .sidebar-container > *:first-child [class*="dropdown"] {
+        background: #3b82f6 !important;
+        background-color: #3b82f6 !important;
+    }
+    
+    /* NUCLEAR OPTION: FORCE WHITE CHAT BACKGROUND - OVERRIDE EVERYTHING */
+    .sidebar-container .gradio-chatbot,
+    .sidebar-container [data-testid="chatbot"],
+    .sidebar-container .gradio-chatbot *,
+    .sidebar-container [data-testid="chatbot"] * {
+        background: white !important;
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Override specific blue background that's being applied */
+    .sidebar-container [style*="background: rgb(59, 130, 246)"] {
+        background: white !important;
+        background-color: white !important;
+    }
+    
+    /* Override any blue background inline styles in chat */
+    .sidebar-container .gradio-chatbot[style],
+    .sidebar-container [data-testid="chatbot"][style] {
+        background: white !important;
+        background-color: white !important;
+    }
+    
+    /* Make sure chat container itself is white */
+    .sidebar-container > * > .gradio-chatbot,
+    .sidebar-container > * > [data-testid="chatbot"] {
+        background: white !important;
+        background-color: white !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 8px !important;
+        margin: 12px 20px !important;
+    }
+    
+    /* Force white background on any element that might be blue */
+    .sidebar-container [class*="chatbot"] {
+        background: white !important;
+        background-color: white !important;
+        color: black !important;
+    }
+    
+    /* Chat Interface - Light Background with Black Text (SELECTIVE TARGETING) */
+    .sidebar-container .gradio-chatbot,
+    .sidebar-container [data-testid="chatbot"] {
+        background: white !important;
+        background-color: white !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 8px !important;
+        margin: 12px 20px !important;
+    }
+    
+    /* Chat messages should have light background and dark text (EXCLUDE dropdowns) */
+    .sidebar-container .gradio-chatbot div:not([class*="dropdown"]):not([class*="select"]),
+    .sidebar-container [data-testid="chatbot"] div:not([class*="dropdown"]):not([class*="select"]) {
+        background: #f8fafc !important;
+        background-color: #f8fafc !important;
+        color: #1f2937 !important;
+        border: none !important;
+        border-radius: 6px !important;
+        margin: 4px !important;
+        padding: 8px !important;
+    }
+    
+    /* Ensure chat text is dark (EXCLUDE dropdowns) */
+    .sidebar-container .gradio-chatbot p,
+    .sidebar-container .gradio-chatbot span,
+    .sidebar-container [data-testid="chatbot"] p,
+    .sidebar-container [data-testid="chatbot"] span {
+        color: #1f2937 !important;
+        background: transparent !important;
+    }
+    
+    /* Chat Input Area - Clean and Modern */
+    .sidebar-container .gradio-textbox,
+    .sidebar-container [data-testid="textbox"] {
+        background: #f8fafc !important;
+        background-color: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        color: #1f2937 !important;
+        margin: 12px 20px !important;
+    }
+    
+    .sidebar-container .gradio-textbox:focus,
+    .sidebar-container [data-testid="textbox"]:focus {
+        border-color: #3b82f6 !important;
+        background: white !important;
+        background-color: white !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+    }
+    
+    .sidebar-container .gradio-button,
+    .sidebar-container [data-testid="button"] {
+        background: #3b82f6 !important;
+        background-color: #3b82f6 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        margin: 12px 8px 12px 0 !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    .sidebar-container .gradio-button:hover,
+    .sidebar-container [data-testid="button"]:hover {
+        background: #2563eb !important;
+        background-color: #2563eb !important;
+        transform: translateY(-1px) !important;
+    }
+    
+    /* Right Dashboard - EXPANDED AND CENTERED */
+    .dashboard-container {
+        flex: 1 !important;
+        height: 100vh !important;
+        background: #f8fafc !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        position: relative !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Dashboard Header - Compact */
+    .dashboard-header-compact {
+        background: white !important;
+        padding: 12px 32px !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 16px !important;
+        flex-shrink: 0 !important;
+        min-height: 60px !important;
+    }
+    
+    .dashboard-title-compact h1 {
+        font-size: 22px !important;
+        font-weight: 700 !important;
+        color: #1e293b !important;
+        letter-spacing: -0.5px !important;
+        margin: 0 0 2px 0 !important;
+        line-height: 1.2 !important;
+    }
+    
+    .dashboard-title-compact p {
+        font-size: 13px !important;
+        color: #64748b !important;
+        font-weight: 500 !important;
+        margin: 0 !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* Header Controls - Compact */
+    .dashboard-controls-compact {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+    }
+    
+    .header-dropdown {
+        min-width: 200px !important;
+        background: white !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        font-size: 13px !important;
+    }
+    
+    .header-action-btn {
+        background: #3b82f6 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 8px 16px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        white-space: nowrap !important;
+    }
+    
+    .header-action-btn:hover {
+        background: #2563eb !important;
+        transform: translateY(-1px) !important;
+    }
+    
+    /* Navigation Buttons */
+    .nav-buttons-container {
+        background: white !important;
+        padding: 8px 32px 12px 32px !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+        display: flex !important;
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .nav-btn {
+        background: transparent !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 6px !important;
+        padding: 6px 14px !important;
+        font-size: 13px !important;
+        color: #64748b !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        font-weight: 500 !important;
+    }
+    
+    .nav-btn.active {
+        background: #3b82f6 !important;
+        color: white !important;
+        border-color: #3b82f6 !important;
+    }
+    
+    .nav-btn:hover {
+        background: #f1f5f9 !important;
+        border-color: #cbd5e1 !important;
+        color: #475569 !important;
+    }
+    
+    .nav-btn.active:hover {
+        background: #2563eb !important;
+        color: white !important;
+    }
+    
+    /* Metrics Container - PERFECTLY BALANCED */
+    .metrics-container {
+        flex: 1 !important;
+        padding: 24px 32px !important;
+        overflow-y: auto !important;
+        display: block !important;
+    }
+    
+    .metrics-row {
+        display: flex !important;
+        gap: 20px !important;
+        margin-bottom: 20px !important;
+        width: 100% !important;
+        flex-wrap: nowrap !important;
+    }
+    
+    .metric-card {
+        flex: 1 !important;
+        background: white !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        padding: 24px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.2s ease !important;
+        overflow: hidden !important;
+        min-height: 180px !important;
+        min-width: 250px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+    
+    .metric-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+        transform: translateY(-2px) !important;
+    }
+    
+    .metric-card h3 {
+        font-size: 15px !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+        margin: 12px 0 6px 0 !important;
+    }
+    
+    .card-subtitle {
+        font-size: 12px !important;
+        color: #64748b !important;
+        margin: 4px 0 0 0 !important;
+    }
+    
+    /* Progress Circle (ICU Occupancy) */
+    .progress-circle {
+        position: relative !important;
+        width: 100px !important;
+        height: 100px !important;
+        margin: 0 auto 12px auto !important;
+        display: block !important;
+    }
+    
+    .progress-circle svg {
+        transform: rotate(-90deg) !important;
+        display: block !important;
+    }
+    
+    .progress-circle-bg {
+        fill: none !important;
+        stroke: #f1f5f9 !important;
+        stroke-width: 8 !important;
+    }
+    
+    .progress-circle-fill {
+        fill: none !important;
+        stroke: #3b82f6 !important;
+        stroke-width: 8 !important;
+        stroke-linecap: round !important;
+        stroke-dasharray: 283 !important;
+        stroke-dashoffset: 82 !important;
+        transition: stroke-dashoffset 0.3s ease !important;
+    }
+    
+    .progress-text {
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        font-size: 20px !important;
+        font-weight: 700 !important;
+        color: #1e293b !important;
+    }
+    
+    /* Load Chart (Emergency Room Load) */
+    .load-chart {
+        width: 180px !important;
+        height: 70px !important;
+        margin: 0 auto 12px auto !important;
+        display: block !important;
+    }
+    
+    .load-path {
+        stroke: #3b82f6 !important;
+        stroke-width: 3 !important;
+        fill: none !important;
+    }
+    
+    .load-area {
+        fill: url(#gradient) !important;
+    }
+    
+    /* Staff Metrics */
+    .staff-metrics {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        width: 180px !important;
+        margin: 12px auto 0 auto !important;
+    }
+    
+    .staff-item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+    
+    .staff-label {
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        color: #475569 !important;
+        min-width: 50px !important;
+        text-align: left !important;
+    }
+    
+    .progress-bar {
+        flex: 1 !important;
+        height: 6px !important;
+        background: #f1f5f9 !important;
+        border-radius: 3px !important;
+        overflow: hidden !important;
+        position: relative !important;
+    }
+    
+    .progress-fill {
+        height: 100% !important;
+        border-radius: 3px !important;
+        transition: width 0.3s ease !important;
+        display: block !important;
+    }
+    
+    .doctors-progress {
+        width: 75% !important;
+        background: #3b82f6 !important;
+    }
+    
+    .nurses-progress {
+        width: 60% !important;
+        background: #3b82f6 !important;
+    }
+    
+    .staff-percentage {
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        color: #3b82f6 !important;
+        min-width: 28px !important;
+        text-align: right !important;
+    }
+    
+    /* Tool Usage Chart */
+    .usage-chart {
+        display: flex !important;
+        align-items: end !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        height: 70px !important;
+        width: 140px !important;
+        margin: 0 auto 12px auto !important;
+    }
+    
+    .bar {
+        width: 14px !important;
+        background: #3b82f6 !important;
+        border-radius: 2px 2px 0 0 !important;
+        transition: all 0.3s ease !important;
+        opacity: 0.8 !important;
+        display: block !important;
+    }
+    
+    .bar:hover {
+        opacity: 1 !important;
+        background: #2563eb !important;
+    }
+    
+    .bar:nth-child(1) { height: 60% !important; }
+    .bar:nth-child(2) { height: 40% !important; }
+    .bar:nth-child(3) { height: 70% !important; }
+    .bar:nth-child(4) { height: 35% !important; }
+    .bar:nth-child(5) { height: 85% !important; }
+    
+    /* Settings Panel */
+    .dashboard-settings {
+        margin: 16px 32px 32px 32px !important;
+        background: white !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    }
+    
+    .settings-dropdown, .settings-slider {
+        margin: 8px 0 !important;
+        background: white !important;
+    }
+    
+    .context-input {
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        background: white !important;
+        resize: vertical !important;
+        margin-top: 12px !important;
+        font-size: 14px !important;
+        padding: 10px 12px !important;
+    }
+    
+    .context-input:focus {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+        outline: none !important;
+    }
+    
+    /* Hide Gradio elements that interfere */
+    .footer {
+        display: none !important;
+    }
+    
+    /* Force overrides for Gradio layout quirks */
+    .gradio-row {
+        gap: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .gradio-column {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .gradio-accordion {
+        border: none !important;
+    }
+    
+    /* Removed problematic chatbot CSS - using Gradio defaults */
+    
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+        .main-container {
+            max-width: 100% !important;
+        }
+        
+        .sidebar-container {
+            width: 300px !important;
+            min-width: 300px !important;
+            max-width: 300px !important;
+        }
+        
+        .metrics-row {
+            gap: 16px !important;
+        }
+        
+        .dashboard-header-row {
+            padding: 16px 24px !important;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .main-container {
+            flex-direction: column !important;
+        }
+        
+        .sidebar-container {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+            height: 50vh !important;
+            border-right: none !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+        }
+        
+        .dashboard-container {
+            height: 50vh !important;
+        }
+        
+        .metrics-row {
+            flex-direction: column !important;
+            gap: 12px !important;
+        }
+        
+        .dashboard-header-row {
+            padding: 12px 16px !important;
+            flex-direction: column !important;
+            gap: 12px !important;
+            align-items: flex-start !important;
+        }
+        
+        .dashboard-controls {
+            align-self: stretch !important;
+            justify-content: space-between !important;
+        }
+        
+        .dashboard-title h1 {
+            font-size: 22px !important;
+        }
+    }
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+        width: 6px !important;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f8fafc !important;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #cbd5e1 !important;
+        border-radius: 3px !important;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8 !important;
+    }
+    
+    /* CRITICAL: Force visibility and centering */
+    .gradio-container * {
+        box-sizing: border-box !important;
+    }
+    
+    /* Force all elements to be visible */
+    .metric-card, .metrics-row, .metrics-container {
+        visibility: visible !important;
+        display: block !important;
+        opacity: 1 !important;
+    }
+    
+    .metrics-row {
+        display: flex !important;
+    }
+    
+    /* Center the entire interface */
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow-x: hidden !important;
+    }
+    /* GUIDANCE TEXT STYLING */
+    .guidance-text {
+        padding: 16px 20px !important;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+        border: 1px solid #e0f2fe !important;
+        border-radius: 12px !important;
+        margin: 16px 20px !important;
+        color: #0f172a !important;
+        font-size: 13px !important;
+        line-height: 1.5 !important;
+    }
+
+    .guidance-text p {
+        margin: 0 0 8px 0 !important;
+        color: #334155 !important;
+    }
+
+    /* HELPLINE BUTTON STYLING - COMPACT */
+    .helpline-btn-compact {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 8px 14px !important;
+        font-weight: 600 !important;
+        font-size: 13px !important;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25) !important;
+        transition: all 0.2s ease !important;
+        min-width: 90px !important;
+        height: 36px !important;
+    }
+
+    .helpline-btn-compact:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35) !important;
+    }
+
+    /* MAIN CONTENT AREA STYLING */
+    .main-content-area {
+        flex: 1 !important;
+        display: block !important;
+        background: #f8fafc !important;
+        min-height: 500px !important;
+        max-height: calc(100vh - 120px) !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* ANALYSIS SECTION STYLING */
+    .analysis-section {
+        padding: 20px 24px !important;
+        background: white !important;
+        margin: 0 !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .analysis-title {
+        font-size: 20px !important;
+        font-weight: 600 !important;
+        color: #1e293b !important;
+        margin: 0 0 20px 0 !important;
+        font-style: italic !important;
+    }
+
+    /* CHART CONTROLS STYLING */
+    .chart-controls {
+        display: flex !important;
+        gap: 8px !important;
+        margin-bottom: 24px !important;
+    }
+
+    .chart-btn {
+        background: white !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 6px !important;
+        padding: 8px 16px !important;
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        color: #64748b !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .chart-btn.active {
+        background: #3b82f6 !important;
+        color: white !important;
+        border-color: #3b82f6 !important;
+    }
+
+    .chart-btn:hover:not(.active) {
+        background: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+        color: #475569 !important;
+    }
+
+    /* CHART CONTAINER STYLING */
+    .chart-container {
+        background: white !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 16px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 400px !important;
+        max-height: 400px !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+    }
+
+    .chart-legend {
+        margin-bottom: 16px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    .legend-item {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        font-size: 14px !important;
+        color: #64748b !important;
+        font-weight: 500 !important;
+        margin-right: 20px !important;
+    }
+
+    .legend-color {
+        width: 12px !important;
+        height: 12px !important;
+        border-radius: 2px !important;
+        display: block !important;
+    }
+
+    .line-chart {
+        width: 100% !important;
+        height: 320px !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        display: block !important;
+        box-sizing: border-box !important;
+    }
+
+    .line-chart svg {
+        width: 100% !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        display: block !important;
+        transition: opacity 0.3s ease, transform 0.3s ease !important;
+    }
+
+    /* Chart transition effects */
+    .line-chart {
+        transition: opacity 0.3s ease, transform 0.3s ease !important;
+    }
+
+    /* Enhanced chart button hover effects */
+    .chart-btn:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Chart interactive elements */
+    .line-chart svg circle {
+        transition: r 0.2s ease, opacity 0.2s ease !important;
+        cursor: pointer !important;
+    }
+
+    .line-chart svg circle:hover {
+        r: 6 !important;
+        opacity: 0.8 !important;
+    }
+
+    .line-chart svg rect {
+        transition: opacity 0.2s ease, transform 0.2s ease !important;
+        cursor: pointer !important;
+    }
+
+    .line-chart svg rect:hover {
+        opacity: 0.8 !important;
+        transform: scale(1.05) !important;
+    }
+
+    .line-chart svg path[fill*="#"] {
+        transition: opacity 0.2s ease !important;
+        cursor: pointer !important;
+    }    .line-chart svg path[fill*="#"]:hover {
+        opacity: 0.8 !important;
+    }
+
+    /* ENHANCED CHATBOT - PREMIUM MESSAGING INTERFACE */
+    .chatbot-gr-chatbot {
+        background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%) !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+        overflow: hidden !important;
+        position: relative !important;
+    }
+
+    .chatbot-gr-chatbot::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 3px !important;
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4) !important;
+    }
+    
+    .chatbot-gr-chatbot .bubble-wrap {
+        background: transparent !important;
+        padding: 8px 12px !important;
+        margin: 6px 0 !important;
+        border-radius: 14px !important;
+        position: relative !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    /* ASSISTANT MESSAGE - SOPHISTICATED BLUE GRADIENT */
+    .chatbot-gr-chatbot .message.bot {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 85%, #1d4ed8 100%) !important;
+        color: white !important;
+        box-shadow: 0 3px 12px rgba(59, 130, 246, 0.25) !important;
+        border: none !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    .chatbot-gr-chatbot .message.bot::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent) !important;
+        transition: left 0.5s ease !important;
+    }
+
+    .chatbot-gr-chatbot .message.bot:hover::before {
+        left: 100% !important;
+    }
+
+    .chatbot-gr-chatbot .message.bot:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.35) !important;
+    }
+    
+    /* USER MESSAGE - ELEGANT LIGHT BLUE SHADE */
+    .chatbot-gr-chatbot .message.user {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 85%, #93c5fd 100%) !important;
+        color: #1e293b !important; /* Changed color to a darker shade for better contrast */
+        border: 1px solid #93c5fd !important;
+        box-shadow: 0 2px 8px rgba(147, 197, 253, 0.2) !important;
+        font-weight: 500 !important;
+        position: relative !important;
+    }
+
+    .chatbot-gr-chatbot .message.user:hover {
+        background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 85%, #60a5fa 100%) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(147, 197, 253, 0.3) !important;
+    }
+
+    /* ICON BUTTONS - REFINED ACCENT COLORS */
+    .chatbot-gr-chatbot .icon-button-wrapper {
+        background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%) !important;
+        border-radius: 8px !important;
+        box-shadow: 0 2px 6px rgba(6, 182, 212, 0.2) !important;
+        transition: all 0.2s ease !important;
+    }
+
+    .chatbot-gr-chatbot .icon-button-wrapper:hover {
+        background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%) !important;
+        transform: scale(1.05) !important;
+        box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3) !important;
+    }
+    
+    .chatbot-gr-chatbot .icon-button-wrapper button {
+        background: transparent !important;
+        color: white !important;
+        border: none !important;
+        font-weight: 600 !important;
+    }
+
+    /* ENHANCED INPUT CONTAINER - MODERN CHAT INPUT */
+    #component-6 {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 12px !important;
+        padding: 0 !important;
+    }
+
+    #component-6 .input-container {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 14px !important;
+        padding: 4px 16px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    #component-6 .input-container::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.05), transparent) !important;
+        transition: left 0.6s ease !important;
+    }
+
+    #component-6 .input-container:focus-within {
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 4px 12px rgba(59, 130, 246, 0.15) !important;
+        transform: translateY(-1px) !important;
+    }
+
+    #component-6 .input-container:focus-within::before {
+        left: 100% !important;
+    }
+    
+    #component-6 .input-container textarea {
+        background: transparent !important;
+        border: none !important;
+        outline: none !important;
+        color: #1e293b !important;
+        font-weight: 500 !important;
+        margin: 0 !important;
+        padding: 8px 0 !important;
+        resize: none !important;
+    }
+
+    #component-6 .input-container textarea::placeholder {
+        color: #94a3b8 !important;
+        font-weight: 400 !important;
+    }
+    
+    /* ENHANCED SEND BUTTON - PREMIUM ACTION BUTTON */
+    #component-6 button {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
+        color: white !important;
+        border: none !important;
+        width: 40px !important;
+        height: 40px !important;
+        max-height: 40px !important;
+        max-width: 40px !important;
+        min-height: 40px !important;
+        min-width: 40px !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    #component-6 button::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        width: 0 !important;
+        height: 0 !important;
+        background: rgba(255, 255, 255, 0.2) !important;
+        border-radius: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        transition: width 0.3s ease, height 0.3s ease !important;
+    }
+
+    #component-6 button:hover {
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%) !important;
+        transform: translateY(-2px) scale(1.05) !important;
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+    }
+
+    #component-6 button:hover::before {
+        width: 30px !important;
+        height: 30px !important;
+    }
+
+    #component-6 button:active {
+        transform: translateY(0) scale(0.95) !important;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+    }
+
+    /* ENHANCED FOCUS STATES AND ACCESSIBILITY */
+    .model-gr-dropdown:focus-within,
+    .chatbot-gr-chatbot:focus-within,
+    #component-6 button:focus {
+        outline: 2px solid #3b82f6 !important;
+        outline-offset: 2px !important;
+    }
+
+    /* SUBTLE ANIMATIONS FOR ENHANCED INTERACTIVITY */
+    @keyframes messageSlideIn {
+        from {
+            opacity: 0 !important;
+            transform: translateY(10px) !important;
+        }
+        to {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+    }
+
+    .chatbot-gr-chatbot .message {
+        animation: messageSlideIn 0.3s ease-out !important;
+    }
+
+    /* LOADING STATES */
+    .chatbot-gr-chatbot .message.loading {
+        background: linear-gradient(90deg, #f1f5f9, #e2e8f0, #f1f5f9) !important;
+        background-size: 200% 100% !important;
+        animation: shimmer 1.5s infinite !important;
+    }
+
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+
+    /* ===== CHATBOT LOADER INTEGRATION STYLES ===== */
+    
+    /* Loading Indicator Container */
+    .loading-indicator {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 16px 20px !important;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 12px !important;
+        color: #64748b !important;
+        font-weight: 500 !important;
+        font-size: 14px !important;
+        margin: 8px 0 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+        position: relative !important;
+        overflow: hidden !important;
+        animation: loadingSlideIn 0.3s ease-out !important;
+    }
+
+    /* Loading Indicator Shimmer Effect */
+    .loading-indicator::before {
+        content: '' !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.08), transparent) !important;
+        animation: loadingShimmer 2s infinite !important;
+    }
+
+    /* Animated Loading Dots */
+    .loading-dots {
+        display: inline-block !important;
+        width: 20px !important;
+        height: 14px !important;
+        position: relative !important;
+    }
+
+    .loading-dots::after {
+        content: '•••' !important;
+        display: inline-block !important;
+        color: #3b82f6 !important;
+        font-size: 16px !important;
+        letter-spacing: 2px !important;
+        animation: loadingDots 1.4s infinite ease-in-out !important;
+    }
+
+    /* Loading Animations */
+    @keyframes loadingSlideIn {
+        from {
+            opacity: 0 !important;
+            transform: translateY(10px) scale(0.95) !important;
+        }
+        to {
+            opacity: 1 !important;
+            transform: translateY(0) scale(1) !important;
+        }
+    }
+
+    @keyframes loadingShimmer {
+        0% { 
+            left: -100% !important;
+        }
+        100% { 
+            left: 100% !important;
+        }
+    }
+
+    @keyframes loadingDots {
+        0%, 80%, 100% {
+            opacity: 0.3 !important;
+            transform: scale(0.8) !important;
+        }
+        40% {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+        }
+    }
+
+    /* Enhanced Loading States for Different Types */
+    .loading-indicator[data-type="thinking"] {
+        border-left: 4px solid #8b5cf6 !important;
+    }
+
+    .loading-indicator[data-type="database"] {
+        border-left: 4px solid #06b6d4 !important;
+    }
+
+    .loading-indicator[data-type="ai"] {
+        border-left: 4px solid #10b981 !important;
+    }
+
+    .loading-indicator[data-type="generating"] {
+        border-left: 4px solid #f59e0b !important;
+    }
+
+    /* Responsive Loading Indicator */
+    @media (max-width: 768px) {
+        .loading-indicator {
+            padding: 12px 16px !important;
+            font-size: 13px !important;
+            margin: 6px 0 !important;
+        }
+        
+        .loading-dots::after {
+            font-size: 14px !important;
+        }
+    }
+
+    /* Dark Mode Support for Loading Indicator */
+    @media (prefers-color-scheme: dark) {
+        .loading-indicator {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+            border-color: #475569 !important;
+            color: #cbd5e1 !important;
+        }
+        
+        .loading-indicator::before {
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.15), transparent) !important;
+        }
+    }
+
+    /* Accessibility Enhancements */
+    .loading-indicator[aria-live="polite"] {
+        position: relative !important;
+    }
+
+    /* Reduced Motion Support */
+    @media (prefers-reduced-motion: reduce) {
+        .loading-indicator,
+        .loading-indicator::before,
+        .loading-dots::after {
+            animation: none !important;
+        }
+        
+        .loading-dots::after {
+            content: '...' !important;
+        }
+    }
+
+    /* Additional Responsive Design for Chart Layout */
+    @media (max-width: 1200px) {
+        .analysis-section {
+            padding: 16px 20px !important;
+        }
+        
+        .chart-container {
+            padding: 12px !important;
+            height: 350px !important;
+        }
+        
+        .line-chart {
+            height: 280px !important;
+        }
+        
+        .dashboard-container {
+            overflow-x: hidden !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .analysis-section {
+            padding: 12px 16px !important;
+        }
+        
+        .chart-container {
+            padding: 8px !important;
+            height: 300px !important;
+        }
+        
+        .line-chart {
+            height: 240px !important;
+        }        .chart-controls {
+            flex-wrap: wrap !important;
+            gap: 6px !important;
+        }
+
+        .chart-btn {
+            padding: 6px 12px !important;
+            font-size: 12px !important;
+        }
+    }    /* CUSTOM TEST DROPDOWN STYLES - COMPREHENSIVE GRADIO TARGETING */
+    .custom-dropdown-container {
+        position: fixed !important;
+        bottom: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 9999 !important;
+        width: 200px !important;
+        background: none !important;
+        border: none !important;
+    }
+      /* DROPDOWN BUTTON - TARGET ALL POSSIBLE GRADIO SELECTORS */
+    .custom-test-dropdown,
+    .custom-test-dropdown .gradio-dropdown,
+    .custom-test-dropdown [data-testid="dropdown"],
+    .custom-test-dropdown .svelte-select,
+    .custom-test-dropdown button,
+    .custom-test-dropdown select {
+        background-color: #4883FF !important;
+        border-radius: 8px !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(72, 131, 255, 0.3) !important;
+        width: 100% !important;
+        color: white !important;
+        font-weight: 500 !important;
+        padding: 8px 12px 8px 32px !important;
+        background-image: url('static/images/tools.svg') !important;
+        background-repeat: no-repeat !important;
+        background-position: 8px center !important;
+        background-size: 16px 16px !important;
+    }
+      /* REMOVE WRAPPER STYLING - CLEAN BUTTON APPEARANCE */
+    .custom-test-dropdown .wrap,
+    .custom-test-dropdown .wrap > div:first-child {
+        background: none !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+    
+    /* REMOVE ALL ADDITIONAL CONTAINER STYLING */
+    .custom-test-dropdown > div,
+    .custom-test-dropdown .wrap > div,
+    .custom-test-dropdown [data-testid="dropdown"] > div,
+    .custom-test-dropdown .dropdown-container,
+    .custom-test-dropdown .dropdown-wrapper {
+        background: none !important;
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        outline: none !important;
+    }
+      /* DROPDOWN TEXT/CONTENT STYLING */
+    .custom-test-dropdown span,
+    .custom-test-dropdown .wrap span,
+    .custom-test-dropdown [data-testid="dropdown"] span,
+    .custom-test-dropdown button span,
+    .custom-test-dropdown select option,
+    .custom-test-dropdown .value,
+    .custom-test-dropdown .selected-value,
+    .custom-test-dropdown .dropdown-text,
+    .custom-test-dropdown .selection,
+    .custom-test-dropdown .current-selection {
+        background-color: transparent !important;
+        color: white !important;
+        font-weight: 500 !important;
+    }
+      /* FORCE WHITE TEXT ON ALL DROPDOWN ELEMENTS INCLUDING SELECTED VALUE */
+    .custom-test-dropdown *,
+    .custom-test-dropdown *:not(.svelte-select-list):not(.dropdown-menu):not(.options),
+    .custom-test-dropdown .gradio-dropdown *,
+    .custom-test-dropdown [data-testid="dropdown"] *,
+    .custom-test-dropdown button *,
+    .custom-test-dropdown span,
+    .custom-test-dropdown div,
+    .custom-test-dropdown p,
+    .custom-test-dropdown .selected-item,
+    .custom-test-dropdown .current-value,
+    .custom-test-dropdown .display-value {
+        color: white !important;
+        background-color: transparent !important;
+    }
+    
+    /* HIDE LABEL */
+    .custom-test-dropdown label,
+    .custom-test-dropdown .wrap > label {
+        display: none !important;
+    }
+    
+    /* FOCUS STATES */
+    .custom-test-dropdown .gradio-dropdown:focus,
+    .custom-test-dropdown [data-testid="dropdown"]:focus,
+    .custom-test-dropdown .wrap:focus-within,
+    .custom-test-dropdown button:focus,
+    .custom-test-dropdown select:focus {
+        outline: none !important;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 4px 12px rgba(72, 131, 255, 0.4) !important;
+    }    /* DROPDOWN MENU CONTAINER - TARGET ALL POSSIBLE MENU SELECTORS */
+    .custom-test-dropdown .gradio-dropdown + div,
+    .custom-test-dropdown [data-testid="dropdown"] + div,
+    .custom-test-dropdown .dropdown-content,
+    .custom-test-dropdown .dropdown-menu,
+    .custom-test-dropdown .options,
+    .custom-test-dropdown .svelte-select-list,
+    .custom-test-dropdown [role="listbox"],
+    .custom-test-dropdown ul,
+    .custom-test-dropdown .menu,
+    .custom-test-dropdown div[class*="dropdown"],
+    .custom-test-dropdown div[class*="options"],
+    .custom-test-dropdown div[class*="menu"] {
+        background-color: #4883FF !important;
+        background: #4883FF !important;
+        color: white !important;
+    }
+      /* DROPDOWN MENU ITEMS HOVER STATES */
+    .custom-test-dropdown .gradio-dropdown + div:hover,
+    .custom-test-dropdown [data-testid="dropdown"] + div:hover,
+    .custom-test-dropdown .dropdown-content:hover,
+    .custom-test-dropdown .dropdown-menu:hover,
+    .custom-test-dropdown .options:hover,
+    .custom-test-dropdown .svelte-select-list:hover,
+    .custom-test-dropdown [role="listbox"]:hover,
+    .custom-test-dropdown ul:hover,
+    .custom-test-dropdown .menu:hover,
+    .custom-test-dropdown div[class*="dropdown"]:hover,
+    .custom-test-dropdown div[class*="options"]:hover,
+    .custom-test-dropdown div[class*="menu"]:hover,
+    .custom-test-dropdown .gradio-dropdown + div li:hover,
+    .custom-test-dropdown [data-testid="dropdown"] + div li:hover,
+    .custom-test-dropdown .dropdown-content li:hover,
+    .custom-test-dropdown .dropdown-menu li:hover,
+    .custom-test-dropdown .options li:hover,
+    .custom-test-dropdown .svelte-select-list li:hover,
+    .custom-test-dropdown [role="listbox"] li:hover,
+    .custom-test-dropdown ul li:hover,
+    .custom-test-dropdown .menu li:hover {
+        background-color: #4883FF !important;
+        background: #4883FF !important;
+        color: white !important;
+    }
+      /* DROPDOWN BUTTON ONLY - #4883FF - MAXIMUM SPECIFICITY */
+    .custom-test-dropdown button,
+    .custom-test-dropdown .gradio-dropdown button,
+    .custom-test-dropdown [data-testid="dropdown"] button,
+    .custom-test-dropdown .svelte-select button,
+    .custom-test-dropdown .wrap button,
+    .custom-test-dropdown button[type="button"],
+    .custom-test-dropdown input[type="button"],
+    .custom-test-dropdown select,
+    .custom-test-dropdown .gradio-dropdown,
+    .custom-test-dropdown [data-testid="dropdown"]:not([data-testid="dropdown"] + div),
+    .custom-test-dropdown .svelte-select:not(.svelte-select-list) {
+        background-color: #4883FF !important;
+        background: #4883FF !important;
+        color: white !important;
+        border: none !important;
+    }
+      /* DROPDOWN HOVER STATES - MAINTAIN SAME BLUE COLOR */
+    .custom-test-dropdown button:hover,
+    .custom-test-dropdown .gradio-dropdown button:hover,
+    .custom-test-dropdown [data-testid="dropdown"] button:hover,
+    .custom-test-dropdown .svelte-select button:hover,
+    .custom-test-dropdown .wrap button:hover,
+    .custom-test-dropdown button[type="button"]:hover,
+    .custom-test-dropdown input[type="button"]:hover,
+    .custom-test-dropdown select:hover,
+    .custom-test-dropdown .gradio-dropdown:hover,
+    .custom-test-dropdown [data-testid="dropdown"]:hover:not([data-testid="dropdown"] + div),
+    .custom-test-dropdown .svelte-select:hover:not(.svelte-select-list) {
+        background-color: #4883FF !important;
+        background: #4883FF !important;
+        color: white !important;
+        border: none !important;
+        transform: none !important;
+        box-shadow: 0 4px 12px rgba(72, 131, 255, 0.3) !important;
+    }
+    /* CLEAN UP - REMOVE ALL CONFLICTING RULES */    /* OVERRIDE ANY POTENTIAL BLACK/DARK BACKGROUNDS ON HOVER */
+    .custom-test-dropdown *:hover {
+        background-color: #4883FF !important;
+        background: #4883FF !important;
+        color: white !important;
+    }
+    
+    /* NUCLEAR OPTION: FORCE WHITE TEXT ON SELECTED OPTION */
+    .custom-test-dropdown [class],
+    .custom-test-dropdown [class] *,
+    .custom-test-dropdown .gradio-dropdown [class],
+    .custom-test-dropdown .gradio-dropdown [class] *,
+    .custom-test-dropdown [data-testid="dropdown"] [class],
+    .custom-test-dropdown [data-testid="dropdown"] [class] *,
+    .custom-test-dropdown button[class],
+    .custom-test-dropdown button[class] *,
+    .custom-test-dropdown div[style],
+    .custom-test-dropdown span[style],
+    .custom-test-dropdown div[style] *,
+    .custom-test-dropdown span[style] * {
+        color: white !important;
+    }
+      /* SPECIFIC OVERRIDE FOR CHART BUTTON STYLES THAT MIGHT INTERFERE */
+    .custom-test-dropdown.chart-btn:hover,
+    .custom-test-dropdown .chart-btn:hover {
+        background-color: #4883FF !important;
+        background: #4883FF !important;
+        color: white !important;
+        border-color: #4883FF !important;
+    }    /* PREVENT ANY DEFAULT HOVER STYLES FROM OVERRIDING */
+    .custom-test-dropdown:hover,
+    .custom-test-dropdown *:hover:not(svg):not(path) {
+        background-color: #4883FF !important;
+        background: #4883FF !important;
+        color: white !important;
+    }
+    
+    /* ULTIMATE OVERRIDE FOR INLINE STYLES - MAXIMUM SPECIFICITY */
+    .custom-test-dropdown[style*="color"] *,
+    .custom-test-dropdown *[style*="color"],
+    .custom-test-dropdown [style*="background"] *,
+    .custom-test-dropdown *[style*="background"] {
+        color: white !important;
+        background-color: transparent !important;
+    }
+      /* FORCE WHITE TEXT ON BUTTON AND SELECTED CONTENT */
+    .custom-test-dropdown button,
+    .custom-test-dropdown button *,
+    .custom-test-dropdown .gradio-dropdown button,
+    .custom-test-dropdown .gradio-dropdown button *,
+    .custom-test-dropdown [data-testid="dropdown"] button,
+    .custom-test-dropdown [data-testid="dropdown"] button * {
+        color: white !important;
+        background: transparent !important;
+    }
+    
+    /* ADDITIONAL SPECIFICITY FOR SELECTED VALUE TEXT */
+    .custom-test-dropdown button span,
+    .custom-test-dropdown .gradio-dropdown button span,
+    .custom-test-dropdown [data-testid="dropdown"] button span,
+    .custom-test-dropdown .selected-option,
+    .custom-test-dropdown .current-option,
+    .custom-test-dropdown .dropdown-value,
+    .custom-test-dropdown [role="combobox"],
+    .custom-test-dropdown [role="combobox"] *,
+    .custom-test-dropdown [class*="value"],
+    .custom-test-dropdown [class*="value"] *,
+    .custom-test-dropdown [class*="selected"],
+    .custom-test-dropdown [class*="selected"] * {
+        color: white !important;
+        background-color: transparent !important;
+    }
+    
+    /* NO MORE UNIVERSAL OVERRIDES THAT COULD INTERFERE */
     """
