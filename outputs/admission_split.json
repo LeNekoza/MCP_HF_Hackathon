@@ -1,0 +1,36 @@
+{
+  "analysis_id": "admission_split",
+  "label": "Elective vs emergency demand split",
+  "description": "Analysis of admission patterns by type and timing",
+  "default_chart": "stacked_bar",
+  "extra_charts": [
+    "pie"
+  ],
+  "available_charts": [
+    "line",
+    "bar",
+    "scatter",
+    "pie",
+    "pie"
+  ],
+  "data": {
+    "overall_split": {
+      "elective": 0,
+      "emergency": 0,
+      "elective_pct": 0.0,
+      "emergency_pct": 0.0
+    },
+    "daily_trends": [],
+    "hourly_pattern": [],
+    "summary": {
+      "total_admissions": 0,
+      "analysis_period_days": 14,
+      "avg_daily_admissions": 0.0,
+      "peak_admission_hour": null
+    },
+    "timestamp": "2025-06-09T23:20:27.606934",
+    "ward_split": []
+  },
+  "success": true,
+  "error": null
+}

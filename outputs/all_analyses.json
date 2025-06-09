@@ -1,0 +1,1856 @@
+{
+  "bed_snapshot": {
+    "analysis_id": "bed_snapshot",
+    "label": "Real-time bed occupancy by ward",
+    "description": "Current bed utilization across all hospital wards",
+    "default_chart": "stacked_bar",
+    "extra_charts": [
+      "100pct_area"
+    ],
+    "available_charts": [
+      "line",
+      "bar",
+      "scatter",
+      "pie",
+      "100pct_area"
+    ],
+    "data": {
+      "data": [
+        {
+          "room_type": "Pediatric",
+          "current_occupied_beds": 1,
+          "total_beds": 44,
+          "utilisation_pct": 2.3
+        },
+        {
+          "room_type": "Surgery",
+          "current_occupied_beds": 1,
+          "total_beds": 23,
+          "utilisation_pct": 4.3
+        }
+      ],
+      "summary": {
+        "total_occupied": 2,
+        "total_capacity": 67,
+        "overall_utilisation": 3.0
+      },
+      "timestamp": "2025-06-09T23:20:19.419870"
+    },
+    "success": true,
+    "error": null
+  },
+  "census_forecast": {
+    "analysis_id": "census_forecast",
+    "label": "Short-horizon bed census",
+    "description": "3-day forecast of bed occupancy using time series analysis",
+    "default_chart": "line",
+    "extra_charts": [
+      "line_conf_band"
+    ],
+    "available_charts": [
+      "line",
+      "bar",
+      "scatter",
+      "pie",
+      "line_conf_band"
+    ],
+    "data": {
+      "historical": [
+        {
+          "date": "2024-12-04",
+          "occupied_beds": 6,
+          "utilisation_pct": 3.1
+        },
+        {
+          "date": "2024-12-05",
+          "occupied_beds": 5,
+          "utilisation_pct": 2.6
+        },
+        {
+          "date": "2024-12-06",
+          "occupied_beds": 7,
+          "utilisation_pct": 3.6
+        },
+        {
+          "date": "2024-12-07",
+          "occupied_beds": 7,
+          "utilisation_pct": 3.6
+        },
+        {
+          "date": "2024-12-08",
+          "occupied_beds": 5,
+          "utilisation_pct": 2.6
+        },
+        {
+          "date": "2024-12-09",
+          "occupied_beds": 6,
+          "utilisation_pct": 3.1
+        },
+        {
+          "date": "2024-12-10",
+          "occupied_beds": 7,
+          "utilisation_pct": 3.6
+        },
+        {
+          "date": "2024-12-11",
+          "occupied_beds": 8,
+          "utilisation_pct": 4.1
+        },
+        {
+          "date": "2024-12-12",
+          "occupied_beds": 6,
+          "utilisation_pct": 3.1
+        },
+        {
+          "date": "2024-12-13",
+          "occupied_beds": 5,
+          "utilisation_pct": 2.6
+        },
+        {
+          "date": "2024-12-14",
+          "occupied_beds": 6,
+          "utilisation_pct": 3.1
+        },
+        {
+          "date": "2024-12-15",
+          "occupied_beds": 5,
+          "utilisation_pct": 2.6
+        },
+        {
+          "date": "2024-12-16",
+          "occupied_beds": 5,
+          "utilisation_pct": 2.6
+        },
+        {
+          "date": "2024-12-17",
+          "occupied_beds": 6,
+          "utilisation_pct": 3.1
+        },
+        {
+          "date": "2024-12-18",
+          "occupied_beds": 6,
+          "utilisation_pct": 3.1
+        },
+        {
+          "date": "2024-12-19",
+          "occupied_beds": 5,
+          "utilisation_pct": 2.6
+        },
+        {
+          "date": "2024-12-20",
+          "occupied_beds": 5,
+          "utilisation_pct": 2.6
+        },
+        {
+          "date": "2024-12-21",
+          "occupied_beds": 7,
+          "utilisation_pct": 3.6
+        },
+        {
+          "date": "2024-12-22",
+          "occupied_beds": 7,
+          "utilisation_pct": 3.6
+        },
+        {
+          "date": "2024-12-23",
+          "occupied_beds": 6,
+          "utilisation_pct": 3.1
+        },
+        {
+          "date": "2024-12-24",
+          "occupied_beds": 5,
+          "utilisation_pct": 2.6
+        },
+        {
+          "date": "2024-12-25",
+          "occupied_beds": 6,
+          "utilisation_pct": 3.1
+        },
+        {
+          "date": "2024-12-26",
+          "occupied_beds": 6,
+          "utilisation_pct": 3.1
+        },
+        {
+          "date": "2024-12-27",
+          "occupied_beds": 6,
+          "utilisation_pct": 3.1
+        },
+        {
+          "date": "2024-12-28",
+          "occupied_beds": 6,
+          "utilisation_pct": 3.1
+        },
+        {
+          "date": "2024-12-29",
+          "occupied_beds": 6,
+          "utilisation_pct": 3.1
+        },
+        {
+          "date": "2024-12-30",
+          "occupied_beds": 5,
+          "utilisation_pct": 2.6
+        },
+        {
+          "date": "2024-12-31",
+          "occupied_beds": 7,
+          "utilisation_pct": 3.6
+        },
+        {
+          "date": "2025-01-01",
+          "occupied_beds": 2,
+          "utilisation_pct": 1.0
+        },
+        {
+          "date": "2025-01-02",
+          "occupied_beds": 1,
+          "utilisation_pct": 0.5
+        }
+      ],
+      "forecast": [
+        {
+          "date": "2025-01-03",
+          "predicted_occupied_beds": 3.4880304148163948,
+          "utilisation_pct": 1.8
+        },
+        {
+          "date": "2025-01-04",
+          "predicted_occupied_beds": 3.4880304148163948,
+          "utilisation_pct": 1.8
+        },
+        {
+          "date": "2025-01-05",
+          "predicted_occupied_beds": 3.4880304148163948,
+          "utilisation_pct": 1.8
+        }
+      ],
+      "summary": {
+        "total_bed_capacity": 193,
+        "avg_historical_occupancy": 4.7,
+        "forecast_range": "3.5 - 3.5"
+      },
+      "timestamp": "2025-06-09T23:20:24.435108"
+    },
+    "success": true,
+    "error": null
+  },
+  "admission_split": {
+    "analysis_id": "admission_split",
+    "label": "Elective vs emergency demand split",
+    "description": "Analysis of admission patterns by type and timing",
+    "default_chart": "stacked_bar",
+    "extra_charts": [
+      "pie"
+    ],
+    "available_charts": [
+      "line",
+      "bar",
+      "scatter",
+      "pie",
+      "pie"
+    ],
+    "data": {
+      "overall_split": {
+        "elective": 0,
+        "emergency": 0,
+        "elective_pct": 0.0,
+        "emergency_pct": 0.0
+      },
+      "daily_trends": [],
+      "hourly_pattern": [],
+      "summary": {
+        "total_admissions": 0,
+        "analysis_period_days": 14,
+        "avg_daily_admissions": 0.0,
+        "peak_admission_hour": null
+      },
+      "timestamp": "2025-06-09T23:20:27.606934",
+      "ward_split": []
+    },
+    "success": true,
+    "error": null
+  },
+  "los_prediction": {
+    "analysis_id": "los_prediction",
+    "label": "Average length-of-stay prediction",
+    "description": "Length of stay analysis and predictions by ward",
+    "default_chart": "bar_h",
+    "extra_charts": [
+      "box"
+    ],
+    "available_charts": [
+      "line",
+      "bar",
+      "scatter",
+      "pie",
+      "box"
+    ],
+    "data": {
+      "ward_statistics": [
+        {
+          "room_type": "Emergency",
+          "avg_los": 1.99,
+          "median_los": 2.0,
+          "std_los": 0.85,
+          "sample_size": 236
+        },
+        {
+          "room_type": "General Ward",
+          "avg_los": 1.95,
+          "median_los": 2.0,
+          "std_los": 0.81,
+          "sample_size": 112
+        },
+        {
+          "room_type": "ICU",
+          "avg_los": 1.93,
+          "median_los": 2.0,
+          "std_los": 0.76,
+          "sample_size": 56
+        },
+        {
+          "room_type": "Maternity",
+          "avg_los": 2.0,
+          "median_los": 2.0,
+          "std_los": 0.87,
+          "sample_size": 9
+        },
+        {
+          "room_type": "Pediatric",
+          "avg_los": 2.06,
+          "median_los": 2.0,
+          "std_los": 0.81,
+          "sample_size": 429
+        },
+        {
+          "room_type": "Surgery",
+          "avg_los": 1.94,
+          "median_los": 2.0,
+          "std_los": 0.83,
+          "sample_size": 258
+        }
+      ],
+      "model_predictions": [
+        {
+          "admission_type": "Elective",
+          "room_type": "ICU",
+          "gender": "Male",
+          "age_at_adm": 65,
+          "predicted_los": 1.96
+        },
+        {
+          "admission_type": "Emergency",
+          "room_type": "ICU",
+          "gender": "Female",
+          "age_at_adm": 70,
+          "predicted_los": 1.7
+        },
+        {
+          "admission_type": "Elective",
+          "room_type": "General",
+          "gender": "Male",
+          "age_at_adm": 45,
+          "predicted_los": 1.97
+        },
+        {
+          "admission_type": "Emergency",
+          "room_type": "General",
+          "gender": "Female",
+          "age_at_adm": 55,
+          "predicted_los": 1.98
+        }
+      ],
+      "model_status": {
+        "status": "trained",
+        "samples": 1100,
+        "cv_mean_score": -0.015,
+        "cv_std_score": 0.021,
+        "model_path": "models/los_model.pkl"
+      },
+      "summary": {
+        "overall_avg_los": 2.0,
+        "overall_median_los": 2.0,
+        "total_completed_stays": 1100,
+        "longest_stay": 3.0,
+        "shortest_stay": 1.0
+      },
+      "timestamp": "2025-06-09T23:20:33.264785"
+    },
+    "success": true,
+    "error": null
+  },
+  "burn_rate": {
+    "analysis_id": "burn_rate",
+    "label": "Consumable burn-rate forecast",
+    "description": "Inventory consumption forecast and stockout alerts",
+    "default_chart": "stacked_area",
+    "extra_charts": [],
+    "available_charts": [
+      "line",
+      "bar",
+      "scatter",
+      "pie"
+    ],
+    "data": {
+      "inventory_forecast": [
+        {
+          "item_name": "Oxygen Tank 3",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 10",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 13",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 15",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 17",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 23",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 26",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 28",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 30",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 34",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 38",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 39",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 42",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 44",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 49",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 50",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 51",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 54",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 56",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 58",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 64",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 66",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 70",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 71",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 72",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 75",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 76",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 78",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 80",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 87",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 89",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 95",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 1",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 56.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 2",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 284.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 4",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 282.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 5",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 68.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 6",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 194.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 7",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 8",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 159.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 9",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 178.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 11",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 12",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 14",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 63.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 16",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 72.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 18",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 19",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 36.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 20",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 188.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 21",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 315.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 22",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 204.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 24",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 358.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 25",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 194.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 27",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 214.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 29",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 258.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 31",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 32",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 303.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 33",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 35",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 245.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 36",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 37",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 40",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 48.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 41",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 43",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 108.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 45",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 46",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 156.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 47",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 117.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 48",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 52",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 53",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 331.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 55",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 57",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 59",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 352.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 60",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 353.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 61",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 34.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 62",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 63",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 355.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 65",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 316.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 67",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 298.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 68",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 69",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 338.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 73",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 26.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 74",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 77",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 31.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 79",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 182.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 81",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 123.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 82",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 122.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 83",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 84",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 150.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 85",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 223.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 86",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 88",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 47.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 90",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 288.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 91",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 92",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 93",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 94",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 125.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type A+ 96",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 250.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 97",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 337.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 98",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Blood Type O- 99",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 82.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        },
+        {
+          "item_name": "Medical Supplies 100",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": NaN,
+          "risk_level": "Medium",
+          "category": "Other"
+        }
+      ],
+      "high_risk_items": [
+        {
+          "item_name": "Oxygen Tank 3",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 10",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 13",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 15",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 17",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 23",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 26",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 28",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 30",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 34",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 38",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 39",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 42",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 44",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 49",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 50",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 51",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 54",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 56",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 58",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 64",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 66",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 70",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 71",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 72",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 75",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 76",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 78",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 80",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 87",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 89",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        },
+        {
+          "item_name": "Oxygen Tank 95",
+          "current_stock": 1,
+          "daily_burn_rate": 0.8,
+          "projected_usage_7_days": 5.6,
+          "days_until_stockout": 1.2,
+          "days_to_expiry": NaN,
+          "risk_level": "High",
+          "category": "Other"
+        }
+      ],
+      "expiring_soon": [
+        {
+          "item_name": "Blood Type O- 73",
+          "current_stock": 1,
+          "daily_burn_rate": 0.1,
+          "projected_usage_7_days": 0.7,
+          "days_until_stockout": 10.0,
+          "days_to_expiry": 26.0,
+          "risk_level": "Medium",
+          "category": "Other"
+        }
+      ],
+      "category_summary": [
+        {
+          "category": "Other",
+          "total_stock": 100,
+          "total_daily_burn": 32.4,
+          "high_risk_items": 32
+        }
+      ],
+      "summary": {
+        "total_items_tracked": 100,
+        "high_risk_count": 32,
+        "medium_risk_count": 68,
+        "low_risk_count": 0,
+        "items_expiring_soon": 1,
+        "current_bed_occupancy": 0,
+        "forecast_period_days": 7
+      },
+      "timestamp": "2025-06-09T23:20:35.636776"
+    },
+    "success": true,
+    "error": null
+  },
+  "staffing": {
+    "analysis_id": "staffing",
+    "label": "Staffing needs",
+    "description": "Staff scheduling and workload analysis",
+    "default_chart": "grouped_bar",
+    "extra_charts": [
+      "dual_axis_line"
+    ],
+    "available_charts": [
+      "line",
+      "bar",
+      "scatter",
+      "pie",
+      "dual_axis_line"
+    ],
+    "data": {
+      "current_status": {
+        "bed_census_by_ward": {},
+        "current_staff_counts": {
+          "nurses": 100,
+          "doctors": 100,
+          "support_staff": 0
+        },
+        "required_staffing": {
+          "nurses": 0,
+          "doctors": 0,
+          "support_staff": 0
+        },
+        "staffing_gaps": {
+          "nurses": 100,
+          "doctors": 100,
+          "support_staff": 0
+        }
+      },
+      "forecast": [
+        {
+          "date": "2025-06-10",
+          "wards": {},
+          "total_required": {
+            "nurses": 0,
+            "doctors": 0,
+            "support_staff": 0
+          }
+        },
+        {
+          "date": "2025-06-11",
+          "wards": {},
+          "total_required": {
+            "nurses": 0,
+            "doctors": 0,
+            "support_staff": 0
+          }
+        },
+        {
+          "date": "2025-06-12",
+          "wards": {},
+          "total_required": {
+            "nurses": 0,
+            "doctors": 0,
+            "support_staff": 0
+          }
+        }
+      ],
+      "shift_recommendations": {
+        "day_shift": {
+          "nurses_needed": 2,
+          "doctors_needed": 1,
+          "support_needed": 1
+        },
+        "evening_shift": {
+          "nurses_needed": 2,
+          "doctors_needed": 1,
+          "support_needed": 1
+        },
+        "night_shift": {
+          "nurses_needed": 1,
+          "doctors_needed": 1,
+          "support_needed": 0
+        }
+      },
+      "staff_load_analysis": {
+        "patient_to_staff_ratio": 0.0,
+        "workload_level": "Normal",
+        "staff_distribution": {},
+        "recommendations": [
+          null,
+          null,
+          null
+        ]
+      },
+      "summary": {
+        "total_occupied_beds": 0,
+        "total_current_staff": 200,
+        "total_required_staff": 0,
+        "overall_staffing_level": 20000.0,
+        "forecast_period_days": 3,
+        "high_priority_wards": []
+      },
+      "timestamp": "2025-06-09T23:20:38.354841"
+    },
+    "success": true,
+    "error": null
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "analysis_id": "bed_snapshot",
+  "label": "Real-time bed occupancy by ward",
+  "description": "Current bed utilization across all hospital wards",
+  "default_chart": "stacked_bar",
+  "extra_charts": [
+    "100pct_area"
+  ],
+  "available_charts": [
+    "line",
+    "bar",
+    "scatter",
+    "pie",
+    "100pct_area"
+  ],
+  "data": {
+    "data": [
+      {
+        "room_type": "Pediatric",
+        "current_occupied_beds": 1,
+        "total_beds": 44,
+        "utilisation_pct": 2.3
+      },
+      {
+        "room_type": "Surgery",
+        "current_occupied_beds": 1,
+        "total_beds": 23,
+        "utilisation_pct": 4.3
+      }
+    ],
+    "summary": {
+      "total_occupied": 2,
+      "total_capacity": 67,
+      "overall_utilisation": 3.0
+    },
+    "timestamp": "2025-06-09T23:20:19.419870"
+  },
+  "success": true,
+  "error": null
+}

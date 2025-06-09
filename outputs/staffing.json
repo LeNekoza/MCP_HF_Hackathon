@@ -1,0 +1,103 @@
+{
+  "analysis_id": "staffing",
+  "label": "Staffing needs",
+  "description": "Staff scheduling and workload analysis",
+  "default_chart": "grouped_bar",
+  "extra_charts": [
+    "dual_axis_line"
+  ],
+  "available_charts": [
+    "line",
+    "bar",
+    "scatter",
+    "pie",
+    "dual_axis_line"
+  ],
+  "data": {
+    "current_status": {
+      "bed_census_by_ward": {},
+      "current_staff_counts": {
+        "nurses": 100,
+        "doctors": 100,
+        "support_staff": 0
+      },
+      "required_staffing": {
+        "nurses": 0,
+        "doctors": 0,
+        "support_staff": 0
+      },
+      "staffing_gaps": {
+        "nurses": 100,
+        "doctors": 100,
+        "support_staff": 0
+      }
+    },
+    "forecast": [
+      {
+        "date": "2025-06-10",
+        "wards": {},
+        "total_required": {
+          "nurses": 0,
+          "doctors": 0,
+          "support_staff": 0
+        }
+      },
+      {
+        "date": "2025-06-11",
+        "wards": {},
+        "total_required": {
+          "nurses": 0,
+          "doctors": 0,
+          "support_staff": 0
+        }
+      },
+      {
+        "date": "2025-06-12",
+        "wards": {},
+        "total_required": {
+          "nurses": 0,
+          "doctors": 0,
+          "support_staff": 0
+        }
+      }
+    ],
+    "shift_recommendations": {
+      "day_shift": {
+        "nurses_needed": 2,
+        "doctors_needed": 1,
+        "support_needed": 1
+      },
+      "evening_shift": {
+        "nurses_needed": 2,
+        "doctors_needed": 1,
+        "support_needed": 1
+      },
+      "night_shift": {
+        "nurses_needed": 1,
+        "doctors_needed": 1,
+        "support_needed": 0
+      }
+    },
+    "staff_load_analysis": {
+      "patient_to_staff_ratio": 0.0,
+      "workload_level": "Normal",
+      "staff_distribution": {},
+      "recommendations": [
+        null,
+        null,
+        null
+      ]
+    },
+    "summary": {
+      "total_occupied_beds": 0,
+      "total_current_staff": 200,
+      "total_required_staff": 0,
+      "overall_staffing_level": 20000.0,
+      "forecast_period_days": 3,
+      "high_priority_wards": []
+    },
+    "timestamp": "2025-06-09T23:20:38.354841"
+  },
+  "success": true,
+  "error": null
+}

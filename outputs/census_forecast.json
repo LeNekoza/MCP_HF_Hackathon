@@ -1,0 +1,195 @@
+{
+  "analysis_id": "census_forecast",
+  "label": "Short-horizon bed census",
+  "description": "3-day forecast of bed occupancy using time series analysis",
+  "default_chart": "line",
+  "extra_charts": [
+    "line_conf_band"
+  ],
+  "available_charts": [
+    "line",
+    "bar",
+    "scatter",
+    "pie",
+    "line_conf_band"
+  ],
+  "data": {
+    "historical": [
+      {
+        "date": "2024-12-04",
+        "occupied_beds": 6,
+        "utilisation_pct": 3.1
+      },
+      {
+        "date": "2024-12-05",
+        "occupied_beds": 5,
+        "utilisation_pct": 2.6
+      },
+      {
+        "date": "2024-12-06",
+        "occupied_beds": 7,
+        "utilisation_pct": 3.6
+      },
+      {
+        "date": "2024-12-07",
+        "occupied_beds": 7,
+        "utilisation_pct": 3.6
+      },
+      {
+        "date": "2024-12-08",
+        "occupied_beds": 5,
+        "utilisation_pct": 2.6
+      },
+      {
+        "date": "2024-12-09",
+        "occupied_beds": 6,
+        "utilisation_pct": 3.1
+      },
+      {
+        "date": "2024-12-10",
+        "occupied_beds": 7,
+        "utilisation_pct": 3.6
+      },
+      {
+        "date": "2024-12-11",
+        "occupied_beds": 8,
+        "utilisation_pct": 4.1
+      },
+      {
+        "date": "2024-12-12",
+        "occupied_beds": 6,
+        "utilisation_pct": 3.1
+      },
+      {
+        "date": "2024-12-13",
+        "occupied_beds": 5,
+        "utilisation_pct": 2.6
+      },
+      {
+        "date": "2024-12-14",
+        "occupied_beds": 6,
+        "utilisation_pct": 3.1
+      },
+      {
+        "date": "2024-12-15",
+        "occupied_beds": 5,
+        "utilisation_pct": 2.6
+      },
+      {
+        "date": "2024-12-16",
+        "occupied_beds": 5,
+        "utilisation_pct": 2.6
+      },
+      {
+        "date": "2024-12-17",
+        "occupied_beds": 6,
+        "utilisation_pct": 3.1
+      },
+      {
+        "date": "2024-12-18",
+        "occupied_beds": 6,
+        "utilisation_pct": 3.1
+      },
+      {
+        "date": "2024-12-19",
+        "occupied_beds": 5,
+        "utilisation_pct": 2.6
+      },
+      {
+        "date": "2024-12-20",
+        "occupied_beds": 5,
+        "utilisation_pct": 2.6
+      },
+      {
+        "date": "2024-12-21",
+        "occupied_beds": 7,
+        "utilisation_pct": 3.6
+      },
+      {
+        "date": "2024-12-22",
+        "occupied_beds": 7,
+        "utilisation_pct": 3.6
+      },
+      {
+        "date": "2024-12-23",
+        "occupied_beds": 6,
+        "utilisation_pct": 3.1
+      },
+      {
+        "date": "2024-12-24",
+        "occupied_beds": 5,
+        "utilisation_pct": 2.6
+      },
+      {
+        "date": "2024-12-25",
+        "occupied_beds": 6,
+        "utilisation_pct": 3.1
+      },
+      {
+        "date": "2024-12-26",
+        "occupied_beds": 6,
+        "utilisation_pct": 3.1
+      },
+      {
+        "date": "2024-12-27",
+        "occupied_beds": 6,
+        "utilisation_pct": 3.1
+      },
+      {
+        "date": "2024-12-28",
+        "occupied_beds": 6,
+        "utilisation_pct": 3.1
+      },
+      {
+        "date": "2024-12-29",
+        "occupied_beds": 6,
+        "utilisation_pct": 3.1
+      },
+      {
+        "date": "2024-12-30",
+        "occupied_beds": 5,
+        "utilisation_pct": 2.6
+      },
+      {
+        "date": "2024-12-31",
+        "occupied_beds": 7,
+        "utilisation_pct": 3.6
+      },
+      {
+        "date": "2025-01-01",
+        "occupied_beds": 2,
+        "utilisation_pct": 1.0
+      },
+      {
+        "date": "2025-01-02",
+        "occupied_beds": 1,
+        "utilisation_pct": 0.5
+      }
+    ],
+    "forecast": [
+      {
+        "date": "2025-01-03",
+        "predicted_occupied_beds": 3.4880304148163948,
+        "utilisation_pct": 1.8
+      },
+      {
+        "date": "2025-01-04",
+        "predicted_occupied_beds": 3.4880304148163948,
+        "utilisation_pct": 1.8
+      },
+      {
+        "date": "2025-01-05",
+        "predicted_occupied_beds": 3.4880304148163948,
+        "utilisation_pct": 1.8
+      }
+    ],
+    "summary": {
+      "total_bed_capacity": 193,
+      "avg_historical_occupancy": 4.7,
+      "forecast_range": "3.5 - 3.5"
+    },
+    "timestamp": "2025-06-09T23:20:24.435108"
+  },
+  "success": true,
+  "error": null
+}

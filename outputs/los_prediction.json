@@ -1,0 +1,109 @@
+{
+  "analysis_id": "los_prediction",
+  "label": "Average length-of-stay prediction",
+  "description": "Length of stay analysis and predictions by ward",
+  "default_chart": "bar_h",
+  "extra_charts": [
+    "box"
+  ],
+  "available_charts": [
+    "line",
+    "bar",
+    "scatter",
+    "pie",
+    "box"
+  ],
+  "data": {
+    "ward_statistics": [
+      {
+        "room_type": "Emergency",
+        "avg_los": 1.99,
+        "median_los": 2.0,
+        "std_los": 0.85,
+        "sample_size": 236
+      },
+      {
+        "room_type": "General Ward",
+        "avg_los": 1.95,
+        "median_los": 2.0,
+        "std_los": 0.81,
+        "sample_size": 112
+      },
+      {
+        "room_type": "ICU",
+        "avg_los": 1.93,
+        "median_los": 2.0,
+        "std_los": 0.76,
+        "sample_size": 56
+      },
+      {
+        "room_type": "Maternity",
+        "avg_los": 2.0,
+        "median_los": 2.0,
+        "std_los": 0.87,
+        "sample_size": 9
+      },
+      {
+        "room_type": "Pediatric",
+        "avg_los": 2.06,
+        "median_los": 2.0,
+        "std_los": 0.81,
+        "sample_size": 429
+      },
+      {
+        "room_type": "Surgery",
+        "avg_los": 1.94,
+        "median_los": 2.0,
+        "std_los": 0.83,
+        "sample_size": 258
+      }
+    ],
+    "model_predictions": [
+      {
+        "admission_type": "Elective",
+        "room_type": "ICU",
+        "gender": "Male",
+        "age_at_adm": 65,
+        "predicted_los": 1.96
+      },
+      {
+        "admission_type": "Emergency",
+        "room_type": "ICU",
+        "gender": "Female",
+        "age_at_adm": 70,
+        "predicted_los": 1.7
+      },
+      {
+        "admission_type": "Elective",
+        "room_type": "General",
+        "gender": "Male",
+        "age_at_adm": 45,
+        "predicted_los": 1.97
+      },
+      {
+        "admission_type": "Emergency",
+        "room_type": "General",
+        "gender": "Female",
+        "age_at_adm": 55,
+        "predicted_los": 1.98
+      }
+    ],
+    "model_status": {
+      "status": "trained",
+      "samples": 1100,
+      "cv_mean_score": -0.015,
+      "cv_std_score": 0.021,
+      "model_path": "models/los_model.pkl"
+    },
+    "summary": {
+      "overall_avg_los": 2.0,
+      "overall_median_los": 2.0,
+      "total_completed_stays": 1100,
+      "longest_stay": 3.0,
+      "shortest_stay": 1.0
+    },
+    "timestamp": "2025-06-09T23:20:33.264785"
+  },
+  "success": true,
+  "error": null
+}

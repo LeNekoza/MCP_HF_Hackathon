@@ -142,95 +142,11 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                 """
                 )
 
-                # Main Content Area - Always Visible Analysis Section
-                gr.HTML(
-                    """
-                <div class="main-content-area">
-                    <div class="analysis-section">
-                        <h2 class="analysis-title">Analysis Title</h2>
-                        
-                        <!-- Chart Type Controls -->
-                        <div class="chart-controls">
-                            <button class="chart-btn active" data-chart="line">Line</button>
-                            <button class="chart-btn" data-chart="bar">Bar</button>
-                            <button class="chart-btn" data-chart="pie">Pie</button>
-                            <button class="chart-btn" data-chart="scatter">Scatter</button>
-                            </div>
-                            
-                        <!-- Chart Container -->
-                        <div class="chart-container">
-                            <div class="chart-legend">
-                                <span class="legend-item">
-                                    <span class="legend-color" style="background: #3b82f6;"></span>
-                                    Patient Count
-                                </span>
-                                <span class="legend-item">
-                                    <span class="legend-color" style="background: #22d3ee;"></span>
-                                    Revenue Data
-                                </span>
-                                </div>
-                                
-                            <div class="line-chart">
-                                <svg width="100%" height="400" viewBox="0 0 600 300">
-                                    <!-- Grid lines -->
-                                            <defs>
-                                        <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
-                                            <path d="M 50 0 L 0 0 0 25" fill="none" stroke="#f1f5f9" stroke-width="1"/>
-                                        </pattern>
-                                            </defs>
-                                    <rect width="100%" height="100%" fill="url(#grid)" />
-                                    
-                                    <!-- Y-axis labels -->
-                                    <text x="30" y="50" fill="#64748b" font-size="12" text-anchor="end">65</text>
-                                    <text x="30" y="88" fill="#64748b" font-size="12" text-anchor="end">60</text>
-                                    <text x="30" y="125" fill="#64748b" font-size="12" text-anchor="end">55</text>
-                                    <text x="30" y="163" fill="#64748b" font-size="12" text-anchor="end">50</text>
-                                    <text x="30" y="200" fill="#64748b" font-size="12" text-anchor="end">45</text>
-                                    <text x="30" y="238" fill="#64748b" font-size="12" text-anchor="end">40</text>
-                                    
-                                    <!-- X-axis labels -->
-                                    <text x="80" y="280" fill="#64748b" font-size="12" text-anchor="middle">January</text>
-                                    <text x="160" y="280" fill="#64748b" font-size="12" text-anchor="middle">February</text>
-                                    <text x="240" y="280" fill="#64748b" font-size="12" text-anchor="middle">March</text>
-                                    <text x="320" y="280" fill="#64748b" font-size="12" text-anchor="middle">April</text>
-                                    <text x="400" y="280" fill="#64748b" font-size="12" text-anchor="middle">May</text>
-                                    <text x="480" y="280" fill="#64748b" font-size="12" text-anchor="middle">June</text>
-                                    <text x="560" y="280" fill="#64748b" font-size="12" text-anchor="middle">July</text>
-                                    
-                                    <!-- Red line (declining) -->
-                                    <path d="M 80 50 L 160 88 L 240 125 L 320 163 L 400 200 L 480 163 L 560 238" 
-                                          stroke="#ef4444" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                    
-                                    <!-- Cyan/Teal line (rising then declining) -->
-                                    <path d="M 80 238 L 160 225 L 240 200 L 320 175 L 400 138 L 480 125 L 560 163" 
-                                          stroke="#22d3ee" stroke-width="3" fill="none" stroke-linecap="round"/>
-                                    
-                                    <!-- Gray dotted line -->
-                                    <path d="M 80 88 L 160 125 L 240 138 L 320 150 L 400 175 L 480 188 L 560 200" 
-                                          stroke="#94a3b8" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
-                                    
-                                    <!-- Data points -->
-                                    <circle cx="80" cy="50" r="4" fill="#ef4444"/>
-                                    <circle cx="160" cy="88" r="4" fill="#ef4444"/>
-                                    <circle cx="240" cy="125" r="4" fill="#ef4444"/>
-                                    <circle cx="320" cy="163" r="4" fill="#ef4444"/>
-                                    <circle cx="400" cy="200" r="4" fill="#ef4444"/>
-                                    <circle cx="480" cy="163" r="4" fill="#ef4444"/>
-                                    <circle cx="560" cy="238" r="4" fill="#ef4444"/>
-                                    
-                                    <circle cx="80" cy="238" r="4" fill="#22d3ee"/>
-                                    <circle cx="160" cy="225" r="4" fill="#22d3ee"/>
-                                    <circle cx="240" cy="200" r="4" fill="#22d3ee"/>
-                                    <circle cx="320" cy="175" r="4" fill="#22d3ee"/>
-                                    <circle cx="400" cy="138" r="4" fill="#22d3ee"/>
-                                    <circle cx="480" cy="125" r="4" fill="#22d3ee"/>
-                                    <circle cx="560" cy="163" r="4" fill="#22d3ee"/>
-                                </svg>
-                                            </div>
-                                        </div>
-                    </div>
-                </div>
-                """                )
+                # Main Content Area - Dynamic Analytics Dashboard
+                # Create and integrate the analytics dashboard
+                from .analytics_interface import create_analytics_dashboard
+                # Note: The analytics dashboard includes analysis_description as an internal component
+                analytics_dashboard, analysis_selector, chart_type_selector, chart_display, summary_display = create_analytics_dashboard()
 
         # Hidden status indicator
         status = gr.Textbox(visible=False)
@@ -617,6 +533,33 @@ Make sure the user gets both the complete information they requested AND your pr
                 }
             ],
             outputs=chatbot,
+        )
+        
+
+        
+        # Initialize analytics dashboard on load - limited to accessible components
+        def simple_init():
+            """Simple initialization for analytics components."""
+            try:
+                from .analytics_interface import generate_mock_data, create_plotly_chart, get_analysis_summary
+                import plotly.graph_objects as go
+                
+                # Use mock bed occupancy data
+                data_response = generate_mock_data("bed_snapshot")
+                chart_fig = create_plotly_chart(data_response["data"], "stacked_bar", "bed_snapshot")
+                summary_html = get_analysis_summary(data_response["data"], "bed_snapshot")
+                
+                return chart_fig, summary_html
+            except Exception as e:
+                return (
+                    go.Figure().add_annotation(text=f"Loading...", x=0.5, y=0.5),
+                    "<div class='summary-panel'><h3>Loading...</h3><p>Please wait</p></div>"
+                )
+        
+        demo.load(
+            fn=simple_init,
+            inputs=[],
+            outputs=[chart_display, summary_display]
         )
 
     return demo
@@ -3609,5 +3552,118 @@ def load_modern_hospital_css():
             padding: 6px 12px !important;
             font-size: 12px !important;
         }
+    }
+
+    /* Analytics Dashboard Styles */
+    .analytics-dashboard {
+        padding: 20px !important;
+        background: white !important;
+        border-radius: 12px !important;
+        margin: 0 !important;
+    }
+
+    .analytics-header {
+        margin-bottom: 20px !important;
+        padding-bottom: 15px !important;
+        border-bottom: 2px solid #e5e7eb !important;
+    }
+
+    .analytics-header h2 {
+        color: #1f2937 !important;
+        margin: 0 0 5px 0 !important;
+        font-size: 24px !important;
+        font-weight: 600 !important;
+    }
+
+    .analytics-header p {
+        color: #6b7280 !important;
+        margin: 0 !important;
+        font-size: 14px !important;
+    }
+
+    .analytics-controls {
+        margin-bottom: 20px !important;
+    }
+
+    .analysis-selector, .chart-type-selector {
+        margin-bottom: 15px !important;
+    }
+
+    .refresh-btn {
+        height: 40px !important;
+        font-weight: 500 !important;
+        background: #3b82f6 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+    }
+
+    .refresh-btn:hover {
+        background: #2563eb !important;
+    }
+
+    .analysis-description {
+        margin-bottom: 20px !important;
+        padding: 15px !important;
+        background: #f8fafc !important;
+        border-radius: 8px !important;
+        border-left: 4px solid #3b82f6 !important;
+    }
+
+    .analysis-description p {
+        margin: 0 0 5px 0 !important;
+        color: #374151 !important;
+    }
+
+    .analysis-description small {
+        color: #6b7280 !important;
+        font-size: 12px !important;
+    }
+
+    .main-chart {
+        border: 1px solid #e5e7eb !important;
+        border-radius: 8px !important;
+        margin-bottom: 20px !important;
+        background: white !important;
+    }
+
+    .summary-panel {
+        background: #f8fafc !important;
+        border-radius: 8px !important;
+        padding: 20px !important;
+        border: 1px solid #e5e7eb !important;
+        height: fit-content !important;
+    }
+
+    .summary-panel h3 {
+        margin: 0 0 15px 0 !important;
+        color: #1f2937 !important;
+        font-size: 18px !important;
+        font-weight: 600 !important;
+    }
+
+    .metric {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-bottom: 10px !important;
+        padding: 8px 0 !important;
+        border-bottom: 1px solid #e5e7eb !important;
+    }
+
+    .metric:last-child {
+        border-bottom: none !important;
+    }
+
+    .metric-label {
+        color: #6b7280 !important;
+        font-size: 14px !important;
+    }
+
+    .metric-value {
+        color: #1f2937 !important;
+        font-weight: 600 !important;
+        font-size: 16px !important;
     }
     """
