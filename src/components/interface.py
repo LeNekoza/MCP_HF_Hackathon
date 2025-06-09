@@ -74,21 +74,12 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
 
                 # Tools Section with Dropdown
                 with gr.Row(elem_classes="tools-section"):
-                    with gr.Column(scale=1):
-                        tools_dropdown = gr.Dropdown(
+                    with gr.Column(scale=1):                        tools_dropdown = gr.Dropdown(
                             choices=[
-                                "Patient Search",
-                                "Room Status",
-                                "Staff Directory", 
-                                "Equipment Inventory",
-                                "Medication Lookup",
-                                "Lab Results",
-                                "Appointment Scheduler",
-                                "Emergency Protocols",
-                                "Medical Calculator",
-                                "Report Generator"
+                                "Visualize",
+                                "Go Back"
                             ],
-                            label="🔧 Tools",
+                            label="⚒ Tools",
                             value=None,
                             interactive=True,
                             container=True,
@@ -504,42 +495,45 @@ Make sure the user gets both the complete information they requested AND your pr
                 },
                 {
                     "role": "assistant",
-                    "content": "📞 The helpline number of the hospital is **555-HELP (555-4357)**.\n\nOur helpline is available 24/7 for urgent assistance. Please call immediately if you have any medical emergencies or need immediate support.",
-                }
+                    "content": "📞 The helpline number of the hospital is **555-HELP (555-4357)**.\n\nOur helpline is available 24/7 for urgent assistance. Please call immediately if you have any medical emergencies or need immediate support.",                }
             ]
 
-        def handle_tool_selection(tool_name):
-            """Handle tool selection from dropdown"""
-            if not tool_name:
-                return "", []
-            
-            tool_messages = {
-                "Patient Search": "Please search for patient information. What patient details would you like me to look up?",
-                "Room Status": "I'll check the current room occupancy and availability status for you.",
-                "Staff Directory": "Let me show you the staff directory and current availability.",
-                "Equipment Inventory": "I'll retrieve the current medical equipment inventory status.",
-                "Medication Lookup": "What medication information would you like me to look up?",
-                "Lab Results": "I'll help you access and review lab results. Which patient or test are you looking for?",
-                "Appointment Scheduler": "I can help you check appointments and scheduling. What would you like to know?",
-                "Emergency Protocols": "I'll provide emergency protocol information. What type of emergency are you asking about?",
-                "Medical Calculator": "I can help with medical calculations. What would you like to calculate?",
-                "Report Generator": "I'll help you generate reports. What type of report do you need?"
-            }
-            
-            return "", [
-                {
-                    "role": "user", 
-                    "content": f"I selected the {tool_name} tool"
-                },
-                {
-                    "role": "assistant",
-                    "content": f"🔧 **{tool_name} Tool Activated**\n\n{tool_messages.get(tool_name, 'Tool activated. How can I assist you?')}"
-                }
-            ]
+        # Chat state management
+        original_chat_state = gr.State([])  # Store original chat history
+        visualize_chat_state = gr.State([])  # Store visualize chat history
+        current_mode_state = gr.State("original")  # Track current mode: "original" or "visualize"
 
-        # Connect events for sidebar chat
+        # Wrapper function to handle state management for streaming
+        def stream_response_with_state(
+            message: str,
+            history: List[Dict],
+            model: str,
+            temp: float,
+            max_tok: int,
+            specialty: str,
+            context: str,
+            original_chat,
+            visualize_chat,
+            current_mode
+        ):
+            """Stream response and update appropriate chat state"""
+            # Use the existing stream_response function
+            for updated_history, cleared_input in stream_response(
+                message, history, model, temp, max_tok, specialty, context
+            ):
+                # Update the appropriate chat state based on current mode
+                if current_mode == "visualize":
+                    new_visualize_chat = updated_history
+                    new_original_chat = original_chat
+                else:
+                    new_original_chat = updated_history  
+                    new_visualize_chat = visualize_chat
+                
+                yield updated_history, cleared_input, new_original_chat, new_visualize_chat, current_mode
+
+        # Connect events for sidebar chat with state management
         msg.submit(
-            fn=stream_response,
+            fn=stream_response_with_state,
             inputs=[
                 msg,
                 chatbot,
@@ -548,64 +542,104 @@ Make sure the user gets both the complete information they requested AND your pr
                 gr.State(1000),  # max_tokens
                 gr.State("General Medicine"),  # medical_specialty
                 gr.State(""),  # context_input
+                original_chat_state,
+                visualize_chat_state, 
+                current_mode_state
             ],
-            outputs=[chatbot, msg],
+            outputs=[chatbot, msg, original_chat_state, visualize_chat_state, current_mode_state],
             show_progress="hidden",
         )
 
         send_btn.click(
-            fn=stream_response,
+            fn=stream_response_with_state,
             inputs=[
                 msg,
                 chatbot,
                 gr.State("nebius-llama-3.3-70b"),  # default model
                 gr.State(0.4),  # temperature
-                gr.State(1000),  # max_tokens                gr.State("General Medicine"),  # medical_specialty
+                gr.State(1000),  # max_tokens
+                gr.State("General Medicine"),  # medical_specialty
                 gr.State(""),  # context_input
+                original_chat_state,
+                visualize_chat_state,
+                current_mode_state
             ],
-            outputs=[chatbot, msg],
+            outputs=[chatbot, msg, original_chat_state, visualize_chat_state, current_mode_state],
             show_progress="hidden",
-        )
-
-        helpline_btn.click(
-            fn=handle_helpline,
-            outputs=[msg, chatbot],
-        )
-
-        # Tools dropdown handler
-        def handle_tool_selection(tool_name):
-            """Handle tool selection from dropdown"""
-            if not tool_name:
-                return "", []
-            
-            tool_messages = {
-                "Patient Search": "Please search for patient information. What patient details would you like me to look up?",
-                "Room Status": "I'll check the current room occupancy and availability status for you.",
-                "Staff Directory": "Let me show you the staff directory and current availability.",
-                "Equipment Inventory": "I'll retrieve the current medical equipment inventory status.",
-                "Medication Lookup": "What medication information would you like me to look up?",
-                "Lab Results": "I'll help you access and review lab results. Which patient or test are you looking for?",
-                "Appointment Scheduler": "I can help you check appointments and scheduling. What would you like to know?",
-                "Emergency Protocols": "I'll provide emergency protocol information. What type of emergency are you asking about?",
-                "Medical Calculator": "I can help with medical calculations. What would you like to calculate?",
-                "Report Generator": "I'll help you generate reports. What type of report do you need?"
-            }
-            
-            return "", [
+        )        # Update helpline handler to work with state management
+        def handle_helpline_with_state(original_chat, visualize_chat, current_mode):
+            """Handle helpline with state management"""
+            helpline_response = [
                 {
-                    "role": "user", 
-                    "content": f"I selected the {tool_name} tool"
+                    "role": "user",
+                    "content": "Connect me to the hospital helpline for urgent assistance",
                 },
                 {
                     "role": "assistant",
-                    "content": f"🔧 **{tool_name} Tool Activated**\n\n{tool_messages.get(tool_name, 'Tool activated. How can I assist you?')}"
+                    "content": "📞 The helpline number of the hospital is **555-HELP (555-4357)**.\n\nOur helpline is available 24/7 for urgent assistance. Please call immediately if you have any medical emergencies or need immediate support.",
                 }
             ]
+            
+            # Update the appropriate chat state
+            if current_mode == "visualize":
+                new_visualize_chat = visualize_chat + helpline_response
+                new_original_chat = original_chat
+                new_chat_display = new_visualize_chat
+            else:
+                new_original_chat = original_chat + helpline_response
+                new_visualize_chat = visualize_chat
+                new_chat_display = new_original_chat
+                
+            return "", new_chat_display, new_original_chat, new_visualize_chat, current_mode
+
+        helpline_btn.click(
+            fn=handle_helpline_with_state,
+            inputs=[original_chat_state, visualize_chat_state, current_mode_state],
+            outputs=[msg, chatbot, original_chat_state, visualize_chat_state, current_mode_state],
+        )
+
+        # Tools dropdown handler
+        def handle_tool_selection(tool_name, current_chat, original_chat, visualize_chat, current_mode):
+            """Handle tool selection from dropdown with separate chat flows"""
+            if not tool_name:
+                return "", current_chat, original_chat, visualize_chat, current_mode
+            
+            if tool_name == "Go Back":
+                # Return to original chat with full history intact
+                # Add a visual divider and system message to inform user about conversation context reset
+                updated_original_chat = original_chat + [
+                    {
+                        "role": "assistant",
+                        "content": "--- 🔄 **Welcome back to the main chat!**\n\n📋 You can see your previous conversation history above, but please note that I'm starting with a fresh conversation context. I don't have access to the details from our previous messages, so feel free to provide any relevant context if you'd like to continue where we left off.\n\nHow can I assist you today?"
+                    }
+                ]
+                return "", updated_original_chat, updated_original_chat, visualize_chat, "original"
+            
+            elif tool_name == "Visualize":
+                                # Switch to visualize mode with new chat
+                if not visualize_chat:  # If visualize chat is empty, initialize it
+                    new_visualize_chat = [
+                        {
+                            "role": "assistant",
+                            "content": "📊 **Visualization Mode Activated**\n\nI'm now in visualization mode! I can help you:\n\n• Create charts and graphs from hospital data\n• Analyze patient statistics and trends\n• Generate visual reports and dashboards\n• Visualize medical data patterns\n\nWhat would you like to visualize or analyze?"
+                        }
+                    ]
+                else:
+                    new_visualize_chat = visualize_chat
+                
+                # Store current chat as original if we're switching from original mode
+                if current_mode == "original":
+                    original_chat = current_chat
+                
+                return "", new_visualize_chat, original_chat, new_visualize_chat, "visualize"
+            
+            # For any other tools (shouldn't happen with current setup)
+            return "", current_chat, original_chat, visualize_chat, current_mode
 
         tools_dropdown.change(
             fn=handle_tool_selection,
-            inputs=[tools_dropdown],
-            outputs=[msg, chatbot],
+            inputs=[tools_dropdown, chatbot, original_chat_state, visualize_chat_state, current_mode_state],
+            outputs=[msg, chatbot, original_chat_state, visualize_chat_state, current_mode_state],
         )
 
         # Load welcome message
