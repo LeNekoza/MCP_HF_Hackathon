@@ -468,7 +468,80 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                 ] = f'<div class="loading-indicator" aria-live="polite" role="status" data-type="{data_type}">{loading_text}<span class="loading-dots"></span></div>'
                 yield history, ""
 
-            # Check if this is a database query first
+            # Check if this is an analysis query first
+            try:
+                from ..services.analysis_service import analysis_service
+                
+                if analysis_service.is_analysis_query(message):
+                    # Show analysis loading state
+                    history[-1][
+                        "content"
+                    ] = f'<div class="loading-indicator" aria-live="polite" role="status" data-type="analysis">📊 Loading analysis data...<span class="loading-dots"></span></div>'
+                    yield history, ""
+                    time.sleep(0.5)
+
+                    # Process analysis query
+                    enhanced_prompt = analysis_service.process_analysis_query(message)
+                    
+                    # Show AI processing state
+                    history[-1][
+                        "content"
+                    ] = f'<div class="loading-indicator" aria-live="polite" role="status" data-type="ai">🧠 Generating insights from analysis...<span class="loading-dots"></span></div>'
+                    yield history, ""
+                    time.sleep(0.3)
+                    
+                    # Use AI to process the analysis results
+                    try:
+                        if model == "nebius-llama-3.3-70b" and nebius_model.is_available():
+                            # Clear loading indicator and start real response
+                            history[-1]["content"] = ""
+                            
+                            response_generator = nebius_model.generate_response(
+                                prompt=enhanced_prompt,
+                                context="Analysis results included in the response",
+                                specialty=specialty,
+                                max_tokens=max(max_tok, 2500),
+                                temperature=temp,
+                                stream=True,
+                            )
+
+                            for chunk in response_generator:
+                                if chunk:
+                                    history[-1]["content"] += chunk
+                                    yield history, ""
+                        else:
+                            # Fallback: use handle_ai_response for analysis
+                            analyzed_response = handle_ai_response(
+                                enhanced_prompt,
+                                model,
+                                temp,
+                                max(max_tok, 2500),
+                                specialty,
+                                "Analysis results included in the response",
+                            )
+                            # Clear loading indicator and stream response
+                            history[-1]["content"] = ""
+
+                            # Stream the analyzed response
+                            words = analyzed_response.split()
+                            for i, word in enumerate(words):
+                                if i == 0:
+                                    history[-1]["content"] = word
+                                else:
+                                    history[-1]["content"] += " " + word
+                                time.sleep(0.02)
+                                yield history, ""
+                    except Exception as e:
+                        error_msg = f"❌ Error processing analysis: {str(e)}"
+                        history[-1]["content"] = error_msg
+                        yield history, ""
+                    return
+                    
+            except Exception as e:
+                # If analysis service fails, continue with database/regular processing
+                pass
+
+            # Check if this is a database query (only if not analysis query)
             try:
                 from ..services.advanced_database_mcp import advanced_database_mcp
 
@@ -958,21 +1031,31 @@ def handle_ai_response(
     # Medical disclaimer
     disclaimer = "\n\n⚠️ **Medical Disclaimer**: This is for informational purposes only and should not replace professional medical advice. Please consult with a healthcare provider for medical concerns."
 
-    # First, check if this is a database query
+    # Check if this is an analysis query first
     try:
-        from ..services.advanced_database_mcp import advanced_database_mcp
+        from ..services.analysis_service import analysis_service
+        
+        if analysis_service.is_analysis_query(user_message):
+            # Process analysis query - skip database queries
+            enhanced_prompt = analysis_service.process_analysis_query(user_message)
+            user_message = enhanced_prompt
+            context = f"Analysis results included in the response"
+        else:
+            # Check if this is a database query (only if not analysis query)
+            try:
+                from ..services.advanced_database_mcp import advanced_database_mcp
 
-        if advanced_database_mcp.is_database_query(user_message):
-            # Process database query to get raw data
-            db_response = advanced_database_mcp.process_advanced_query(user_message)
+                if advanced_database_mcp.is_database_query(user_message):
+                    # Process database query to get raw data
+                    db_response = advanced_database_mcp.process_advanced_query(user_message)
 
-            # If we got real data from the database, pass it through AI for analysis
-            if (
-                "Error processing" not in db_response
-                and "Use more specific queries" not in db_response
-            ):
-                # Create enhanced prompt combining user question with database data
-                enhanced_prompt = f"""
+                    # If we got real data from the database, pass it through AI for analysis
+                    if (
+                        "Error processing" not in db_response
+                        and "Use more specific queries" not in db_response
+                    ):
+                        # Create enhanced prompt combining user question with database data
+                        enhanced_prompt = f"""
 User Question: {user_message}
 
 Database Results: 
@@ -993,12 +1076,15 @@ IMPORTANT: The user specifically requested details/information. Please provide:
 Make sure the user gets both the complete information they requested AND your professional analysis.
 """
 
-                # Continue to AI processing with enhanced prompt
-                user_message = enhanced_prompt
-                context = f"Database query results included in the analysis"
+                        # Continue to AI processing with enhanced prompt
+                        user_message = enhanced_prompt
+                        context = f"Database query results included in the analysis"
 
+            except Exception as e:
+                # If advanced database integration fails, continue with regular AI response
+                pass
     except Exception as e:
-        # If advanced database integration fails, continue with regular AI response
+        # If analysis service fails, continue with regular processing
         pass
 
     if model == "nebius-llama-3.3-70b":
@@ -1009,18 +1095,18 @@ Make sure the user gets both the complete information they requested AND your pr
             nebius_model = NebiusModel()
 
             if nebius_model.is_available():
-                # Use higher token limit for database analysis if needed
+                # Use higher token limit for database/analysis processing if needed
                 analysis_max_tokens = max_tokens
-                if "Database Results:" in user_message:
+                if "Database Results:" in user_message or "Analysis Data Context:" in user_message:
                     analysis_max_tokens = max(
-                        max_tokens, 2000
+                        max_tokens, 2500
                     )  # Ensure enough space for complete data + analysis
 
                 # Inject hospital schema context for better understanding
                 enhanced_context = context if context.strip() else ""
 
-                # Add hospital schema context if this isn't already a database query
-                if "Database Results:" not in user_message:
+                # Add hospital schema context if this isn't already a database or analysis query
+                if "Database Results:" not in user_message and "Analysis Data Context:" not in user_message:
                     try:
                         from ..utils.schema_loader import hospital_schema_loader
 
@@ -3279,6 +3365,4 @@ def load_modern_hospital_css():
     """
 
 
-def handle_ai_response(message, model, temperature, max_tokens, specialty, context):
-    """Handle AI response generation"""
-    return f"AI Response to: {message} (using {model} with temp={temperature})"
+
