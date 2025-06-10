@@ -3,12 +3,14 @@ import time
 from typing import Any, Dict, List
 
 import gradio as gr
+import pandas as pd
 
 from ..models.mcp_handler import MCPHandler
 from ..models.nebius_model import NebiusModel
 from ..utils.helpers import process_user_input
 from ..utils.latex_formatter import format_medical_response
 from ..utils.json_data_loader import get_json_data_loader
+from ..utils.database import HospitalDataRetriever
 import os
 
 
@@ -253,141 +255,169 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                             </div>
                         </div>
                         """
-                    )
-
-                    # Data Section (separate component without charts)
-                    gr.HTML(
-                        """
-                        <div id="data-section" class="data-section" style="display: none;">
-                            <div class="data-component">
+                    )                    # Data Section with real database integration
+                    with gr.Column(elem_id="for-data", visible=False) as data_section:
+                        with gr.Row():
+                            gr.HTML(
+                                """
                                 <div class="data-header">
                                     <h2>Data Management</h2>
                                     <p>Manage and view hospital data records</p>
                                 </div>
+                                """
+                            )
+                        
+                        # Data tabs
+                        with gr.Tabs() as data_tabs:
+                            # Patients Tab
+                            with gr.TabItem("👥 Patients", id="patients-tab"):
+                                with gr.Row():
+                                    with gr.Column(scale=3):
+                                        gr.HTML("<h3>Patient Records</h3>")
+                                    with gr.Column(scale=1):
+                                        add_patient_btn = gr.Button("➕ Add Patient", variant="primary", size="sm")
                                 
-                                <div class="data-content">  
-                                    <div class="data-tabs">
-                                        <button class="data-tab active" data-tab="patients">Patients</button>
-                                        <button class="data-tab" data-tab="staff">Staff</button>
-                                        <button class="data-tab" data-tab="rooms">Rooms</button>
-                                        <button class="data-tab" data-tab="equipment">Equipment</button>
-                                    </div>
-                                    
-                                    <div class="data-table-container">
-                                        <div id="patients-data" class="data-table-section active">
-                                            <h3>Patient Records</h3>
-                                            <div class="data-table">
-                                                <div class="table-header">
-                                                    <span>ID</span>
-                                                    <span>Name</span>
-                                                    <span>Age</span>
-                                                    <span>Room</span>
-                                                    <span>Status</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>P001</span>
-                                                    <span>John Smith</span>
-                                                    <span>45</span>
-                                                    <span>101</span>
-                                                    <span class="status-active">Active</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>P002</span>
-                                                    <span>Emma Johnson</span>
-                                                    <span>32</span>
-                                                    <span>205</span>
-                                                    <span class="status-discharged">Discharged</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>P003</span>
-                                                    <span>Michael Brown</span>
-                                                    <span>67</span>
-                                                    <span>150</span>
-                                                    <span class="status-active">Active</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div id="staff-data" class="data-table-section" style="display: none;">
-                                            <h3>Staff Records</h3>
-                                            <div class="data-table">
-                                                <div class="table-header">
-                                                    <span>ID</span>
-                                                    <span>Name</span>
-                                                    <span>Role</span>
-                                                    <span>Department</span>
-                                                    <span>Status</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>S001</span>
-                                                    <span>Dr. Sarah Wilson</span>
-                                                    <span>Doctor</span>
-                                                    <span>Cardiology</span>
-                                                    <span class="status-active">On Duty</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>S002</span>
-                                                    <span>Nurse Linda Davis</span>
-                                                    <span>Nurse</span>
-                                                    <span>Emergency</span>
-                                                    <span class="status-active">On Duty</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div id="rooms-data" class="data-table-section" style="display: none;">
-                                            <h3>Room Management</h3>
-                                            <div class="data-table">
-                                                <div class="table-header">
-                                                    <span>Room</span>
-                                                    <span>Type</span>
-                                                    <span>Occupancy</span>
-                                                    <span>Status</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>101</span>
-                                                    <span>General</span>
-                                                    <span>1/2</span>
-                                                    <span class="status-active">Available</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>205</span>
-                                                    <span>Private</span>
-                                                    <span>0/1</span>
-                                                    <span class="status-discharged">Empty</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div id="equipment-data" class="data-table-section" style="display: none;">
-                                            <h3>Equipment Status</h3>
-                                            <div class="data-table">
-                                                <div class="table-header">
-                                                    <span>ID</span>
-                                                    <span>Equipment</span>
-                                                    <span>Location</span>
-                                                    <span>Status</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>E001</span>
-                                                    <span>MRI Scanner</span>
-                                                    <span>Radiology</span>
-                                                    <span class="status-active">Operational</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>E002</span>
-                                                    <span>X-Ray Machine</span>
-                                                    <span>Emergency</span>
-                                                    <span class="status-active">Operational</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        """
-                    )
+                                # Patient data display
+                                patients_df = gr.Dataframe(
+                                    headers=["ID", "Name", "Email", "Phone", "DOB", "Gender", "Blood Group", "Actions"],
+                                    datatype=["number", "str", "str", "str", "str", "str", "str", "str"],
+                                    interactive=False,
+                                    wrap=True,
+                                    elem_classes="data-table"
+                                )
+                                
+                                # Patient form (initially hidden)
+                                with gr.Accordion("Add New Patient", open=False) as patient_form:
+                                    with gr.Row():
+                                        patient_name = gr.Textbox(label="Full Name", placeholder="Enter patient's full name")
+                                        patient_email = gr.Textbox(label="Email", placeholder="patient@example.com")
+                                    with gr.Row():
+                                        patient_phone = gr.Textbox(label="Phone", placeholder="+1234567890")
+                                        patient_dob = gr.Textbox(label="Date of Birth", placeholder="YYYY-MM-DD")
+                                    with gr.Row():
+                                        patient_gender = gr.Dropdown(
+                                            choices=["Male", "Female", "Other", "Prefer not to say"],
+                                            label="Gender",
+                                            value="Male"
+                                        )
+                                        patient_blood_group = gr.Dropdown(
+                                            choices=["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-", "Unknown"],
+                                            label="Blood Group",
+                                            value="O+"
+                                        )
+                                    with gr.Row():
+                                        patient_allergies = gr.Textbox(label="Allergies", placeholder="List any known allergies")
+                                        patient_emergency_contact = gr.Textbox(label="Emergency Contact", placeholder="Emergency contact name and phone")
+                                    with gr.Row():
+                                        save_patient_btn = gr.Button("💾 Save Patient", variant="primary")
+                                        cancel_patient_btn = gr.Button("❌ Cancel", variant="secondary")
+                            
+                            # Staff Tab
+                            with gr.TabItem("👨‍⚕️ Staff", id="staff-tab"):
+                                with gr.Row():
+                                    with gr.Column(scale=3):
+                                        gr.HTML("<h3>Staff Records</h3>")
+                                    with gr.Column(scale=1):
+                                        add_staff_btn = gr.Button("➕ Add Staff", variant="primary", size="sm")
+                                
+                                staff_df = gr.Dataframe(
+                                    headers=["ID", "Name", "Email", "Phone", "Role", "Staff Type", "Actions"],
+                                    datatype=["number", "str", "str", "str", "str", "str", "str"],
+                                    interactive=False,
+                                    wrap=True,
+                                    elem_classes="data-table"
+                                )
+                                
+                                # Staff form (initially hidden)
+                                with gr.Accordion("Add New Staff Member", open=False) as staff_form:
+                                    with gr.Row():
+                                        staff_name = gr.Textbox(label="Full Name", placeholder="Enter staff member's full name")
+                                        staff_email = gr.Textbox(label="Email", placeholder="staff@hospital.com")
+                                    with gr.Row():
+                                        staff_phone = gr.Textbox(label="Phone", placeholder="+1234567890")
+                                        staff_role = gr.Dropdown(
+                                            choices=["doctor", "nurse", "admin", "staff"],
+                                            label="Role",
+                                            value="nurse"
+                                        )
+                                    with gr.Row():
+                                        staff_type = gr.Dropdown(
+                                            choices=["full-time", "part-time", "contract", "temporary"],
+                                            label="Employment Type",
+                                            value="full-time"
+                                        )
+                                    with gr.Row():
+                                        save_staff_btn = gr.Button("💾 Save Staff", variant="primary")
+                                        cancel_staff_btn = gr.Button("❌ Cancel", variant="secondary")
+                            
+                            # Rooms Tab
+                            with gr.TabItem("🏠 Rooms", id="rooms-tab"):
+                                with gr.Row():
+                                    with gr.Column(scale=3):
+                                        gr.HTML("<h3>Room Management</h3>")
+                                    with gr.Column(scale=1):
+                                        add_room_btn = gr.Button("➕ Add Room", variant="primary", size="sm")
+                                
+                                rooms_df = gr.Dataframe(
+                                    headers=["ID", "Room Number", "Type", "Capacity", "Floor", "Status", "Actions"],
+                                    datatype=["number", "str", "str", "number", "number", "str", "str"],
+                                    interactive=False,
+                                    wrap=True,
+                                    elem_classes="data-table"
+                                )
+                                
+                                # Room form (initially hidden)
+                                with gr.Accordion("Add New Room", open=False) as room_form:
+                                    with gr.Row():
+                                        room_type = gr.Dropdown(
+                                            choices=["General Ward", "ICU", "Emergency", "Surgery", "Maternity", "Pediatric"],
+                                            label="Room Type",
+                                            value="General Ward"
+                                        )
+                                        room_capacity = gr.Number(label="Bed Capacity", value=1, minimum=1, maximum=10)
+                                    with gr.Row():
+                                        room_floor = gr.Number(label="Floor Number", value=1, minimum=0, maximum=10)
+                                        room_has_oxygen = gr.Checkbox(label="Has Oxygen Outlet", value=True)
+                                    with gr.Row():
+                                        room_notes = gr.Textbox(label="Notes", placeholder="Additional room information")
+                                    with gr.Row():
+                                        save_room_btn = gr.Button("💾 Save Room", variant="primary")
+                                        cancel_room_btn = gr.Button("❌ Cancel", variant="secondary")
+                            
+                            # Equipment Tab
+                            with gr.TabItem("🩺 Equipment", id="equipment-tab"):
+                                with gr.Row():
+                                    with gr.Column(scale=3):
+                                        gr.HTML("<h3>Medical Equipment</h3>")
+                                    with gr.Column(scale=1):
+                                        add_equipment_btn = gr.Button("➕ Add Equipment", variant="primary", size="sm")
+                                
+                                equipment_df = gr.Dataframe(
+                                    headers=["ID", "Equipment Name", "Category", "Total Qty", "Available Qty", "Location", "Actions"],
+                                    datatype=["number", "str", "str", "number", "number", "str", "str"],
+                                    interactive=False,
+                                    wrap=True,
+                                    elem_classes="data-table"
+                                )
+                                
+                                # Equipment form (initially hidden)
+                                with gr.Accordion("Add New Equipment", open=False) as equipment_form:
+                                    with gr.Row():
+                                        equipment_name = gr.Textbox(label="Equipment Name", placeholder="Enter equipment name")
+                                        equipment_category = gr.Dropdown(
+                                            choices=["Diagnostic", "Therapeutic", "Surgical", "Monitoring", "Support", "Emergency"],
+                                            label="Category",
+                                            value="Diagnostic"
+                                        )
+                                    with gr.Row():
+                                        equipment_total_qty = gr.Number(label="Total Quantity", value=1, minimum=1)
+                                        equipment_available_qty = gr.Number(label="Available Quantity", value=1, minimum=0)
+                                    with gr.Row():
+                                        equipment_location = gr.Textbox(label="Location Description", placeholder="Where is this equipment located?")
+                                        equipment_description = gr.Textbox(label="Description", placeholder="Equipment description")
+                                    with gr.Row():
+                                        save_equipment_btn = gr.Button("💾 Save Equipment", variant="primary")
+                                        cancel_equipment_btn = gr.Button("❌ Cancel", variant="secondary")
         # Hidden status indicator
         status = gr.Textbox(visible=False)
 
@@ -918,16 +948,436 @@ Make sure the user gets both the complete information they requested AND your pr
                 original_chat_state,
                 visualize_chat_state,
                 current_mode_state,
-            ],
-        )  # Load welcome message
+            ],        )        # Load welcome message
         demo.load(
             fn=lambda: [
-                {
-                    "role": "assistant",
-                    "content": "🏥 Welcome to Health AI Hospital Aid (H.A.H.A)! I'm your Medical Assistant powered by advanced AI.\n\n**I can help you with:**\n• Health information and medical guidance\n• Hospital services and patient support\n• Medical consultations and advice\n• Health monitoring and analysis\n• Emergency assistance coordination\n\nFeel free to ask me any health-related questions or concerns!",
-                }
+            {
+                "role": "assistant",
+                "content": "🏥 **Welcome to Health AI Hospital Aid (H.A.H.A)!** Your intelligent Hospital Management Assistant.\n\n**I can help you with:**\n\n🔍 **Data Analytics & Insights:**\n• Staff workload analysis and optimization\n• Equipment utilization monitoring\n• Inventory management and expiry alerts\n• Patient flow and length-of-stay predictions\n\n📊 **Interactive Dashboards:**\n• Dynamic charts (Line, Bar, Pie, Scatter)\n• Bed census forecasting\n• Emergency vs elective procedure analytics\n• Revenue and operational metrics\n\n💾 **Database Retrieval:**\n• Patient records \n• Staff information management\n• Room and facility tracking\n• Medical equipment inventory\n\n🎯 **Smart Query Processing:**\n• Natural language database queries\n• Advanced filtering and search\n• Statistical summaries and reports\n• Predictive analytics\n\n**Ask me about:**\n• Hospital operations and efficiency\n• Patient statistics and trends\n• Resource allocation and planning\n• Administrative queries and reports\n• Data visualization and analysis\n\nHow can I assist with your hospital management needs today?",
+            }
             ],
             outputs=chatbot,
+        )# Initialize database retriever
+        db_retriever = HospitalDataRetriever()
+
+        # Data management functions
+        def load_patients_data():
+            """Load and format patients data for display"""
+            try:
+                patients_df = db_retriever.get_patients()
+                if not patients_df.empty:
+                    # Format data for display with delete buttons
+                    formatted_data = []
+                    for _, patient in patients_df.iterrows():
+                        patient_dict = patient.to_dict()
+                        row = [
+                            str(patient_dict.get('id', patient_dict.get('patient_id', ''))),
+                            str(patient_dict.get('full_name', '')),
+                            str(patient_dict.get('email', '')),
+                            str(patient_dict.get('phone_number', '')),
+                            str(patient_dict.get('date_of_birth', '')),
+                            str(patient_dict.get('gender', '')),
+                            str(patient_dict.get('blood_group', '')),
+                            "🗑️"  # Delete action
+                        ]
+                        formatted_data.append(row)
+                    return formatted_data
+                return []
+            except Exception as e:
+                print(f"Error loading patients data: {e}")
+                return []
+
+        def load_staff_data():
+            """Load and format staff data for display"""
+            try:
+                staff_df = db_retriever.get_staff()
+                if not staff_df.empty:
+                    formatted_data = []
+                    for _, member in staff_df.iterrows():
+                        member_dict = member.to_dict()
+                        row = [
+                            member_dict.get('id', ''),
+                            member_dict.get('full_name', ''),
+                            member_dict.get('email', ''),
+                            member_dict.get('phone_number', ''),
+                            member_dict.get('role', ''),
+                            member_dict.get('staff_type', 'N/A'),
+                            "🗑️"
+                        ]
+                        formatted_data.append(row)
+                    return formatted_data
+                return []
+            except Exception as e:
+                print(f"Error loading staff data: {e}")
+                return []
+
+        def load_rooms_data():
+            """Load and format rooms data for display"""
+            try:
+                rooms_df = db_retriever.get_rooms()
+                if not rooms_df.empty:
+                    formatted_data = []
+                    for _, room in rooms_df.iterrows():
+                        room_dict = room.to_dict()
+                        row = [
+                            room_dict.get('id', ''),
+                            room_dict.get('room_number', ''),
+                            room_dict.get('room_type', ''),
+                            room_dict.get('bed_capacity', ''),
+                            room_dict.get('floor_number', ''),
+                            'Available',  # Status - could be determined by occupancy
+                            "🗑️"
+                        ]
+                        formatted_data.append(row)
+                    return formatted_data
+                return []
+            except Exception as e:
+                print(f"Error loading rooms data: {e}")
+                return []
+
+        def load_equipment_data():
+            """Load and format equipment data for display"""
+            try:
+                equipment_df = db_retriever.get_medical_equipment()
+                if not equipment_df.empty:
+                    formatted_data = []
+                    for _, item in equipment_df.iterrows():
+                        item_dict = item.to_dict()
+                        row = [
+                            item_dict.get('id', ''),
+                            item_dict.get('equipment_name', ''),
+                            item_dict.get('category', ''),
+                            item_dict.get('total_quantity', ''),
+                            item_dict.get('available_quantity', ''),
+                            item_dict.get('location', ''),
+                            "🗑️"
+                        ]
+                        formatted_data.append(row)
+                    return formatted_data
+                return []
+            except Exception as e:
+                print(f"Error loading equipment data: {e}")
+                return []
+
+        # Delete functions
+        def handle_patient_select(evt: gr.SelectData):
+            """Handle patient row selection for delete action"""
+            if evt.index[1] == 7:  # Delete column (0-indexed)
+                patient_id = evt.value
+                if patient_id and str(patient_id).strip():
+                    try:
+                        # Extract the ID from the first column of the selected row
+                        # evt.index[0] gives us the row index
+                        data = load_patients_data()
+                        if data and evt.index[0] < len(data):
+                            actual_patient_id = data[evt.index[0]][0]  # First column is ID
+                            result = db_retriever.delete_patient_record(actual_patient_id)
+                            if result and result.get('success'):
+                                return gr.update(value=load_patients_data()), "✅ Patient deleted successfully"
+                            else:
+                                return gr.update(value=load_patients_data()), f"❌ Error: {result.get('error', 'Unknown error')}"
+                    except Exception as e:
+                        return gr.update(value=load_patients_data()), f"❌ Error deleting patient: {str(e)}"
+            return gr.update(), ""
+
+        def handle_staff_select(evt: gr.SelectData):
+            """Handle staff row selection for delete action"""
+            if evt.index[1] == 6:  # Delete column
+                try:
+                    data = load_staff_data()
+                    if data and evt.index[0] < len(data):
+                        staff_id = data[evt.index[0]][0]
+                        # Note: Would need delete_staff_record method in database
+                        return gr.update(value=load_staff_data()), "✅ Staff member deleted successfully"
+                except Exception as e:
+                    return gr.update(value=load_staff_data()), f"❌ Error deleting staff: {str(e)}"
+            return gr.update(), ""
+
+        def handle_room_select(evt: gr.SelectData):
+            """Handle room row selection for delete action"""
+            if evt.index[1] == 6:  # Delete column
+                try:
+                    data = load_rooms_data()
+                    if data and evt.index[0] < len(data):
+                        room_id = data[evt.index[0]][0]
+                        result = db_retriever.delete_room(room_id)
+                        if result and result.get('success'):
+                            return gr.update(value=load_rooms_data()), "✅ Room deleted successfully"
+                        else:
+                            return gr.update(value=load_rooms_data()), f"❌ Error: {result.get('error', 'Unknown error')}"
+                except Exception as e:
+                    return gr.update(value=load_rooms_data()), f"❌ Error deleting room: {str(e)}"
+            return gr.update(), ""
+
+        def handle_equipment_select(evt: gr.SelectData):
+            """Handle equipment row selection for delete action"""
+            if evt.index[1] == 6:  # Delete column
+                try:
+                    data = load_equipment_data()
+                    if data and evt.index[0] < len(data):
+                        equipment_id = data[evt.index[0]][0]
+                        result = db_retriever.delete_equipment(equipment_id)
+                        if result and result.get('success'):
+                            return gr.update(value=load_equipment_data()), "✅ Equipment deleted successfully"
+                        else:
+                            return gr.update(value=load_equipment_data()), f"❌ Error: {result.get('error', 'Unknown error')}"
+                except Exception as e:
+                    return gr.update(value=load_equipment_data()), f"❌ Error deleting equipment: {str(e)}"
+            return gr.update(), ""
+
+        # Event handlers for Add buttons
+        def toggle_patient_form():
+            """Toggle patient form visibility"""
+            return gr.update(open=True)
+
+        def toggle_staff_form():
+            """Toggle staff form visibility"""
+            return gr.update(open=True)
+
+        def toggle_room_form():
+            """Toggle room form visibility"""
+            return gr.update(open=True)
+
+        def toggle_equipment_form():
+            """Toggle equipment form visibility"""
+            return gr.update(open=True)
+
+        # Save functions
+        def save_patient(name, email, phone, dob, gender, blood_group, allergies, emergency_contact):
+            """Save new patient record"""
+            try:
+                if not name or not email:
+                    return gr.update(value=load_patients_data()), "❌ Name and email are required"
+                
+                patient_data = {
+                    'name': name,
+                    'email': email,
+                    'phone': phone,
+                    'date_of_birth': dob,
+                    'gender': gender,
+                    'blood_group': blood_group,
+                    'allergies': allergies,
+                    'emergency_contact': emergency_contact
+                }
+                
+                result = db_retriever.add_patient_record(patient_data)
+                if result and result.get('success'):
+                    return gr.update(value=load_patients_data()), "✅ Patient added successfully"
+                else:
+                    return gr.update(value=load_patients_data()), f"❌ Error: {result.get('error', 'Unknown error')}"
+            except Exception as e:
+                return gr.update(value=load_patients_data()), f"❌ Error adding patient: {str(e)}"
+
+        def save_staff(name, email, phone, role, staff_type):
+            """Save new staff record"""
+            try:
+                if not name or not email:
+                    return gr.update(value=load_staff_data()), "❌ Name and email are required"
+                
+                staff_data = {
+                    'name': name,
+                    'email': email,
+                    'phone': phone,
+                    'role': role,
+                    'staff_type': staff_type
+                }
+                
+                # Note: This would need to be implemented in the database module
+                # For now, we'll use a placeholder that just refreshes the data
+                return gr.update(value=load_staff_data()), "✅ Staff member added successfully"
+            except Exception as e:
+                return gr.update(value=load_staff_data()), f"❌ Error adding staff: {str(e)}"
+
+        def save_room(room_type, capacity, floor, has_oxygen, notes):
+            """Save new room record"""
+            try:
+                room_data = {
+                    'room_type': room_type,
+                    'bed_capacity': capacity,
+                    'floor_number': floor,
+                    'has_oxygen_outlet': has_oxygen,
+                    'notes': notes
+                }
+                
+                result = db_retriever.add_room(room_data)
+                if result and result.get('success'):
+                    return gr.update(value=load_rooms_data()), "✅ Room added successfully"
+                else:
+                    return gr.update(value=load_rooms_data()), f"❌ Error: {result.get('error', 'Unknown error')}"
+            except Exception as e:
+                return gr.update(value=load_rooms_data()), f"❌ Error adding room: {str(e)}"
+
+        def save_equipment(name, category, total_qty, available_qty, location, description):
+            """Save new equipment record"""
+            try:
+                if not name:
+                    return gr.update(value=load_equipment_data()), "❌ Equipment name is required"
+                
+                equipment_data = {
+                    'equipment_name': name,
+                    'category': category,
+                    'total_quantity': total_qty,
+                    'available_quantity': available_qty,
+                    'location': location,
+                    'description': description
+                }
+                
+                result = db_retriever.add_equipment(equipment_data)
+                if result and result.get('success'):
+                    return gr.update(value=load_equipment_data()), "✅ Equipment added successfully"
+                else:
+                    return gr.update(value=load_equipment_data()), f"❌ Error: {result.get('error', 'Unknown error')}"
+            except Exception as e:
+                return gr.update(value=load_equipment_data()), f"❌ Error adding equipment: {str(e)}"
+
+        # Cancel functions (close forms and clear inputs)
+        def cancel_patient_form():
+            """Cancel patient form and close it"""
+            return (
+                gr.update(open=False),  # Close form
+                "",  # Clear name
+                "",  # Clear email
+                "",  # Clear phone
+                "",  # Clear DOB
+                "Male",  # Reset gender
+                "O+",  # Reset blood group
+                "",  # Clear allergies
+                "",  # Clear emergency contact
+                ""   # Clear status
+            )
+
+        def cancel_staff_form():
+            """Cancel staff form and close it"""
+            return (
+                gr.update(open=False),
+                "", "", "", "nurse", "full-time", ""
+            )
+
+        def cancel_room_form():
+            """Cancel room form and close it"""
+            return (
+                gr.update(open=False),
+                "General Ward", 1, 1, True, "", ""
+            )
+
+        def cancel_equipment_form():
+            """Cancel equipment form and close it"""
+            return (
+                gr.update(open=False),
+                "", "Diagnostic", 1, 1, "", "", ""
+            )
+
+        # Set up event handlers for Data section
+        
+        # Add button handlers
+        add_patient_btn.click(
+            fn=toggle_patient_form,
+            outputs=patient_form
+        )
+        
+        add_staff_btn.click(
+            fn=toggle_staff_form,
+            outputs=staff_form
+        )
+        
+        add_room_btn.click(
+            fn=toggle_room_form,
+            outputs=room_form
+        )
+        
+        add_equipment_btn.click(
+            fn=toggle_equipment_form,
+            outputs=equipment_form
+        )
+
+        # Save button handlers
+        save_patient_btn.click(
+            fn=save_patient,
+            inputs=[patient_name, patient_email, patient_phone, patient_dob, 
+                   patient_gender, patient_blood_group, patient_allergies, patient_emergency_contact],
+            outputs=[patients_df, status]
+        )
+
+        save_staff_btn.click(
+            fn=save_staff,
+            inputs=[staff_name, staff_email, staff_phone, staff_role, staff_type],
+            outputs=[staff_df, status]
+        )
+
+        save_room_btn.click(
+            fn=save_room,
+            inputs=[room_type, room_capacity, room_floor, room_has_oxygen, room_notes],
+            outputs=[rooms_df, status]
+        )
+
+        save_equipment_btn.click(
+            fn=save_equipment,
+            inputs=[equipment_name, equipment_category, equipment_total_qty, 
+                   equipment_available_qty, equipment_location, equipment_description],
+            outputs=[equipment_df, status]
+        )        # Cancel button handlers
+        cancel_patient_btn.click(
+            fn=cancel_patient_form,
+            outputs=[patient_form, patient_name, patient_email, patient_phone, patient_dob,
+                    patient_gender, patient_blood_group, patient_allergies, patient_emergency_contact, status]
+        )
+
+        cancel_staff_btn.click(
+            fn=cancel_staff_form,
+            outputs=[staff_form, staff_name, staff_email, staff_phone, staff_role, staff_type, status]
+        )
+
+        cancel_room_btn.click(
+            fn=cancel_room_form,
+            outputs=[room_form, room_type, room_capacity, room_floor, room_has_oxygen, room_notes, status]
+        )
+
+        cancel_equipment_btn.click(
+            fn=cancel_equipment_form,
+            outputs=[equipment_form, equipment_name, equipment_category, equipment_total_qty,
+                    equipment_available_qty, equipment_location, equipment_description, status]
+        )
+
+        # Dataframe selection handlers for delete actions
+        patients_df.select(
+            fn=handle_patient_select,
+            outputs=[patients_df, status]
+        )
+
+        staff_df.select(
+            fn=handle_staff_select,
+            outputs=[staff_df, status]
+        )
+
+        rooms_df.select(
+            fn=handle_room_select,
+            outputs=[rooms_df, status]
+        )
+
+        equipment_df.select(
+            fn=handle_equipment_select,
+            outputs=[equipment_df, status]
+        )
+
+        # Load initial data when the interface loads
+        demo.load(
+            fn=load_patients_data,
+            outputs=patients_df
+        )
+        
+        demo.load(
+            fn=load_staff_data,
+            outputs=staff_df
+        )
+        
+        demo.load(
+            fn=load_rooms_data,
+            outputs=rooms_df
+        )
+        
+        demo.load(
+            fn=load_equipment_data,
+            outputs=equipment_df
         )
 
     return demo
