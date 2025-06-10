@@ -1048,7 +1048,7 @@ body {
 
 /* USER MESSAGE - ELEGANT LIGHT BLUE SHADE */
 .chatbot-gr-chatbot .message.user {
-    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 85%, #93c5fd 100%) !important;
+    background: #10b981 !important;
     color: #1e293b !important; /* Changed color to a darker shade for better contrast */
     border: 1px solid #93c5fd !important;
     box-shadow: 0 2px 8px rgba(147, 197, 253, 0.2) !important;
@@ -1057,7 +1057,7 @@ body {
 }
 
 .chatbot-gr-chatbot .message.user:hover {
-    background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 85%, #60a5fa 100%) !important;
+    background: #10b981 !important;
     transform: translateY(-1px) !important;
     box-shadow: 0 4px 12px rgba(147, 197, 253, 0.3) !important;
 }
@@ -1230,9 +1230,6 @@ body {
     100% { background-position: 200% 0; }
 }
 
-.gradio-container-5-32-1 .user .prose * {
-    color: #1e293b !important; /* Set a consistent color for body text */
-}
 
 /* ===== CHATBOT LOADER INTEGRATION STYLES ===== */
 

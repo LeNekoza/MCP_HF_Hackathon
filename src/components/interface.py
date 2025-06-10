@@ -2841,8 +2841,6 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
             return data.data.ward_statistics.map(ward => ({
                 ward: ward.ward_type,
                 predictedLOS: Math.round(ward.avg_los_days * 10) / 10,
-                actualLOS: Math.round((ward.avg_los_days + (Math.random() - 0.5) * 0.5) * 10) / 10,
-                accuracy: Math.round(85 + Math.random() * 10), // Mock accuracy between 85-95%
                 patients: ward.total_discharges
             }));
         }
@@ -2963,6 +2961,20 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                         '<h3 style="margin: 0 0 8px 0; color: #475569;">Chart Not Available</h3>' +
                         '<p style="margin: 0;">' + chartType.charAt(0).toUpperCase() + chartType.slice(1) + ' chart is not supported for Short-horizon bed census analysis.</p>' +
                         '<p style="margin: 8px 0 0 0; font-size: 14px;">Please use Line or Bar charts to view predicted beds and utilization data.</p>' +
+                        '</div>';
+                    
+                    chartContainer.style.opacity = '1';
+                    chartContainer.style.transform = 'scale(1)';
+                    return;
+                }
+                
+                // Hide scatter chart for los-prediction analysis
+                if (this.currentAnalysisType === 'los-prediction' && chartType === 'scatter') {
+                    chartContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: #64748b; font-size: 16px; background: #f8fafc; border-radius: 8px; border: 2px dashed #cbd5e1;">' +
+                        '<div style="font-size: 48px; margin-bottom: 16px;">📊</div>' +
+                        '<h3 style="margin: 0 0 8px 0; color: #475569;">Chart Not Available</h3>' +
+                        '<p style="margin: 0;">Scatter chart is not supported for Length-of-stay prediction analysis.</p>' +
+                        '<p style="margin: 8px 0 0 0; font-size: 14px;">Please use Line, Bar, or Pie charts to view predicted LOS and patient count data.</p>' +
                         '</div>';
                     
                     chartContainer.style.opacity = '1';
@@ -4583,13 +4595,13 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                     { category: 'Planned Admission', count: 156, revenue: 220, satisfaction: 89 }
                 ],
                 'los-prediction': [
-                    { patient: 'P001', predicted: 4.2, actual: 3.8, accuracy: 95, condition: 'Pneumonia' },
-                    { patient: 'P002', predicted: 6.5, actual: 6.8, accuracy: 92, condition: 'Surgery' },
-                    { patient: 'P003', predicted: 2.1, actual: 2.0, accuracy: 98, condition: 'Observation' },
-                    { patient: 'P004', predicted: 8.2, actual: null, accuracy: 88, condition: 'Cardiac' },
-                    { patient: 'P005', predicted: 3.5, actual: null, accuracy: 90, condition: 'Orthopedic' },
-                    { patient: 'P006', predicted: 5.8, actual: null, accuracy: 85, condition: 'Neurological' },
-                    { patient: 'P007', predicted: 1.2, actual: null, accuracy: 94, condition: 'Emergency' }
+                    { ward: 'ICU', predictedLOS: 4.2, patients: 25 },
+                    { ward: 'Surgery', predictedLOS: 6.5, patients: 18 },
+                    { ward: 'Emergency', predictedLOS: 2.1, patients: 42 },
+                    { ward: 'Cardiac', predictedLOS: 8.2, patients: 15 },
+                    { ward: 'Orthopedic', predictedLOS: 3.5, patients: 28 },
+                    { ward: 'Neurological', predictedLOS: 5.8, patients: 12 },
+                    { ward: 'Pediatric', predictedLOS: 1.2, patients: 35 }
                 ]
             };
             
@@ -4625,7 +4637,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                 'inventory-expiry': ['Item Name', 'Days to Expiry', 'Urgency Level'],
                 'bed-census': ['Predicted Beds', 'Utilization %'],
                 'elective-emergency': ['Patient Count', 'Revenue ($K)', 'Satisfaction %'],
-                'los-prediction': ['Predicted LOS', 'Actual LOS', 'Accuracy %']
+                'los-prediction': ['Predicted LOS', 'Patient Count']
             };
             
             const labels = legendMappings[analysisType] || ['Patient Count', 'Revenue Data', 'Satisfaction'];
