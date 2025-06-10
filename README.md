@@ -9,8 +9,9 @@ app_file: app.py
 pinned: false
 license: mit
 tags:
-  - mcp-server-track
-  - agent-demo-track
+- mcp-server-track
+- agent-demo-track
+short_description: 🏥 AI assistant for hospital operations
 ---
 
 # Health AI Hospital Aid (H.A.H.A)
