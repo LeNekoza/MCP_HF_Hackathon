@@ -2,7 +2,7 @@
 title: Health AI Hospital Aid
 emoji: 🏥
 colorFrom: blue
-colorTo: green
+colorTo: pink
 sdk: gradio
 sdk_version: 5.33.0
 app_file: app.py
