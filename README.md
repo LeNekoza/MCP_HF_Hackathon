@@ -125,6 +125,72 @@ MCP_HF_Hackathon/
 
 The application integrates with a Neon PostgreSQL database containing hospital data across tables like `users`, `patient_records`, `rooms`, `occupancy`, etc. (as detailed in [`README.md`](README.md) under Database Overview and [`docs/project/MCP_DATABASE_INTEGRATION.md`](docs/project/MCP_DATABASE_INTEGRATION.md)). This enables the AI to provide responses based on real-time information. Secure database configuration is handled via [`.env`](.env).
 
+## 📡 MCP Server Configuration
+
+This project provides a Model Context Protocol (MCP) server configured for seamless integration and communication with clients supporting Server-Sent Events (SSE) and standard input/output (stdio).
+
+### 🔗 MCP Server URL
+
+```
+http://localhost:7860/gradio_api/mcp/sse
+```
+
+### 🧰 Available MCP Tools
+
+* **stream\_response\_with\_state**
+  Streams AI-generated responses, updating the relevant chat states.
+
+* **stream\_response\_with\_state\_**
+  Variant streaming response handler with state management.
+
+* **handle\_helpline\_with\_state**
+  Manages helpline interactions, maintaining the conversation state throughout.
+
+* **handle\_tool\_selection**
+  Facilitates the selection and handling of tools via dropdown, managing separate chat flows.
+
+* **\<lambda>**
+  Delivers a welcoming assistant message introducing the system's capabilities, including medical guidance, hospital support, health monitoring, and emergency assistance.
+
+### 🛠️ Integration Instructions
+
+To integrate this MCP server with SSE-compatible clients (e.g., Cursor, Windsurf, Cline), add the following to your MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "gradio": {
+      "url": "http://localhost:7860/gradio_api/mcp/sse"
+    }
+  }
+}
+```
+
+### 🧪 Experimental stdio Support
+
+For clients limited to standard input/output protocols, first ensure Node.js is installed, then integrate using:
+
+```json
+{
+  "mcpServers": {
+    "gradio": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "http://localhost:7860/gradio_api/mcp/sse",
+        "--transport",
+        "sse-only"
+      ]
+    }
+  }
+}
+```
+
+This setup ensures broader compatibility and flexibility across various client types and integration scenarios.
+
+
+
+
 ---
 
 **Happy Hacking! 🚀**

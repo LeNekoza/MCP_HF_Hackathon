@@ -59,7 +59,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
         with gr.Row(elem_classes="main-container", equal_height=True):
 
             # Left Sidebar - Chat Panel (reduced scale for more chart space)
-            with gr.Column(scale=1, min_width=300, elem_classes="sidebar-container"):
+            with gr.Column(min_width=300, elem_classes="sidebar-container"):
 
                 # Assistant Header - Compact
                 gr.HTML(
@@ -68,7 +68,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                     <div class="avatar-circle">🩺</div>
                     <div class="assistant-text">
                         <h3>Medical Assistant</h3>
-                        <p>How can I help you?</p>
+                        <p>How can I help you?</p>  
                     </div>
                 </div>
                 """
@@ -265,7 +265,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                                     <p>Manage and view hospital data records</p>
                                 </div>
                                 
-                                <div class="data-content">
+                                <div class="data-content">  
                                     <div class="data-tabs">
                                         <button class="data-tab active" data-tab="patients">Patients</button>
                                         <button class="data-tab" data-tab="staff">Staff</button>
@@ -541,20 +541,32 @@ Make sure the user gets both the complete information they requested AND your pr
                         # Use AI to analyze the database results instead of returning raw data
                         if (
                             model == "nebius-llama-3.3-70b"
-                            and nebius_model.is_available()                        ):
+                            and nebius_model.is_available()
+                        ):
                             # Clear loading indicator and start real response
                             history[-1]["content"] = ""
                             try:
                                 # Build conversation context from chat history for database queries
                                 conversation_context = ""
-                                if len(history) > 1:  # More than just the current user message
-                                    for msg in history[:-1]:  # Exclude current user message
+                                if (
+                                    len(history) > 1
+                                ):  # More than just the current user message
+                                    for msg in history[
+                                        :-1
+                                    ]:  # Exclude current user message
                                         if msg["role"] == "user":
-                                            conversation_context += f"User: {msg['content']}\n"
-                                        elif msg["role"] == "assistant" and not ("Welcome" in msg["content"] and "---" in msg["content"]):
+                                            conversation_context += (
+                                                f"User: {msg['content']}\n"
+                                            )
+                                        elif msg["role"] == "assistant" and not (
+                                            "Welcome" in msg["content"]
+                                            and "---" in msg["content"]
+                                        ):
                                             # Exclude welcome back messages but include actual AI responses
-                                            conversation_context += f"Assistant: {msg['content']}\n"
-                                    
+                                            conversation_context += (
+                                                f"Assistant: {msg['content']}\n"
+                                            )
+
                                     if conversation_context:
                                         conversation_context = f"Previous conversation:\n{conversation_context}\n---\nDatabase analysis context:"
                                         # Combine conversation context with database query context
@@ -563,7 +575,7 @@ Make sure the user gets both the complete information they requested AND your pr
                                         combined_context = "Database query results included in the analysis"
                                 else:
                                     combined_context = "Database query results included in the analysis"
-                                
+
                                 response_generator = nebius_model.generate_response(
                                     prompt=enhanced_prompt,
                                     context=combined_context,
@@ -621,7 +633,7 @@ Make sure the user gets both the complete information they requested AND your pr
                     "content"
                 ] = f'<div class="loading-indicator" aria-live="polite" role="status" data-type="generating">🚀 Generating response...<span class="loading-dots"></span></div>'
                 yield history, ""
-                time.sleep(0.3)                # Clear loading indicator and start real response
+                time.sleep(0.3)  # Clear loading indicator and start real response
                 history[-1]["content"] = ""
 
                 try:
@@ -631,13 +643,15 @@ Make sure the user gets both the complete information they requested AND your pr
                         for msg in history[:-1]:  # Exclude current user message
                             if msg["role"] == "user":
                                 conversation_context += f"User: {msg['content']}\n"
-                            elif msg["role"] == "assistant" and not ("Welcome" in msg["content"] and "---" in msg["content"]):
+                            elif msg["role"] == "assistant" and not (
+                                "Welcome" in msg["content"] and "---" in msg["content"]
+                            ):
                                 # Exclude welcome back messages but include actual AI responses
                                 conversation_context += f"Assistant: {msg['content']}\n"
-                        
+
                         if conversation_context:
                             conversation_context = f"Previous conversation:\n{conversation_context}\n---\nCurrent question:"
-                    
+
                     response_generator = nebius_model.generate_response(
                         prompt=message,
                         context=conversation_context if conversation_context else None,
@@ -817,7 +831,8 @@ Make sure the user gets both the complete information they requested AND your pr
                 original_chat_state,
                 visualize_chat_state,
                 current_mode_state,
-            ],        )
+            ],
+        )
 
         # Test dropdown handler
         def handle_tool_selection(
@@ -833,7 +848,7 @@ Make sure the user gets both the complete information they requested AND your pr
                 if original_chat:
                     display_chat = original_chat + [
                         {
-                            "role": "assistant", 
+                            "role": "assistant",
                             "content": "--- 🔄 **Welcome back to the main chat!**\n\n📋 I can see our previous conversation history above and I remember our conversation context. Feel free to continue where we left off or ask me anything new!\n\nHow can I assist you today?",
                         }
                     ]
@@ -1187,7 +1202,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
     }
     
     /* Responsive chart container */
-    @media (max-width: 1200px) {
+   /* @media (max-width: 1200px) {
         .main-container {
             flex-direction: column !important;
         }
@@ -1219,9 +1234,9 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
             min-width: 250px !important;
         }
     }
-    
-    @media (max-width: 768px) {
-        .chart-legend {
+    */
+    /* @media (max-width: 768px) { 
+        .chart-legend { 
             flex-direction: column !important;
             align-items: center !important;
             gap: 8px !important;
@@ -1238,17 +1253,17 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
         
         .full-width-chart-svg svg {
             min-width: 200px !important;
-        }
+        }*/
         
         /* Adjust scroll indicators for mobile */
-        .full-width-chart-svg.many-data-points::after,
+        /*.full-width-chart-svg.many-data-points::after,
         .full-width-chart-svg.extra-wide::after {
             font-size: 10px !important;
             padding: 4px 8px !important;
             bottom: 10px !important;
             right: 10px !important;
         }
-    }
+    }*/
     
     /* Enhanced legend styles for full-width charts */
     .chart-legend {
@@ -3262,6 +3277,7 @@ def load_modern_hospital_css():
         overflow: hidden !important;
     }
     """
+
 
 def handle_ai_response(message, model, temperature, max_tokens, specialty, context):
     """Handle AI response generation"""
