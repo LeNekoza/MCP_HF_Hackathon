@@ -2587,3 +2587,11 @@ main{
 .gradio-container.gradio-container-5-32-1 .contain .table-row span{
     padding: 10px 5px !important;
 }
+
+.gradio-container.gradio-container-5-32-1 .contain #component-6 .input-container textarea[data-testid="textbox"]::placeholder{
+    color: #a5adb9 !important;
+    font-size: 13px !important;
+    font-style: italic !important;
+}
+
+

@@ -432,7 +432,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                         <h3>Medical Assistant</h3>
                         <p>How can I help you?</p>  
                     </div>
-                </div>
+                </div> 
                 """
                 )  # Chat Interface - Normal Chat
                 chatbot = gr.Chatbot(
@@ -446,7 +446,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                 )  # Chat Input Area - Standard
                 with gr.Row():
                     msg = gr.Textbox(
-                        placeholder="Ask about hospital status, patients, or medical queries...",
+                        placeholder="Mention @analysis to inquire about dashboard content.",
                         show_label=False,
                         lines=1,
                         max_lines=3,
@@ -457,6 +457,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                         "→", size="sm", scale=0, min_width=40
                     )  # Test Section with Dropdown
                 with gr.Row(elem_classes="tools-section"):
+
                     with gr.Column(scale=1):
                         test_dropdown = gr.Dropdown(
                             choices=["Main Chat", "Visualize"],
@@ -511,16 +512,16 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                             <h2 class="analysis-title">Dashboard Analytics</h2>
                             <div class="analysis-selector-container">
                                 <select class="analysis-selector" name="analysis-selector" id="analysis-selector">
+                                    <option value="tool-utilisation">Tool utilisation & idle time</option>
                                     <option value="alos">Average Length-of-Stay (ALOS) by procedure / ward</option>
                                     <option value="staff-workload">Staff workload dashboard</option>
-                                    <option value="tool-utilisation">Tool utilisation & idle time</option>
                                     <option value="inventory-expiry">Inventory expiry radar</option>
                                     <option value="bed-census">Short-horizon bed census</option>
                                     <option value="elective-emergency">Elective vs emergency</option>
                                     <option value="los-prediction">Length-of-stay prediction</option>
-                                </select>
+                                </select>  
                                 <div class="selector-icon">▼</div>
-                            </div>
+                            </div>   
                         
                             <!-- Chart Type Controls -->
                             <div class="chart-controls">
@@ -2364,6 +2365,10 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
             this.updateInterval = 30000; // 30 seconds
             this.metrics = {};
             this.currentSection = 'dashboard'; // Track current section
+            this.chartData = null; // Initialize chart data
+            this.currentAnalysisType = 'tool-utilisation'; // Default analysis type
+            this.savedDashboardState = null; // State management for navigation
+            this.analysisDataFromServer = null; // Store server JSON data
             this.init();
         }
 
@@ -2377,6 +2382,8 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
         }
 
         setup() {
+            // Load server analysis data first
+            this.loadServerAnalysisData();
             this.setupEventListeners();
             this.initializeCharts();
             this.startDataUpdates();
@@ -2502,7 +2509,13 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                         dataSection.style.display = 'none';
                     }
                     console.log('Dashboard section activated');
+                    
+                    // Restore dashboard state and chart data
+                    this.restoreDashboardState();
                 } else if (section === 'data') {
+                    // Save current dashboard state before switching
+                    this.saveDashboardState();
+                    
                     // Show data section, hide dashboard section
                     if (dashboardSection) {
                         dashboardSection.style.display = 'none';
@@ -2619,15 +2632,28 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                     return;
             }
             
-            if (this.setChartData) {
+            // Only use section data if we don't have current chart data
+            if (!this.chartData && this.setChartData) {
                 this.setChartData(sectionData);
+            } else if (this.chartData) {
+                // Use existing chart data if available
+                const activeBtn = document.querySelector('.chart-btn.active');
+                const chartType = activeBtn ? activeBtn.getAttribute('data-chart') || 'line' : 'line';
+                this.updateChart(chartType, this.chartData);
             }
         }
 
         // Use embedded JSON data from server-side files
         getEmbeddedJsonData(analysisType) {
-            // Use the embedded data from window.ANALYSIS_DATA
+            // First try to use the server data we loaded in constructor
+            if (this.analysisDataFromServer && this.analysisDataFromServer[analysisType]) {
+                console.log(`Using server data for ${analysisType}:`, this.analysisDataFromServer[analysisType]);
+                return this.analysisDataFromServer[analysisType];
+            }
+            
+            // Fallback to window.ANALYSIS_DATA if available
             if (window.ANALYSIS_DATA && window.ANALYSIS_DATA[analysisType]) {
+                console.log(`Using window.ANALYSIS_DATA for ${analysisType}:`, window.ANALYSIS_DATA[analysisType]);
                 return window.ANALYSIS_DATA[analysisType];
             }
             
@@ -2839,6 +2865,20 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
 
         loadDashboardData() {
             console.log('Loading dashboard data...');
+            
+            // If we have a current analysis type, reload that data
+            if (this.currentAnalysisType) {
+                const analysisSelector = document.querySelector('#analysis-selector');
+                if (analysisSelector) {
+                    const selectedOption = Array.from(analysisSelector.options).find(opt => opt.value === this.currentAnalysisType);
+                    if (selectedOption) {
+                        this.handleAnalysisSelection(this.currentAnalysisType, selectedOption.text);
+                        return;
+                    }
+                }
+            }
+            
+            // Fallback to default data simulation
             this.simulateDataUpdate();
         }
 
@@ -4406,7 +4446,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                 console.log('Initializing analysis selector...');
                 
                 // Set default selection
-                analysisSelector.value = 'alos';
+                analysisSelector.value = 'tool-utilisation';
                 
                 analysisSelector.addEventListener('change', (e) => {
                     this.handleAnalysisSelection(e.target.value, e.target.selectedOptions[0].text);
@@ -4416,7 +4456,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                 console.log('Analysis selector initialized with default value:', analysisSelector.value);
                 
                 // Load initial data for default selection
-                this.handleAnalysisSelection('alos', 'Average Length-of-Stay (ALOS) by procedure / ward');
+                this.handleAnalysisSelection('tool-utilisation', 'Tool utilisation & idle time');
             }
         }
 
@@ -4607,6 +4647,107 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
             console.log('getChartData called - stored chartData:', this.chartData);
             console.log('getChartData called - currentAnalysisType:', this.currentAnalysisType);
             return this.chartData || this.getCurrentChartData();
+        }
+
+        saveDashboardState() {
+            // Save current dashboard state to prevent losing chart data when switching sections
+            console.log('Saving dashboard state');
+            this.savedDashboardState = {
+                chartData: this.chartData,
+                currentAnalysisType: this.currentAnalysisType,
+                activeChartType: this.getActiveChartType(),
+                analysisSelector: this.getAnalysisSelectorValue()
+            };
+            console.log('Dashboard state saved:', this.savedDashboardState);
+        }
+
+        restoreDashboardState() {
+            // Restore dashboard state when returning to dashboard
+            console.log('Restoring dashboard state');
+            
+            if (this.savedDashboardState) {
+                console.log('Found saved state:', this.savedDashboardState);
+                
+                // Restore chart data and analysis type
+                this.chartData = this.savedDashboardState.chartData;
+                this.currentAnalysisType = this.savedDashboardState.currentAnalysisType;
+                
+                // Restore analysis selector value
+                if (this.savedDashboardState.analysisSelector) {
+                    const analysisSelector = document.querySelector('#analysis-selector');
+                    if (analysisSelector) {
+                        analysisSelector.value = this.savedDashboardState.analysisSelector;
+                    }
+                }
+                
+                // Restore chart type button state
+                if (this.savedDashboardState.activeChartType) {
+                    const chartBtns = document.querySelectorAll('.chart-btn');
+                    chartBtns.forEach(btn => {
+                        btn.classList.remove('active');
+                        if (btn.getAttribute('data-chart') === this.savedDashboardState.activeChartType) {
+                            btn.classList.add('active');
+                        }
+                    });
+                }
+                
+                // Update legend if we have an analysis type
+                if (this.currentAnalysisType) {
+                    this.updateAnalysisLegend(this.currentAnalysisType);
+                }
+                
+                // Update chart with restored data
+                if (this.chartData && this.savedDashboardState.activeChartType) {
+                    setTimeout(() => {
+                        this.updateChart(this.savedDashboardState.activeChartType, this.chartData);
+                        console.log('Chart restored with saved data');
+                    }, 300);
+                } else if (this.savedDashboardState.analysisSelector) {
+                    // Re-trigger analysis selection to reload data
+                    setTimeout(() => {
+                        const analysisSelector = document.querySelector('#analysis-selector');
+                        if (analysisSelector && analysisSelector.selectedOptions[0]) {
+                            this.handleAnalysisSelection(
+                                this.savedDashboardState.analysisSelector, 
+                                analysisSelector.selectedOptions[0].text
+                            );
+                        }
+                    }, 300);
+                }
+            } else {
+                console.log('No saved state found, loading default dashboard data');
+                // If no saved state, load default dashboard
+                this.loadDashboardData();
+            }
+        }
+
+        getActiveChartType() {
+            const activeBtn = document.querySelector('.chart-btn.active');
+            return activeBtn ? activeBtn.getAttribute('data-chart') : 'line';
+        }
+
+        getAnalysisSelectorValue() {
+            const analysisSelector = document.querySelector('#analysis-selector');
+            return analysisSelector ? analysisSelector.value : 'alos';
+        }
+
+        loadServerAnalysisData() {
+            // Load analysis data from server-side JSON
+            try {
+                if (window.ANALYSIS_DATA && typeof window.ANALYSIS_DATA === 'string' && window.ANALYSIS_DATA !== '{}') {
+                    this.analysisDataFromServer = JSON.parse(window.ANALYSIS_DATA);
+                    console.log('Server analysis data loaded:', this.analysisDataFromServer);
+                } else if (window.ANALYSIS_DATA && typeof window.ANALYSIS_DATA === 'object') {
+                    this.analysisDataFromServer = window.ANALYSIS_DATA;
+                    console.log('Server analysis data object loaded:', this.analysisDataFromServer);
+                } else {
+                    console.log('No server analysis data available, using fallback data');
+                    this.analysisDataFromServer = null;
+                }
+            } catch (e) {
+                console.error('Error parsing server analysis data:', e);
+                this.analysisDataFromServer = null;
+            }
         }
     }
 

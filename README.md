@@ -23,45 +23,47 @@ The main interface and application logic are orchestrated within [`src/component
 
 ## ✨ Features
 
-*   **AI-Powered Medical Consultations:** Provides medical information, guidance, and advice through an intelligent chat interface.
-*   **Real-time Database Integration:** Connects to a hospital database (Neon PostgreSQL) to fetch and display live data on patients, rooms, staff, and inventory. This is primarily handled by `src/services/advanced_database_mcp.py` (as referenced in [`docs/project/AI_DATABASE_INTEGRATION_FLOW.md`](docs/project/AI_DATABASE_INTEGRATION_FLOW.md)) and integrated into the chat flow in [`src/components/interface.py`](src/components/interface.py).
-*   **Interactive Dashboard:** A modern, responsive dashboard built with Gradio, showcasing vital hospital statistics and data visualizations.
-*   **Natural Language Queries:** Users can query the database using plain English; the system fetches relevant data which is then analyzed by the AI.
-*   **AI-Enhanced Data Analysis:** Database results are processed by the AI to provide contextual insights, summaries, and professional formatting, as seen in the `stream_response` function within [`src/components/interface.py`](src/components/interface.py).
-*   **LaTeX Formatting:** Medical values (e.g., blood pressure, BMI, dosages) are rendered using LaTeX for clarity and professionalism, facilitated by [`src/utils/latex_formatter.py`](src/utils/latex_formatter.py).
-*   **Streaming Responses & Loading Indicators:** Enhanced user experience with real-time streaming of AI responses and dynamic loading indicators (e.g., "🤔 Thinking...", "🗄️ Querying the database...") during processing, implemented in the `stream_response` function in [`src/components/interface.py`](src/components/interface.py).
-*   **Contextual Chat History:** Maintains conversation context for seamless interactions, managed within the Gradio interface logic.
-*   **Secure Configuration:** Manages sensitive credentials securely using environment variables (`.env`).
+- **AI-Powered Medical Consultations:** Provides medical information, guidance, and advice through an intelligent chat interface.
+- **Real-time Database Integration:** Connects to a hospital database (Neon PostgreSQL) to fetch and display live data on patients, rooms, staff, and inventory. This is primarily handled by `src/services/advanced_database_mcp.py` (as referenced in [`docs/project/AI_DATABASE_INTEGRATION_FLOW.md`](docs/project/AI_DATABASE_INTEGRATION_FLOW.md)) and integrated into the chat flow in [`src/components/interface.py`](src/components/interface.py).
+- **Interactive Dashboard:** A modern, responsive dashboard built with Gradio, showcasing vital hospital statistics and data visualizations.
+- **Natural Language Queries:** Users can query the database using plain English; the system fetches relevant data which is then analyzed by the AI.
+- **AI-Enhanced Data Analysis:** Database results are processed by the AI to provide contextual insights, summaries, and professional formatting, as seen in the `stream_response` function within [`src/components/interface.py`](src/components/interface.py).
+- **LaTeX Formatting:** Medical values (e.g., blood pressure, BMI, dosages) are rendered using LaTeX for clarity and professionalism, facilitated by [`src/utils/latex_formatter.py`](src/utils/latex_formatter.py).
+- **Streaming Responses & Loading Indicators:** Enhanced user experience with real-time streaming of AI responses and dynamic loading indicators (e.g., "🤔 Thinking...", "🗄️ Querying the database...") during processing, implemented in the `stream_response` function in [`src/components/interface.py`](src/components/interface.py).
+- **Contextual Chat History:** Maintains conversation context for seamless interactions, managed within the Gradio interface logic.
+- **Secure Configuration:** Manages sensitive credentials securely using environment variables (`.env`).
 
 ## 🛠️ Tech Stack
 
-*   **Backend:** Python
-*   **Web Interface:** Gradio
-*   **AI Model Provider:** Nebius (specifically `meta-llama/Llama-3.3-70B-Instruct`)
-*   **Database:** PostgreSQL (Neon)
-*   **Core Logic:** Model Context Protocol (MCP) integration, custom AI model handlers.
-*   **Styling:** Custom CSS for a modern hospital theme.
+- **Backend:** Python
+- **Web Interface:** Gradio
+- **AI Model Provider:** Nebius (specifically `meta-llama/Llama-3.3-70B-Instruct`)
+- **Database:** PostgreSQL (Neon)
+- **Core Logic:** Model Context Protocol (MCP) integration, custom AI model handlers.
+- **Styling:** Custom CSS for a modern hospital theme.
 
 ## 📦 MCP Tools/Servers
 
 **🏷️ Track 1: MCP Server / Tool**
 
 This project implements a **Model Context Protocol (MCP) Database Integration** to enable the AI assistant to interact with a live hospital database.
-*   **Core Engine:** The integration involves components like [`src/models/mcp_handler.py`](src/models/mcp_handler.py) and `src/services/advanced_database_mcp.py`.
-    *   **Intent Recognition:** The system parses user queries to determine if they relate to database information (e.g., patient lookup, room status).
-    *   **Data Retrieval & AI Analysis:** Instead of directly generating SQL and returning raw data, the system fetches data based on the user's intent. This data is then passed to the AI model along with the original user query. The AI analyzes the data, provides insights, and formats the response professionally. This flow is detailed in [`docs/project/AI_DATABASE_INTEGRATION_FLOW.md`](docs/project/AI_DATABASE_INTEGRATION_FLOW.md) and implemented in the `stream_response` and [`handle_ai_response`](src/components/interface.py) functions within [`src/components/interface.py`](src/components/interface.py).
-*   **Seamless Chatbot Integration:** The main interface in [`src/components/interface.py`](src/components/interface.py) automatically detects if a user's query should involve database interaction, fetches data, and then uses the AI to present a comprehensive, analyzed response.
+
+- **Core Engine:** The integration involves components like [`src/models/mcp_handler.py`](src/models/mcp_handler.py) and `src/services/advanced_database_mcp.py`.
+  - **Intent Recognition:** The system parses user queries to determine if they relate to database information (e.g., patient lookup, room status).
+  - **Data Retrieval & AI Analysis:** Instead of directly generating SQL and returning raw data, the system fetches data based on the user's intent. This data is then passed to the AI model along with the original user query. The AI analyzes the data, provides insights, and formats the response professionally. This flow is detailed in [`docs/project/AI_DATABASE_INTEGRATION_FLOW.md`](docs/project/AI_DATABASE_INTEGRATION_FLOW.md) and implemented in the `stream_response` and [`handle_ai_response`](src/components/interface.py) functions within [`src/components/interface.py`](src/components/interface.py).
+- **Seamless Chatbot Integration:** The main interface in [`src/components/interface.py`](src/components/interface.py) automatically detects if a user's query should involve database interaction, fetches data, and then uses the AI to present a comprehensive, analyzed response.
 
 ## 🎨 Custom Gradio Components
 
 The user interface is built using Gradio, with several custom components and layouts defined primarily in [`src/components/interface.py`](src/components/interface.py):
-*   **Main Dashboard (`gr.Blocks`):** The entire application is structured within `gr.Blocks`, using `gr.Row`, `gr.Column`, and `gr.HTML` to create a bespoke layout.
-*   **Custom HTML Sections:**
-    *   **Headers & Navigation:** Includes an assistant header, dashboard title, controls (like a "Helpline" button), and navigation buttons ("Dashboard", "Data") created using `gr.HTML`.
-    *   **Dashboard & Data Views:** Specific sections like `#dashboard-section` and `#data-section` (with tabs for Patients, Staff, Rooms) are rendered using `gr.HTML`, allowing for custom styling and structure beyond standard Gradio components.
-*   **Styled Chat Interface (`gr.Chatbot`):** The chatbot is configured with specific properties (`type="messages"`, `layout="bubble"`) and custom CSS for appearance.
-*   **Dynamic Loading Indicators:** Implemented within the `stream_response` function in [`src/components/interface.py`](src/components/interface.py). These are HTML snippets injected into the chat history to show messages like "🤔 Thinking...", "🗄️ Querying the database...", providing real-time feedback.
-*   **CSS Styling:** Extensive custom CSS is loaded via the [`load_modern_hospital_css`](src/components/interface.py) function (which reads from [`static/css/styles.css`](static/css/styles.css)) to achieve a unique "modern hospital" theme, overriding default Gradio styles.
+
+- **Main Dashboard (`gr.Blocks`):** The entire application is structured within `gr.Blocks`, using `gr.Row`, `gr.Column`, and `gr.HTML` to create a bespoke layout.
+- **Custom HTML Sections:**
+  - **Headers & Navigation:** Includes an assistant header, dashboard title, controls (like a "Helpline" button), and navigation buttons ("Dashboard", "Data") created using `gr.HTML`.
+  - **Dashboard & Data Views:** Specific sections like `#dashboard-section` and `#data-section` (with tabs for Patients, Staff, Rooms) are rendered using `gr.HTML`, allowing for custom styling and structure beyond standard Gradio components.
+- **Styled Chat Interface (`gr.Chatbot`):** The chatbot is configured with specific properties (`type="messages"`, `layout="bubble"`) and custom CSS for appearance.
+- **Dynamic Loading Indicators:** Implemented within the `stream_response` function in [`src/components/interface.py`](src/components/interface.py). These are HTML snippets injected into the chat history to show messages like "🤔 Thinking...", "🗄️ Querying the database...", providing real-time feedback.
+- **CSS Styling:** Extensive custom CSS is loaded via the [`load_modern_hospital_css`](src/components/interface.py) function (which reads from [`static/css/styles.css`](static/css/styles.css)) to achieve a unique "modern hospital" theme, overriding default Gradio styles.
 
 ## 📡 MCP Server Configuration
 
@@ -75,24 +77,97 @@ http://localhost:7860/gradio_api/mcp/sse
 
 ### 🧰 Available MCP Tools
 
-* **stream\_response\_with\_state**
-  Streams AI-generated responses, updating the relevant chat states.
+- **stream_response_with_state**
+  Stream response and update appropriate chat state
 
-* **stream\_response\_with\_state\_**
-  Variant streaming response handler with state management.
+  - message (string)
+  - history (array)
 
-* **handle\_helpline\_with\_state**
-  Manages helpline interactions, maintaining the conversation state throughout.
+- **stream_response_with_state\_**
+  Stream response and update appropriate chat state
 
-* **handle\_tool\_selection**
-  Facilitates the selection and handling of tools via dropdown, managing separate chat flows.
+  - message (string)
+  - history (array)
 
-* **\<lambda>**
-  Delivers a welcoming assistant message introducing the system's capabilities, including medical guidance, hospital support, health monitoring, and emergency assistance.
+- **handle_helpline_with_state**
+  Handle helpline with state management
+
+  - Takes no input parameters
+
+- **handle_tool_selection**
+  Handle tool selection from dropdown with separate chat flows
+
+  - tool_name (string, default: "Main Chat")
+  - current_chat (array)
+
+- **patients_next_page**
+  Go to next page for patients
+
+  - Takes no input parameters
+
+- **patients_prev_page**
+  Go to previous page for patients
+
+  - Takes no input parameters
+
+- **refresh_patients**
+  Refresh patients table with latest data for given page
+
+  - Takes no input parameters
+
+- **staff_next_page**
+  Go to next page for staff
+
+  - Takes no input parameters
+
+- **staff_prev_page**
+  Go to previous page for staff
+
+  - Takes no input parameters
+
+- **refresh_staff**
+  Refresh staff table with latest data for given page
+
+  - Takes no input parameters
+
+- **rooms_next_page**
+  Go to next page for rooms
+
+  - Takes no input parameters
+
+- **rooms_prev_page**
+  Go to previous page for rooms
+
+  - Takes no input parameters
+
+- **refresh_rooms**
+  Refresh rooms table with latest data for given page
+
+  - Takes no input parameters
+
+- **equipment_next_page**
+  Go to next page for equipment
+
+  - Takes no input parameters
+
+- **equipment_prev_page**
+  Go to previous page for equipment
+
+  - Takes no input parameters
+
+- **refresh_equipment**
+  Refresh equipment table with latest data for given page
+
+  - Takes no input parameters
+
+- **\<lambda>**
+  ⚠︎ No description provided in function docstring
+  - Takes no input parameters
 
 ### 🎥 MCP Server Demo Video
 
 [Link to MCP Server Demo Video - Coming Soon]
+
 > Video demonstration showing the MCP server integration with Claude Desktop/Cursor, showcasing real-time hospital data queries and AI-powered medical consultations.
 
 ### 🛠️ Integration Instructions
@@ -134,13 +209,14 @@ This setup ensures broader compatibility and flexibility across various client t
 ## 🤖 AI Agent
 
 The primary AI agent powering the medical assistant is the **`meta-llama/Llama-3.3-70B-Instruct`** model, accessed via the Nebius API.
-*   **Integration:** Managed through the [`NebiusModel`](src/models/nebius_model.py) class, which is initialized and used in [`src/components/interface.py`](src/components/interface.py). Details of this integration can also be found in [`docs/setup/NEBIUS_INTEGRATION.md`](docs/setup/NEBIUS_INTEGRATION.md).
-*   **Capabilities:**
-    *   **Medical Consultation:** Answers health-related questions and provides medical information.
-    *   **Chat Completion:** Engages in natural conversations, maintaining context.
-    *   **Data Analysis & Presentation:** When provided with data from the hospital database (via the `stream_response` logic in [`src/components/interface.py`](src/components/interface.py)), the AI analyzes this information in conjunction with the user's query. It then generates a comprehensive response including structured data, medical analysis, LaTeX formatting, and recommendations. This process is outlined in the `enhanced_prompt` logic within `stream_response` and [`handle_ai_response`](src/components/interface.py).
-    *   **Streaming Responses:** Supports streaming of responses for an interactive user experience.
-*   **Configuration:** Model parameters like temperature and max tokens are handled within the AI interaction functions in [`src/components/interface.py`](src/components/interface.py).
+
+- **Integration:** Managed through the [`NebiusModel`](src/models/nebius_model.py) class, which is initialized and used in [`src/components/interface.py`](src/components/interface.py). Details of this integration can also be found in [`docs/setup/NEBIUS_INTEGRATION.md`](docs/setup/NEBIUS_INTEGRATION.md).
+- **Capabilities:**
+  - **Medical Consultation:** Answers health-related questions and provides medical information.
+  - **Chat Completion:** Engages in natural conversations, maintaining context.
+  - **Data Analysis & Presentation:** When provided with data from the hospital database (via the `stream_response` logic in [`src/components/interface.py`](src/components/interface.py)), the AI analyzes this information in conjunction with the user's query. It then generates a comprehensive response including structured data, medical analysis, LaTeX formatting, and recommendations. This process is outlined in the `enhanced_prompt` logic within `stream_response` and [`handle_ai_response`](src/components/interface.py).
+  - **Streaming Responses:** Supports streaming of responses for an interactive user experience.
+- **Configuration:** Model parameters like temperature and max tokens are handled within the AI interaction functions in [`src/components/interface.py`](src/components/interface.py).
 
 ## 🤖 Agentic Demo
 
@@ -156,6 +232,7 @@ H.A.H.A represents a complete agentic application that showcases the power of AI
 ### 🎥 Application Demo Video
 
 [Link to Application Overview Video - Coming Soon]
+
 > Comprehensive video walkthrough demonstrating the hospital AI assistant's capabilities, including medical consultations, database queries, dashboard interactions, and real-time data analysis.
 
 ### 🏥 Use Cases Demonstrated
@@ -169,6 +246,7 @@ H.A.H.A represents a complete agentic application that showcases the power of AI
 ## 📁 Project Structure
 
 A brief overview of the project structure:
+
 ```
 MCP_HF_Hackathon/
 ├── [`app.py`](app.py )                          # Main application entry point
@@ -187,6 +265,7 @@ MCP_HF_Hackathon/
 ├── docs/                         # Project documentation
 └── tests/                        # Test files
 ```
+
 ## ⚙️ Setup and Installation
 
 1.  **Clone the repository.**
@@ -203,20 +282,20 @@ MCP_HF_Hackathon/
     pip install -r requirements.txt
     ```
 4.  **Configure Environment Variables:**
-    *   Copy `.env.template` to `.env`.
-    *   Fill in your `NEBIUS_API_KEY` and Neon database credentials (e.g., `NEON_HOST`, `NEON_DATABASE`, `NEON_USER`, `NEON_PASSWORD`) in the `.env` file.
+    - Copy `.env.template` to `.env`.
+    - Fill in your `NEBIUS_API_KEY` and Neon database credentials (e.g., `NEON_HOST`, `NEON_DATABASE`, `NEON_USER`, `NEON_PASSWORD`) in the `.env` file.
 
 ## ▶️ Running the Application
 
-*   **Development Server (with auto-reload):**
-    ```bash
-    python dev_server.py
-    ```
-*   **Main Application:**
-    ```bash
-    python app.py
-    ```
-    Access the application by navigating to `http://localhost:7860` (or the port configured in [`.env`](.env)).
+- **Development Server (with auto-reload):**
+  ```bash
+  python dev_server.py
+  ```
+- **Main Application:**
+  ```bash
+  python app.py
+  ```
+  Access the application by navigating to `http://localhost:7860` (or the port configured in [`.env`](.env)).
 
 ## 🗄️ Database
 
@@ -234,20 +313,98 @@ http://localhost:7860/gradio_api/mcp/sse
 
 ### 🧰 Available MCP Tools
 
-* **stream\_response\_with\_state**
-  Streams AI-generated responses, updating the relevant chat states.
+- **stream_response_with_state**
+  Stream response and update appropriate chat state
 
-* **stream\_response\_with\_state\_**
-  Variant streaming response handler with state management.
+  - message (string)
+  - history (array)
 
-* **handle\_helpline\_with\_state**
-  Manages helpline interactions, maintaining the conversation state throughout.
+- **stream_response_with_state\_**
+  Stream response and update appropriate chat state
 
-* **handle\_tool\_selection**
-  Facilitates the selection and handling of tools via dropdown, managing separate chat flows.
+  - message (string)
+  - history (array)
 
-* **\<lambda>**
-  Delivers a welcoming assistant message introducing the system's capabilities, including medical guidance, hospital support, health monitoring, and emergency assistance.
+- **handle_helpline_with_state**
+  Handle helpline with state management
+
+  - Takes no input parameters
+
+- **handle_tool_selection**
+  Handle tool selection from dropdown with separate chat flows
+
+  - tool_name (string, default: "Main Chat")
+  - current_chat (array)
+
+- **patients_next_page**
+  Go to next page for patients
+
+  - Takes no input parameters
+
+- **patients_prev_page**
+  Go to previous page for patients
+
+  - Takes no input parameters
+
+- **refresh_patients**
+  Refresh patients table with latest data for given page
+
+  - Takes no input parameters
+
+- **staff_next_page**
+  Go to next page for staff
+
+  - Takes no input parameters
+
+- **staff_prev_page**
+  Go to previous page for staff
+
+  - Takes no input parameters
+
+- **refresh_staff**
+  Refresh staff table with latest data for given page
+
+  - Takes no input parameters
+
+- **rooms_next_page**
+  Go to next page for rooms
+
+  - Takes no input parameters
+
+- **rooms_prev_page**
+  Go to previous page for rooms
+
+  - Takes no input parameters
+
+- **refresh_rooms**
+  Refresh rooms table with latest data for given page
+
+  - Takes no input parameters
+
+- **equipment_next_page**
+  Go to next page for equipment
+
+  - Takes no input parameters
+
+- **equipment_prev_page**
+  Go to previous page for equipment
+
+  - Takes no input parameters
+
+- **refresh_equipment**
+  Refresh equipment table with latest data for given page
+
+  - Takes no input parameters
+
+- **\<lambda>**
+  ⚠︎ No description provided in function docstring
+  - Takes no input parameters
+
+### 🎥 MCP Server Demo Video
+
+[Link to MCP Server Demo Video - Coming Soon]
+
+> Video demonstration showing the MCP server integration with Claude Desktop/Cursor, showcasing real-time hospital data queries and AI-powered medical consultations.
 
 ### 🛠️ Integration Instructions
 
@@ -284,9 +441,6 @@ For clients limited to standard input/output protocols, first ensure Node.js is 
 ```
 
 This setup ensures broader compatibility and flexibility across various client types and integration scenarios.
-
-
-
 
 ---
 
