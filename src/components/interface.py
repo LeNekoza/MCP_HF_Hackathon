@@ -541,15 +541,32 @@ Make sure the user gets both the complete information they requested AND your pr
                         # Use AI to analyze the database results instead of returning raw data
                         if (
                             model == "nebius-llama-3.3-70b"
-                            and nebius_model.is_available()
-                        ):
+                            and nebius_model.is_available()                        ):
                             # Clear loading indicator and start real response
                             history[-1]["content"] = ""
-
                             try:
+                                # Build conversation context from chat history for database queries
+                                conversation_context = ""
+                                if len(history) > 1:  # More than just the current user message
+                                    for msg in history[:-1]:  # Exclude current user message
+                                        if msg["role"] == "user":
+                                            conversation_context += f"User: {msg['content']}\n"
+                                        elif msg["role"] == "assistant" and not ("Welcome" in msg["content"] and "---" in msg["content"]):
+                                            # Exclude welcome back messages but include actual AI responses
+                                            conversation_context += f"Assistant: {msg['content']}\n"
+                                    
+                                    if conversation_context:
+                                        conversation_context = f"Previous conversation:\n{conversation_context}\n---\nDatabase analysis context:"
+                                        # Combine conversation context with database query context
+                                        combined_context = f"{conversation_context}\nDatabase query results included in the analysis"
+                                    else:
+                                        combined_context = "Database query results included in the analysis"
+                                else:
+                                    combined_context = "Database query results included in the analysis"
+                                
                                 response_generator = nebius_model.generate_response(
                                     prompt=enhanced_prompt,
-                                    context=f"Database query results included in the analysis",
+                                    context=combined_context,
                                     specialty="General Medicine",
                                     max_tokens=max(
                                         1000, 2000
@@ -604,15 +621,26 @@ Make sure the user gets both the complete information they requested AND your pr
                     "content"
                 ] = f'<div class="loading-indicator" aria-live="polite" role="status" data-type="generating">🚀 Generating response...<span class="loading-dots"></span></div>'
                 yield history, ""
-                time.sleep(0.3)
-
-                # Clear loading indicator and start real response
+                time.sleep(0.3)                # Clear loading indicator and start real response
                 history[-1]["content"] = ""
 
                 try:
+                    # Build conversation context from chat history (excluding welcome messages and current user message)
+                    conversation_context = ""
+                    if len(history) > 1:  # More than just the current user message
+                        for msg in history[:-1]:  # Exclude current user message
+                            if msg["role"] == "user":
+                                conversation_context += f"User: {msg['content']}\n"
+                            elif msg["role"] == "assistant" and not ("Welcome" in msg["content"] and "---" in msg["content"]):
+                                # Exclude welcome back messages but include actual AI responses
+                                conversation_context += f"Assistant: {msg['content']}\n"
+                        
+                        if conversation_context:
+                            conversation_context = f"Previous conversation:\n{conversation_context}\n---\nCurrent question:"
+                    
                     response_generator = nebius_model.generate_response(
                         prompt=message,
-                        context=None,
+                        context=conversation_context if conversation_context else None,
                         specialty="General Medicine",
                         max_tokens=1000,
                         temperature=0.4,
@@ -789,8 +817,7 @@ Make sure the user gets both the complete information they requested AND your pr
                 original_chat_state,
                 visualize_chat_state,
                 current_mode_state,
-            ],
-        )
+            ],        )
 
         # Test dropdown handler
         def handle_tool_selection(
@@ -806,8 +833,8 @@ Make sure the user gets both the complete information they requested AND your pr
                 if original_chat:
                     display_chat = original_chat + [
                         {
-                            "role": "assistant",
-                            "content": "--- 🔄 **Welcome back to the main chat!**\n\n📋 You can see your previous conversation history above, but please note that I'm starting with a fresh conversation context. I don't have access to the details from our previous messages, so feel free to provide any relevant context if you'd like to continue where we left off.\n\nHow can I assist you today?",
+                            "role": "assistant", 
+                            "content": "--- 🔄 **Welcome back to the main chat!**\n\n📋 I can see our previous conversation history above and I remember our conversation context. Feel free to continue where we left off or ask me anything new!\n\nHow can I assist you today?",
                         }
                     ]
                     stored_original_chat = (
@@ -840,7 +867,7 @@ Make sure the user gets both the complete information they requested AND your pr
                     display_chat = visualize_chat + [
                         {
                             "role": "assistant",
-                            "content": "--- 📊 **Welcome back to Visualization Mode!**\n\n📋 You can see your previous visualization conversation history above, but please note that I'm starting with a fresh conversation context. I don't have access to the details from our previous messages, so feel free to provide any relevant context if you'd like to continue where we left off.\n\nWhat would you like to visualize or analyze today?",
+                            "content": "--- 📊 **Welcome back to Visualization Mode!**\n\n📋 I can see our previous visualization conversation history above and I remember our conversation context. Feel free to continue where we left off or ask me anything new!\n\nWhat would you like to visualize or analyze today?",
                         }
                     ]
                     stored_visualize_chat = (
@@ -1074,6 +1101,18 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
     js_with_data = (
         """
     <script src="static/js/latex-renderer.js"></script>
+    <script>
+    // LaTeX MathJax configuration
+    window.MathJax = {
+        tex: {
+            inlineMath: [['\\\\(', '\\\\)']],
+            displayMath: [['\\\\[', '\\\\]']],
+            processEscapes: true,
+            processEnvironments: true
+        }
+    };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
     <script src="static/js/app.js"></script>
     
     <style>
@@ -3193,5 +3232,37 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
 
 
 def load_modern_hospital_css():
-    # This function is not provided in the code block, so it's left unchanged
-    pass
+    """Load modern hospital CSS for the interface"""
+    return """
+    /* HOSPITAL DASHBOARD - OPTIMIZED LAYOUT */
+    
+    /* Reset and force proper layout */
+    .gradio-container {
+        max-width: 100vw !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+        padding: 0 !important;
+        background: #f8fafc !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+    
+    /* Main container - FIXED LAYOUT */
+    .main-container {
+        display: flex !important;
+        height: 100vh !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        flex-wrap: nowrap !important;
+        align-items: stretch !important;
+        overflow: hidden !important;
+    }
+    """
+
+def handle_ai_response(message, model, temperature, max_tokens, specialty, context):
+    """Handle AI response generation"""
+    return f"AI Response to: {message} (using {model} with temp={temperature})"
