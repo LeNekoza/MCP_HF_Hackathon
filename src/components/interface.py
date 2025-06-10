@@ -3,6 +3,7 @@ import time
 from typing import Any, Dict, List
 
 import gradio as gr
+import pandas as pd
 
 from ..models.mcp_handler import MCPHandler
 from ..models.nebius_model import NebiusModel
@@ -868,7 +869,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
             # Check if this is an analysis query first
             try:
                 from ..services.analysis_service import analysis_service
-                
+
                 if analysis_service.is_analysis_query(message):
                     # Show analysis loading state
                     history[-1][
@@ -879,20 +880,23 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
 
                     # Process analysis query
                     enhanced_prompt = analysis_service.process_analysis_query(message)
-                    
+
                     # Show AI processing state
                     history[-1][
                         "content"
                     ] = f'<div class="loading-indicator" aria-live="polite" role="status" data-type="ai">🧠 Generating insights from analysis...<span class="loading-dots"></span></div>'
                     yield history, ""
                     time.sleep(0.3)
-                    
+
                     # Use AI to process the analysis results
                     try:
-                        if model == "nebius-llama-3.3-70b" and nebius_model.is_available():
+                        if (
+                            model == "nebius-llama-3.3-70b"
+                            and nebius_model.is_available()
+                        ):
                             # Clear loading indicator and start real response
                             history[-1]["content"] = ""
-                            
+
                             response_generator = nebius_model.generate_response(
                                 prompt=enhanced_prompt,
                                 context="Analysis results included in the response",
@@ -933,7 +937,7 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                         history[-1]["content"] = error_msg
                         yield history, ""
                     return
-                    
+
             except Exception as e:
                 # If analysis service fails, continue with database/regular processing
                 pass
@@ -1836,11 +1840,11 @@ Make sure the user gets both the complete information they requested AND your pr
             fn=lambda: [
                 {
                     "role": "assistant",
-                    "content": "🏥 Welcome to Health AI Hospital Aid (H.A.H.A)! I'm your Medical Assistant powered by advanced AI.\n\n**I can help you with:**\n• Health information and medical guidance\n• Hospital services and patient support\n• Medical consultations and advice\n• Health monitoring and analysis\n• Emergency assistance coordination\n\nFeel free to ask me any health-related questions or concerns!",
+                    "content": "🏥 **Welcome to Health AI Hospital Aid (H.A.H.A)!** Your intelligent Hospital Management Assistant.\n\n**I can help you with:**\n\n🔍 **Data Analytics & Insights:**\n• Staff workload analysis and optimization\n• Equipment utilization monitoring\n• Inventory management and expiry alerts\n• Patient flow and length-of-stay predictions\n\n📊 **Interactive Dashboards:**\n• Dynamic charts (Line, Bar, Pie, Scatter)\n• Bed census forecasting\n• Emergency vs elective procedure analytics\n• Revenue and operational metrics\n\n💾 **Database Retrieval:**\n• Patient records \n• Staff information management\n• Room and facility tracking\n• Medical equipment inventory\n\n🎯 **Smart Query Processing:**\n• Natural language database queries\n• Advanced filtering and search\n• Statistical summaries and reports\n• Predictive analytics\n\n**Ask me about:**\n• Hospital operations and efficiency\n• Patient statistics and trends\n• Resource allocation and planning\n• Administrative queries and reports\n• Data visualization and analysis\n\nHow can I assist with your hospital management needs today?",
                 }
             ],
             outputs=chatbot,
-        )
+        )  # Initialize database retriever
 
     return demo
 
@@ -1873,7 +1877,7 @@ def handle_ai_response(
     # Check if this is an analysis query first
     try:
         from ..services.analysis_service import analysis_service
-        
+
         if analysis_service.is_analysis_query(user_message):
             # Process analysis query - skip database queries
             enhanced_prompt = analysis_service.process_analysis_query(user_message)
@@ -1886,7 +1890,9 @@ def handle_ai_response(
 
                 if advanced_database_mcp.is_database_query(user_message):
                     # Process database query to get raw data
-                    db_response = advanced_database_mcp.process_advanced_query(user_message)
+                    db_response = advanced_database_mcp.process_advanced_query(
+                        user_message
+                    )
 
                     # If we got real data from the database, pass it through AI for analysis
                     if (
@@ -1936,7 +1942,10 @@ Make sure the user gets both the complete information they requested AND your pr
             if nebius_model.is_available():
                 # Use higher token limit for database/analysis processing if needed
                 analysis_max_tokens = max_tokens
-                if "Database Results:" in user_message or "Analysis Data Context:" in user_message:
+                if (
+                    "Database Results:" in user_message
+                    or "Analysis Data Context:" in user_message
+                ):
                     analysis_max_tokens = max(
                         max_tokens, 2500
                     )  # Ensure enough space for complete data + analysis
@@ -1945,7 +1954,10 @@ Make sure the user gets both the complete information they requested AND your pr
                 enhanced_context = context if context.strip() else ""
 
                 # Add hospital schema context if this isn't already a database or analysis query
-                if "Database Results:" not in user_message and "Analysis Data Context:" not in user_message:
+                if (
+                    "Database Results:" not in user_message
+                    and "Analysis Data Context:" not in user_message
+                ):
                     try:
                         from ..utils.schema_loader import hospital_schema_loader
 
@@ -4795,6 +4807,3 @@ def load_modern_hospital_css():
         display: none !important;
     }
     """
-
-
-
