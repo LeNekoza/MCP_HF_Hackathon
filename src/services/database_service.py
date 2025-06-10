@@ -24,6 +24,7 @@ class DatabaseService:
                 "database": os.getenv("NEON_DATABASE", "hospital_db"),
                 "user": os.getenv("NEON_USER", "postgres"),
                 "password": os.getenv("NEON_PASSWORD", "password"),
+                "sslmode": os.getenv("NEON_SSLMODE", "require"),
             }
 
             self.connection = psycopg2.connect(**db_config)
