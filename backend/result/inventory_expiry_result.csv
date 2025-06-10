@@ -1,0 +1,12 @@
+item_name,days_to_expiry,expiry_date,quantity_available,category,urgency,estimated_value,analysis_id,generated_at
+Blood Type O- 73,26,2025-07-06,1,General,urgent,,inventory_expiry,2025-06-10T02:41:06.478071
+Blood Type O- 77,31,2025-07-11,1,General,watch,,inventory_expiry,2025-06-10T02:41:06.478071
+Blood Type O- 61,34,2025-07-14,1,General,watch,,inventory_expiry,2025-06-10T02:41:06.478071
+Blood Type O- 19,36,2025-07-16,1,General,watch,,inventory_expiry,2025-06-10T02:41:06.478071
+Blood Type A+ 88,47,2025-07-27,1,General,watch,,inventory_expiry,2025-06-10T02:41:06.478071
+Blood Type O- 40,48,2025-07-28,1,General,watch,,inventory_expiry,2025-06-10T02:41:06.478071
+Blood Type O- 1,56,2025-08-05,1,General,watch,,inventory_expiry,2025-06-10T02:41:06.478071
+Blood Type A+ 14,63,2025-08-12,1,General,watch,,inventory_expiry,2025-06-10T02:41:06.478071
+Blood Type O- 5,68,2025-08-17,1,General,watch,,inventory_expiry,2025-06-10T02:41:06.478071
+Blood Type A+ 16,72,2025-08-21,1,General,watch,,inventory_expiry,2025-06-10T02:41:06.478071
+Blood Type O- 99,82,2025-08-31,1,General,watch,,inventory_expiry,2025-06-10T02:41:06.478071

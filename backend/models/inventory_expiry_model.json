@@ -1,0 +1,28 @@
+{
+  "analysis_id": "inventory_expiry",
+  "timestamp": "20250610_024102",
+  "generated_at": "2025-06-10T02:41:02.042592",
+  "model_data": {
+    "analysis_type": "inventory_expiry",
+    "days_threshold": 90,
+    "urgency_categories": {
+      "expired": "< 0 days",
+      "critical": "0-7 days",
+      "urgent": "8-30 days",
+      "watch": "31-90 days"
+    },
+    "calculation_method": "days_to_expiry = expiry_date - current_date",
+    "data_quality": {
+      "total_inventory_items": 100,
+      "items_with_expiry_dates": 44,
+      "has_cost_data": false,
+      "has_category_data": false
+    },
+    "risk_assessment": {
+      "items_at_risk": 11,
+      "percentage_at_risk": 11.0,
+      "value_at_risk": 0.0,
+      "alert_count": 1
+    }
+  }
+}

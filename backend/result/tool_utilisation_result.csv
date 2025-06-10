@@ -1,0 +1,15 @@
+metric,value,type
+top_tools_count,10,count
+summary_statistics_total_tools,500,int
+summary_statistics_avg_utilisation,0.0,float
+summary_statistics_median_utilisation,0.0,float
+summary_statistics_max_utilisation,0.0,float
+summary_statistics_min_utilisation,0.0,float
+summary_statistics_high_util_tools,0,int
+summary_statistics_medium_util_tools,0,int
+summary_statistics_low_util_tools,500,int
+utilisation_distribution_count,4,count
+calculation_method,total_minus_available,str
+analysis_timestamp,2025-06-10T02:41:00.259797,str
+analysis_id,tool_utilisation,str
+generated_at,2025-06-10T02:41:06.477263,timestamp

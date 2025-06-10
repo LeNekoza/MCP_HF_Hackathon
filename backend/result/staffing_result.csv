@@ -1,0 +1,4 @@
+metric,value,analysis_id,generated_at
+by_type,"{'nurses': 100, 'doctors': 100, 'support_staff': 0, 'admin_staff': 0}",staffing,2025-06-10T02:41:06.475928
+total_staff,200,staffing,2025-06-10T02:41:06.475928
+analysis_date,2025-06-09,staffing,2025-06-10T02:41:06.475928

@@ -1,0 +1,75 @@
+{
+  "analysis_id": "staffing",
+  "timestamp": "20250610_024054",
+  "generated_at": "2025-06-10T02:40:54.442841",
+  "model_data": {
+    "analysis_type": "staffing",
+    "forecast_parameters": {
+      "forecast_days": 3,
+      "occupancy_estimation_method": "factor_based",
+      "weekend_adjustment_factor": 0.85,
+      "variation_range": "0.7-1.3"
+    },
+    "staffing_ratios": {
+      "ICU": {
+        "nurse_patient_ratio_day": 1.0,
+        "nurse_patient_ratio_night": 1.5,
+        "doctor_patient_ratio": 4.0,
+        "support_patient_ratio": 8.0
+      },
+      "Emergency": {
+        "nurse_patient_ratio_day": 2.0,
+        "nurse_patient_ratio_night": 3.0,
+        "doctor_patient_ratio": 6.0,
+        "support_patient_ratio": 12.0
+      },
+      "General": {
+        "nurse_patient_ratio_day": 4.0,
+        "nurse_patient_ratio_night": 6.0,
+        "doctor_patient_ratio": 10.0,
+        "support_patient_ratio": 15.0
+      },
+      "Pediatric": {
+        "nurse_patient_ratio_day": 3.0,
+        "nurse_patient_ratio_night": 4.0,
+        "doctor_patient_ratio": 8.0,
+        "support_patient_ratio": 12.0
+      },
+      "Maternity": {
+        "nurse_patient_ratio_day": 3.0,
+        "nurse_patient_ratio_night": 4.0,
+        "doctor_patient_ratio": 8.0,
+        "support_patient_ratio": 12.0
+      }
+    },
+    "calculation_methodology": {
+      "nurse_requirements": "Based on patient-to-nurse ratios by ward type",
+      "doctor_requirements": "Based on patient-to-doctor ratios by ward type",
+      "support_requirements": "Based on patient-to-support staff ratios",
+      "minimum_staff": "At least 1 staff member per category per ward"
+    },
+    "current_staff_analysis": {
+      "by_type": {
+        "nurses": 100,
+        "doctors": 100,
+        "support_staff": 0,
+        "admin_staff": 0
+      },
+      "total_staff": 200,
+      "analysis_date": "2025-06-09"
+    },
+    "forecast_quality": {
+      "wards_analyzed": 0,
+      "total_current_patients": 0,
+      "total_current_staff": 200,
+      "recommendations_generated": 1
+    },
+    "ward_types_supported": [
+      "ICU",
+      "Emergency",
+      "General",
+      "Pediatric",
+      "Maternity"
+    ]
+  }
+}

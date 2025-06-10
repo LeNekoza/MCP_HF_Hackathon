@@ -1,0 +1,39 @@
+{
+  "analysis_id": "census_forecast",
+  "timestamp": "20250610_024040",
+  "generated_at": "2025-06-10T02:40:40.325942",
+  "model_data": {
+    "analysis_type": "census_forecast",
+    "method": "holt_winters",
+    "forecast_days": 3,
+    "data_points": 368,
+    "parameters": {
+      "alpha": 0.333357246693031,
+      "beta": NaN,
+      "gamma": NaN,
+      "l0": 4.084181076158017,
+      "b0": NaN,
+      "aic": 244.47038765232224,
+      "aicc": 244.58058048978782,
+      "bic": 252.2865535286601
+    },
+    "series_stats": {
+      "mean": 8.959239130434783,
+      "std": 2.729587899427122,
+      "min": 1.0,
+      "max": 15.0,
+      "start_date": "2024-01-01",
+      "end_date": "2025-01-02"
+    },
+    "model_accuracy": {
+      "alpha": 0.333357246693031,
+      "beta": NaN,
+      "gamma": NaN,
+      "l0": 4.084181076158017,
+      "b0": NaN,
+      "aic": 244.47038765232224,
+      "aicc": 244.58058048978782,
+      "bic": 252.2865535286601
+    }
+  }
+}

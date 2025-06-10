@@ -1,0 +1,133 @@
+{
+  "analysis_id": "tool_utilisation",
+  "timestamp": "20250610_024100",
+  "generated_at": "2025-06-10T02:41:00.259846",
+  "data": {
+    "top_tools": [
+      {
+        "tool_name": "Infusion Pump 1",
+        "util_pct": 0.0,
+        "quantity_available": 1,
+        "quantity_in_use": null,
+        "quantity_total": 1,
+        "category": "Surgical",
+        "status": "low"
+      },
+      {
+        "tool_name": "Defibrillator 330",
+        "util_pct": 0.0,
+        "quantity_available": 1,
+        "quantity_in_use": null,
+        "quantity_total": 1,
+        "category": "Monitoring",
+        "status": "low"
+      },
+      {
+        "tool_name": "Pulse Oximeter 343",
+        "util_pct": 0.0,
+        "quantity_available": 1,
+        "quantity_in_use": null,
+        "quantity_total": 1,
+        "category": "Surgical",
+        "status": "low"
+      },
+      {
+        "tool_name": "Ventilator 342",
+        "util_pct": 0.0,
+        "quantity_available": 1,
+        "quantity_in_use": null,
+        "quantity_total": 1,
+        "category": "Life Support",
+        "status": "low"
+      },
+      {
+        "tool_name": "Stethoscope 341",
+        "util_pct": 0.0,
+        "quantity_available": 1,
+        "quantity_in_use": null,
+        "quantity_total": 1,
+        "category": "Monitoring",
+        "status": "low"
+      },
+      {
+        "tool_name": "Defibrillator 340",
+        "util_pct": 0.0,
+        "quantity_available": 1,
+        "quantity_in_use": null,
+        "quantity_total": 1,
+        "category": "Diagnostic",
+        "status": "low"
+      },
+      {
+        "tool_name": "Pulse Oximeter 339",
+        "util_pct": 0.0,
+        "quantity_available": 1,
+        "quantity_in_use": null,
+        "quantity_total": 1,
+        "category": "Life Support",
+        "status": "low"
+      },
+      {
+        "tool_name": "Ventilator 338",
+        "util_pct": 0.0,
+        "quantity_available": 1,
+        "quantity_in_use": null,
+        "quantity_total": 1,
+        "category": "Life Support",
+        "status": "low"
+      },
+      {
+        "tool_name": "Stethoscope 337",
+        "util_pct": 0.0,
+        "quantity_available": 1,
+        "quantity_in_use": null,
+        "quantity_total": 1,
+        "category": "Life Support",
+        "status": "low"
+      },
+      {
+        "tool_name": "Blood Pressure Monitor 336",
+        "util_pct": 0.0,
+        "quantity_available": 1,
+        "quantity_in_use": null,
+        "quantity_total": 1,
+        "category": "Diagnostic",
+        "status": "low"
+      }
+    ],
+    "summary_statistics": {
+      "total_tools": 500,
+      "avg_utilisation": 0.0,
+      "median_utilisation": 0.0,
+      "max_utilisation": 0.0,
+      "min_utilisation": 0.0,
+      "high_util_tools": 0,
+      "medium_util_tools": 0,
+      "low_util_tools": 500
+    },
+    "utilisation_distribution": [
+      {
+        "range": "Critical (90-100%)",
+        "count": 0,
+        "percentage": 0.0
+      },
+      {
+        "range": "High (80-90%)",
+        "count": 0,
+        "percentage": 0.0
+      },
+      {
+        "range": "Medium (40-80%)",
+        "count": 0,
+        "percentage": 0.0
+      },
+      {
+        "range": "Low (0-40%)",
+        "count": 500,
+        "percentage": 100.0
+      }
+    ],
+    "calculation_method": "total_minus_available",
+    "analysis_timestamp": "2025-06-10T02:41:00.259797"
+  }
+}

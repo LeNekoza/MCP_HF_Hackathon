@@ -699,7 +699,7 @@ class HospitalDashboard {
          const scaleX = (index) => 80 + index * (440 / (data.length - 1));
 
          return `
-             <svg width="100%" height="400" viewBox="0 0 600 300">
+             <svg width="100%" height="400" viewBox="0 0 600 320">
                  <!-- Grid lines -->
                  <defs>
                      <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">
@@ -761,7 +761,7 @@ class HospitalDashboard {
          const barWidth = Math.min(15, (categoryWidth - 10) / yFields.length);
 
          return `
-             <svg width="100%" height="400" viewBox="0 0 600 300">
+             <svg width="100%" height="400" viewBox="0 0 600 320">
                  <!-- Grid lines -->
                  <defs>
                      <pattern id="grid" width="50" height="25" patternUnits="userSpaceOnUse">

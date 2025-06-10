@@ -1,0 +1,11 @@
+analysis_id,has_csv,has_json,csv_size_bytes,json_size_bytes,csv_rows,csv_columns,column_names,generated_at
+tool_utilisation,True,True,608,3349,14,3,"metric, value, type",2025-06-10T02:42:07.882907
+bed_snapshot,True,True,315,312,3,5,"metric, value, timestamp, analysis_id, generated_at",2025-06-10T02:42:07.883320
+average_los,True,True,561,1837,6,9,"ward_type, avg_los_days, median_los_days, std_los_days, min_los_days, max_los_days, total_discharges, analysis_id, generated_at",2025-06-10T02:42:07.884037
+staffing,True,True,267,2613,3,4,"metric, value, analysis_id, generated_at",2025-06-10T02:42:07.884395
+staff_load,True,True,715,2376,10,7,"staff_id, full_name, staff_type, patient_assignments, workload_level, analysis_id, generated_at",2025-06-10T02:42:07.884815
+admission_split,True,True,288,526,4,4,"metric, value, analysis_id, generated_at",2025-06-10T02:42:07.885300
+los_prediction,True,True,579,1768,6,9,"ward_type, avg_los_days, median_los_days, std_los_days, min_los_days, max_los_days, total_discharges, analysis_id, generated_at",2025-06-10T02:42:07.885742
+inventory_expiry,True,True,1125,3573,11,9,"item_name, days_to_expiry, expiry_date, quantity_available, category, urgency, estimated_value, analysis_id, generated_at",2025-06-10T02:42:07.886209
+burn_rate,True,True,7888,25496,100,9,"item_name, current_stock, daily_usage_rate, forecasted_usage, remaining_after_forecast, days_to_expiry, status, analysis_id, generated_at",2025-06-10T02:42:07.887122
+census_forecast,True,True,250,3869,3,5,"date, predicted_occupied_beds, utilisation_pct, analysis_id, generated_at",2025-06-10T02:42:07.887522

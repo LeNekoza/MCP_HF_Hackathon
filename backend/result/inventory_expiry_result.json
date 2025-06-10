@@ -1,0 +1,132 @@
+{
+  "analysis_id": "inventory_expiry",
+  "timestamp": "20250610_024102",
+  "generated_at": "2025-06-10T02:41:02.040877",
+  "data": {
+    "expiring_items": [
+      {
+        "item_name": "Blood Type O- 73",
+        "days_to_expiry": 26,
+        "expiry_date": "2025-07-06",
+        "quantity_available": 1,
+        "category": "General",
+        "urgency": "urgent",
+        "estimated_value": null
+      },
+      {
+        "item_name": "Blood Type O- 77",
+        "days_to_expiry": 31,
+        "expiry_date": "2025-07-11",
+        "quantity_available": 1,
+        "category": "General",
+        "urgency": "watch",
+        "estimated_value": null
+      },
+      {
+        "item_name": "Blood Type O- 61",
+        "days_to_expiry": 34,
+        "expiry_date": "2025-07-14",
+        "quantity_available": 1,
+        "category": "General",
+        "urgency": "watch",
+        "estimated_value": null
+      },
+      {
+        "item_name": "Blood Type O- 19",
+        "days_to_expiry": 36,
+        "expiry_date": "2025-07-16",
+        "quantity_available": 1,
+        "category": "General",
+        "urgency": "watch",
+        "estimated_value": null
+      },
+      {
+        "item_name": "Blood Type A+ 88",
+        "days_to_expiry": 47,
+        "expiry_date": "2025-07-27",
+        "quantity_available": 1,
+        "category": "General",
+        "urgency": "watch",
+        "estimated_value": null
+      },
+      {
+        "item_name": "Blood Type O- 40",
+        "days_to_expiry": 48,
+        "expiry_date": "2025-07-28",
+        "quantity_available": 1,
+        "category": "General",
+        "urgency": "watch",
+        "estimated_value": null
+      },
+      {
+        "item_name": "Blood Type O- 1",
+        "days_to_expiry": 56,
+        "expiry_date": "2025-08-05",
+        "quantity_available": 1,
+        "category": "General",
+        "urgency": "watch",
+        "estimated_value": null
+      },
+      {
+        "item_name": "Blood Type A+ 14",
+        "days_to_expiry": 63,
+        "expiry_date": "2025-08-12",
+        "quantity_available": 1,
+        "category": "General",
+        "urgency": "watch",
+        "estimated_value": null
+      },
+      {
+        "item_name": "Blood Type O- 5",
+        "days_to_expiry": 68,
+        "expiry_date": "2025-08-17",
+        "quantity_available": 1,
+        "category": "General",
+        "urgency": "watch",
+        "estimated_value": null
+      },
+      {
+        "item_name": "Blood Type A+ 16",
+        "days_to_expiry": 72,
+        "expiry_date": "2025-08-21",
+        "quantity_available": 1,
+        "category": "General",
+        "urgency": "watch",
+        "estimated_value": null
+      },
+      {
+        "item_name": "Blood Type O- 99",
+        "days_to_expiry": 82,
+        "expiry_date": "2025-08-31",
+        "quantity_available": 1,
+        "category": "General",
+        "urgency": "watch",
+        "estimated_value": null
+      }
+    ],
+    "summary_statistics": {
+      "total_inventory_items": 100,
+      "items_expiring_within_threshold": 11,
+      "expired_items": 0,
+      "critical_items": 0,
+      "urgent_items": 1,
+      "watch_items": 10,
+      "percentage_expiring": 11.0
+    },
+    "category_breakdown": [],
+    "value_at_risk": 0.0,
+    "alerts": [
+      {
+        "level": "warning",
+        "message": "1 items expiring within 30 days",
+        "action": "Schedule usage or consider redistribution",
+        "count": 1
+      }
+    ],
+    "analysis_parameters": {
+      "days_threshold": 90,
+      "analysis_date": "2025-06-09"
+    },
+    "analysis_timestamp": "2025-06-10T02:41:02.040866"
+  }
+}

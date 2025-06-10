@@ -1,0 +1,22 @@
+{
+  "analysis_id": "admission_split",
+  "timestamp": "20250610_024042",
+  "generated_at": "2025-06-10T02:40:42.539189",
+  "data": {
+    "analysis_period": {
+      "days_analyzed": 14,
+      "start_date": "2025-05-26",
+      "end_date": "2025-06-09",
+      "total_admissions": 0
+    },
+    "overall_split": [],
+    "daily_breakdown": [],
+    "hourly_pattern": [],
+    "summary_stats": {
+      "avg_daily_elective": 0.0,
+      "avg_daily_emergency": 0.0,
+      "peak_elective_hour": 9,
+      "peak_emergency_hour": 0
+    }
+  }
+}

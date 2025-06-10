@@ -1,0 +1,106 @@
+{
+  "analysis_id": "staff_load",
+  "timestamp": "20250610_051856",
+  "generated_at": "2025-06-10T05:18:56.253407",
+  "data": {
+    "top_staff": [
+      {
+        "staff_id": 34,
+        "full_name": "Sarah Smith",
+        "staff_type": null,
+        "patient_assignments": 8,
+        "workload_level": "critical",
+        "assignment_percentage": 5
+      },
+      {
+        "staff_id": 4,
+        "full_name": "Sarah Johnson",
+        "staff_type": null,
+        "patient_assignments": 7,
+        "workload_level": "high",
+        "assignment_percentage": 4
+      },
+      {
+        "staff_id": 46,
+        "full_name": "John Jones",
+        "staff_type": null,
+        "patient_assignments": 7,
+        "workload_level": "high",
+        "assignment_percentage": 4
+      },
+      {
+        "staff_id": 28,
+        "full_name": "Jane Smith",
+        "staff_type": null,
+        "patient_assignments": 6,
+        "workload_level": "high",
+        "assignment_percentage": 4
+      },
+      {
+        "staff_id": 15,
+        "full_name": "David Johnson",
+        "staff_type": null,
+        "patient_assignments": 6,
+        "workload_level": "high",
+        "assignment_percentage": 4
+      },
+      {
+        "staff_id": 14,
+        "full_name": "Jane Smith",
+        "staff_type": null,
+        "patient_assignments": 6,
+        "workload_level": "high",
+        "assignment_percentage": 4
+      },
+      {
+        "staff_id": 19,
+        "full_name": "Sarah Williams",
+        "staff_type": null,
+        "patient_assignments": 5,
+        "workload_level": "high",
+        "assignment_percentage": 3
+      },
+      {
+        "staff_id": 10,
+        "full_name": "Lisa Johnson",
+        "staff_type": null,
+        "patient_assignments": 5,
+        "workload_level": "high",
+        "assignment_percentage": 3
+      },
+      {
+        "staff_id": 25,
+        "full_name": "Sarah Garcia",
+        "staff_type": null,
+        "patient_assignments": 5,
+        "workload_level": "high",
+        "assignment_percentage": 3
+      },
+      {
+        "staff_id": 27,
+        "full_name": "Michael Smith",
+        "staff_type": null,
+        "patient_assignments": 5,
+        "workload_level": "high",
+        "assignment_percentage": 3
+      }
+    ],
+    "summary_statistics": {
+      "total_active_staff": 50,
+      "total_patient_assignments": 161,
+      "avg_assignments_per_staff": 3.2,
+      "max_assignments": 8,
+      "min_assignments": 0,
+      "std_assignments": 1.85
+    },
+    "workload_by_type": [],
+    "alerts": [
+      {
+        "level": "info",
+        "message": "Mock data generated - attendee information not available"
+      }
+    ],
+    "is_mock_data": true,
+    "analysis_timestamp": "2025-06-10T05:18:56.253374"
+  }
+}

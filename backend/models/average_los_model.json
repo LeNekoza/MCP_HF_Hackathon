@@ -1,0 +1,41 @@
+{
+  "analysis_id": "average_los",
+  "timestamp": "20250610_024058",
+  "generated_at": "2025-06-10T02:40:58.347219",
+  "model_data": {
+    "analysis_type": "average_los",
+    "calculation_method": "completed_stays_only",
+    "los_range_filter": "0-365 days",
+    "statistics_computed": [
+      "mean",
+      "median",
+      "std",
+      "count",
+      "min",
+      "max"
+    ],
+    "ward_breakdown": {
+      "total_wards": 6,
+      "wards_analyzed": [
+        "Emergency",
+        "General Ward",
+        "ICU",
+        "Maternity",
+        "Pediatric",
+        "Surgery"
+      ]
+    },
+    "overall_metrics": {
+      "overall_avg_los": 1.9972727272727273,
+      "overall_median_los": 2.0,
+      "overall_std_los": 0.8211223250995583,
+      "total_completed_stays": 1100,
+      "analysis_period_days": 367
+    },
+    "data_quality": {
+      "total_records_processed": 1100,
+      "completed_stays_only": true,
+      "outliers_filtered": true
+    }
+  }
+}

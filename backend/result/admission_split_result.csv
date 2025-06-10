@@ -1,0 +1,5 @@
+metric,value,analysis_id,generated_at
+days_analyzed,14,admission_split,2025-06-10T02:41:06.472507
+start_date,2025-05-26,admission_split,2025-06-10T02:41:06.472507
+end_date,2025-06-09,admission_split,2025-06-10T02:41:06.472507
+total_admissions,0,admission_split,2025-06-10T02:41:06.472507
