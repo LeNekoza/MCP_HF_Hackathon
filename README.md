@@ -1,5 +1,5 @@
 ---
-title: Hospital AI Helper Aid
+title: Health AI Hospital Aid
 emoji: 🏥
 colorFrom: blue
 colorTo: green
@@ -13,7 +13,7 @@ tags:
   - agent-demo-track
 ---
 
-# Hospital AI Helper Aid (H.A.H.A)
+# Health AI Hospital Aid (H.A.H.A)
 
 
 ## 🌟 Inspiration
@@ -22,7 +22,7 @@ The inspiration for H.A.H.A. stems from the COVID-19 pandemic, a time when hospi
 
 ## 🚀 Overview
 
-The Hospital AI Helper Aid (H.A.H.A) is an advanced AI-powered application designed to assist medical professionals and patients within a hospital environment. It features a sophisticated chat interface for medical consultations, real-time access to hospital data through database integration, and an interactive dashboard for visualizing key hospital metrics and forecast data. The system leverages the Model Context Protocol (MCP) for intelligent data handling and integrates with powerful large language models like Nebius Llama 3.3 70B.
+The Health AI Hospital Aid (H.A.H.A) is an advanced AI-powered application designed to assist medical professionals and patients within a hospital environment. It features a sophisticated chat interface for medical consultations, real-time access to hospital data through database integration, and an interactive dashboard for visualizing key hospital metrics and forecast data. The system leverages the Model Context Protocol (MCP) for intelligent data handling and integrates with powerful large language models like Nebius Llama 3.3 70B.
 
 The main interface and application logic are orchestrated within [`src/components/interface.py`](src/components/interface.py).
 
@@ -46,6 +46,19 @@ The main interface and application logic are orchestrated within [`src/component
 - **Database:** PostgreSQL (Neon)
 - **Core Logic:** Model Context Protocol (MCP) integration, custom AI model handlers.
 - **Styling:** Custom CSS for a modern hospital theme.
+
+
+
+### 🎥 Track 1 Demo Video
+
+[https://drive.google.com/file/d/1q-aYIFUFP7zCNOGNUB8_RjZFIYxpNtql/view?usp=sharing]
+
+
+### 🎥 Track 3 Demo Video
+
+[https://drive.google.com/file/d/1M9hF_KJwsNEjAUzL9v2gjQ8e1LlW4V87/view?usp=sharing]
+
+> Comprehensive video walkthrough demonstrating the hospital AI assistant's capabilities, including medical consultations, database queries, dashboard interactions, and real-time data analysis.
 
 ## 📦 MCP Tools/Servers
 
@@ -162,9 +175,6 @@ https://agents-mcp-hackathon-health-ai-hospital-aid.hf.space/?view=api
   ⚠︎ No description provided in function docstring
   - Takes no input parameters
 
-### 🎥 MCP Server Demo Video
-
-[Link to MCP Server Demo Video - Coming Soon]
 
 > Video demonstration showing the MCP server integration using gradio_client showcasing real-time hospital data queries and AI-powered medical consultations.
 
@@ -181,8 +191,6 @@ The primary AI agent powering the medical assistant is the **`meta-llama/Llama-3
   - **Streaming Responses:** Supports streaming of responses for an interactive user experience.
 - **Configuration:** Model parameters like temperature and max tokens are handled within the AI interaction functions in [`src/components/interface.py`](src/components/interface.py).
 
-## 🤖 Agentic Demo
-
 **🏷️ Track 3: Agentic Demo**
 
 H.A.H.A represents a complete agentic application that showcases the power of AI agents in healthcare environments. The system demonstrates:
@@ -193,11 +201,6 @@ H.A.H.A represents a complete agentic application that showcases the power of AI
 - **Statistics and Prediction**: A modern, responsive dashboard built with Gradio, designed to showcase key hospital statistics and predictive analytics. Users can inquire about the dashboard content by tagging @analysis when asking questions.
 - **Multi-modal Interaction**: Seamlessly integrates chat, dashboard visualization, and real-time data
 
-### 🎥 Application Demo Video
-
-[Link to Application Overview Video - Coming Soon]
-
-> Comprehensive video walkthrough demonstrating the hospital AI assistant's capabilities, including medical consultations, database queries, dashboard interactions, and real-time data analysis.
 
 ### 🏥 Use Cases Demonstrated
 
