@@ -8,6 +8,9 @@ sdk_version: 5.33.0
 app_file: app.py
 pinned: false
 license: mit
+tags:
+  - mcp-server-track
+  - agent-demo-track
 ---
 
 # Hospital AI Helper Aid (H.A.H.A)
@@ -41,6 +44,8 @@ The main interface and application logic are orchestrated within [`src/component
 
 ## 📦 MCP Tools/Servers
 
+**🏷️ Track 1: MCP Server / Tool**
+
 This project implements a **Model Context Protocol (MCP) Database Integration** to enable the AI assistant to interact with a live hospital database.
 *   **Core Engine:** The integration involves components like [`src/models/mcp_handler.py`](src/models/mcp_handler.py) and `src/services/advanced_database_mcp.py`.
     *   **Intent Recognition:** The system parses user queries to determine if they relate to database information (e.g., patient lookup, room status).
@@ -58,6 +63,74 @@ The user interface is built using Gradio, with several custom components and lay
 *   **Dynamic Loading Indicators:** Implemented within the `stream_response` function in [`src/components/interface.py`](src/components/interface.py). These are HTML snippets injected into the chat history to show messages like "🤔 Thinking...", "🗄️ Querying the database...", providing real-time feedback.
 *   **CSS Styling:** Extensive custom CSS is loaded via the [`load_modern_hospital_css`](src/components/interface.py) function (which reads from [`static/css/styles.css`](static/css/styles.css)) to achieve a unique "modern hospital" theme, overriding default Gradio styles.
 
+## 📡 MCP Server Configuration
+
+This project provides a Model Context Protocol (MCP) server configured for seamless integration and communication with clients supporting Server-Sent Events (SSE) and standard input/output (stdio).
+
+### 🔗 MCP Server URL
+
+```
+http://localhost:7860/gradio_api/mcp/sse
+```
+
+### 🧰 Available MCP Tools
+
+* **stream\_response\_with\_state**
+  Streams AI-generated responses, updating the relevant chat states.
+
+* **stream\_response\_with\_state\_**
+  Variant streaming response handler with state management.
+
+* **handle\_helpline\_with\_state**
+  Manages helpline interactions, maintaining the conversation state throughout.
+
+* **handle\_tool\_selection**
+  Facilitates the selection and handling of tools via dropdown, managing separate chat flows.
+
+* **\<lambda>**
+  Delivers a welcoming assistant message introducing the system's capabilities, including medical guidance, hospital support, health monitoring, and emergency assistance.
+
+### 🎥 MCP Server Demo Video
+
+[Link to MCP Server Demo Video - Coming Soon]
+> Video demonstration showing the MCP server integration with Claude Desktop/Cursor, showcasing real-time hospital data queries and AI-powered medical consultations.
+
+### 🛠️ Integration Instructions
+
+To integrate this MCP server with SSE-compatible clients (e.g., Cursor, Windsurf, Cline), add the following to your MCP configuration:
+
+```json
+{
+  "mcpServers": {
+    "gradio": {
+      "url": "http://localhost:7860/gradio_api/mcp/sse"
+    }
+  }
+}
+```
+
+### 🧪 Experimental stdio Support
+
+For clients limited to standard input/output protocols, first ensure Node.js is installed, then integrate using:
+
+```json
+{
+  "mcpServers": {
+    "gradio": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "http://localhost:7860/gradio_api/mcp/sse",
+        "--transport",
+        "sse-only"
+      ]
+    }
+  }
+}
+```
+
+This setup ensures broader compatibility and flexibility across various client types and integration scenarios.
+
 ## 🤖 AI Agent
 
 The primary AI agent powering the medical assistant is the **`meta-llama/Llama-3.3-70B-Instruct`** model, accessed via the Nebius API.
@@ -68,6 +141,30 @@ The primary AI agent powering the medical assistant is the **`meta-llama/Llama-3
     *   **Data Analysis & Presentation:** When provided with data from the hospital database (via the `stream_response` logic in [`src/components/interface.py`](src/components/interface.py)), the AI analyzes this information in conjunction with the user's query. It then generates a comprehensive response including structured data, medical analysis, LaTeX formatting, and recommendations. This process is outlined in the `enhanced_prompt` logic within `stream_response` and [`handle_ai_response`](src/components/interface.py).
     *   **Streaming Responses:** Supports streaming of responses for an interactive user experience.
 *   **Configuration:** Model parameters like temperature and max tokens are handled within the AI interaction functions in [`src/components/interface.py`](src/components/interface.py).
+
+## 🤖 Agentic Demo
+
+**🏷️ Track 3: Agentic Demo**
+
+H.A.H.A represents a complete agentic application that showcases the power of AI agents in healthcare environments. The system demonstrates:
+
+- **Intelligent Medical Consultation Agent**: Provides contextual medical advice and information
+- **Database Query Agent**: Translates natural language queries into structured database operations
+- **Data Analysis Agent**: Processes hospital data to provide insights and recommendations
+- **Multi-modal Interaction**: Seamlessly integrates chat, dashboard visualization, and real-time data
+
+### 🎥 Application Demo Video
+
+[Link to Application Overview Video - Coming Soon]
+> Comprehensive video walkthrough demonstrating the hospital AI assistant's capabilities, including medical consultations, database queries, dashboard interactions, and real-time data analysis.
+
+### 🏥 Use Cases Demonstrated
+
+1. **Patient Information Lookup**: Natural language queries for patient records and medical history
+2. **Room Management**: Real-time room occupancy and availability tracking
+3. **Staff Coordination**: Staff scheduling and availability management
+4. **Medical Consultation**: AI-powered medical guidance and information
+5. **Emergency Response**: Quick access to critical hospital information during emergencies
 
 ## 📁 Project Structure
 
