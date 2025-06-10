@@ -1,0 +1,11 @@
+staff_id,full_name,staff_type,patient_assignments,workload_level,analysis_id,generated_at
+19,Sarah Williams,,9,critical,staff_load,2025-06-10T02:41:06.478810
+35,Jane Smith,,7,high,staff_load,2025-06-10T02:41:06.478810
+7,Lisa Jones,,7,high,staff_load,2025-06-10T02:41:06.478810
+40,Lisa Brown,,6,high,staff_load,2025-06-10T02:41:06.478810
+47,Michael Johnson,,5,normal,staff_load,2025-06-10T02:41:06.478810
+5,Lisa Brown,,5,normal,staff_load,2025-06-10T02:41:06.478810
+30,John Garcia,,5,normal,staff_load,2025-06-10T02:41:06.478810
+31,David Jones,,5,normal,staff_load,2025-06-10T02:41:06.478810
+23,Jane Smith,,5,normal,staff_load,2025-06-10T02:41:06.478810
+1,John Garcia,,4,normal,staff_load,2025-06-10T02:41:06.478810

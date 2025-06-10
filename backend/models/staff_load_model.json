@@ -1,0 +1,9 @@
+{
+  "analysis_id": "staff_load",
+  "timestamp": "20250610_051856",
+  "generated_at": "2025-06-10T05:18:56.254264",
+  "model_data": {
+    "analysis_type": "staff_load",
+    "data_source": "mock_generated"
+  }
+}

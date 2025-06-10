@@ -1,0 +1,55 @@
+{
+  "analysis_id": "burn_rate",
+  "timestamp": "20250610_024048",
+  "generated_at": "2025-06-10T02:40:48.111560",
+  "model_data": {
+    "analysis_type": "burn_rate",
+    "forecast_parameters": {
+      "forecast_days": 7,
+      "usage_estimation_method": "item_type_based",
+      "restock_threshold_pct": 20,
+      "expiry_warning_days": 7
+    },
+    "usage_rate_model": {
+      "high_usage_items": [
+        "syringe",
+        "needle",
+        "glove"
+      ],
+      "medium_usage_items": [
+        "bandage",
+        "gauze",
+        "tape"
+      ],
+      "moderate_usage_items": [
+        "medication",
+        "drug",
+        "tablet"
+      ],
+      "low_usage_items": [
+        "equipment",
+        "device",
+        "monitor"
+      ],
+      "base_rates": {
+        "high_usage": 5.0,
+        "medium_usage": 3.0,
+        "moderate_usage": 2.0,
+        "low_usage": 0.1,
+        "default": 0.5
+      }
+    },
+    "status_thresholds": {
+      "critical": "remaining_after_forecast <= 0",
+      "low_stock": "quantity <= 20% of current",
+      "expiring_soon": "days_to_expiry <= forecast_days",
+      "watch": "remaining_after_forecast <= 30% of current"
+    },
+    "forecast_quality": {
+      "total_items_analyzed": 100,
+      "items_with_expiry_dates": 44,
+      "average_daily_usage": 0.005091849221459535,
+      "total_forecasted_consumption": 3.564294455021675
+    }
+  }
+}

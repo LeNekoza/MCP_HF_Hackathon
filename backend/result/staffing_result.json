@@ -1,0 +1,101 @@
+{
+  "analysis_id": "staffing",
+  "timestamp": "20250610_024054",
+  "generated_at": "2025-06-10T02:40:54.441593",
+  "data": {
+    "forecast_period_days": 3,
+    "current_date": "2025-06-09",
+    "current_occupancy": {},
+    "current_staff": {
+      "by_type": {
+        "nurses": 100,
+        "doctors": 100,
+        "support_staff": 0,
+        "admin_staff": 0
+      },
+      "total_staff": 200,
+      "analysis_date": "2025-06-09"
+    },
+    "daily_forecasts": [
+      {
+        "date": "2025-06-09",
+        "day_of_week": "Monday",
+        "ward_requirements": {},
+        "total_requirements": {
+          "nurses_day": 0,
+          "nurses_night": 0,
+          "doctors": 0,
+          "support_staff": 0,
+          "total_patients": 0
+        }
+      },
+      {
+        "date": "2025-06-10",
+        "day_of_week": "Tuesday",
+        "ward_requirements": {},
+        "total_requirements": {
+          "nurses_day": 0,
+          "nurses_night": 0,
+          "doctors": 0,
+          "support_staff": 0,
+          "total_patients": 0
+        }
+      },
+      {
+        "date": "2025-06-11",
+        "day_of_week": "Wednesday",
+        "ward_requirements": {},
+        "total_requirements": {
+          "nurses_day": 0,
+          "nurses_night": 0,
+          "doctors": 0,
+          "support_staff": 0,
+          "total_patients": 0
+        }
+      }
+    ],
+    "recommendations": [
+      {
+        "type": "surplus",
+        "staff_category": "nurses",
+        "current": 100,
+        "required": 0,
+        "surplus": 100,
+        "priority": "low",
+        "message": "Potential nurse surplus: 100 nurses above forecast needs"
+      }
+    ],
+    "staffing_ratios_used": {
+      "ICU": {
+        "nurse_patient_ratio_day": 1.0,
+        "nurse_patient_ratio_night": 1.5,
+        "doctor_patient_ratio": 4.0,
+        "support_patient_ratio": 8.0
+      },
+      "Emergency": {
+        "nurse_patient_ratio_day": 2.0,
+        "nurse_patient_ratio_night": 3.0,
+        "doctor_patient_ratio": 6.0,
+        "support_patient_ratio": 12.0
+      },
+      "General": {
+        "nurse_patient_ratio_day": 4.0,
+        "nurse_patient_ratio_night": 6.0,
+        "doctor_patient_ratio": 10.0,
+        "support_patient_ratio": 15.0
+      },
+      "Pediatric": {
+        "nurse_patient_ratio_day": 3.0,
+        "nurse_patient_ratio_night": 4.0,
+        "doctor_patient_ratio": 8.0,
+        "support_patient_ratio": 12.0
+      },
+      "Maternity": {
+        "nurse_patient_ratio_day": 3.0,
+        "nurse_patient_ratio_night": 4.0,
+        "doctor_patient_ratio": 8.0,
+        "support_patient_ratio": 12.0
+      }
+    }
+  }
+}

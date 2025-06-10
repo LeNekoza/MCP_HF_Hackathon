@@ -1,0 +1,4 @@
+metric,value,timestamp,analysis_id,generated_at
+total_occupied,0.0,2025-06-09T21:10:31.524786,bed_snapshot,2025-06-10T02:41:06.470749
+total_capacity,0.0,2025-06-09T21:10:31.524786,bed_snapshot,2025-06-10T02:41:06.470749
+overall_utilisation_pct,0.0,2025-06-09T21:10:31.524786,bed_snapshot,2025-06-10T02:41:06.470749

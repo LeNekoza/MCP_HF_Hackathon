@@ -1,0 +1,71 @@
+{
+  "analysis_id": "average_los",
+  "timestamp": "20250610_024058",
+  "generated_at": "2025-06-10T02:40:58.345024",
+  "data": {
+    "ward_statistics": [
+      {
+        "ward_type": "Emergency",
+        "avg_los_days": 1.99,
+        "median_los_days": 2.0,
+        "std_los_days": 0.85,
+        "min_los_days": 1.0,
+        "max_los_days": 3.0,
+        "total_discharges": 236
+      },
+      {
+        "ward_type": "General Ward",
+        "avg_los_days": 1.95,
+        "median_los_days": 2.0,
+        "std_los_days": 0.81,
+        "min_los_days": 1.0,
+        "max_los_days": 3.0,
+        "total_discharges": 112
+      },
+      {
+        "ward_type": "ICU",
+        "avg_los_days": 1.93,
+        "median_los_days": 2.0,
+        "std_los_days": 0.76,
+        "min_los_days": 1.0,
+        "max_los_days": 3.0,
+        "total_discharges": 56
+      },
+      {
+        "ward_type": "Maternity",
+        "avg_los_days": 2.0,
+        "median_los_days": 2.0,
+        "std_los_days": 0.87,
+        "min_los_days": 1.0,
+        "max_los_days": 3.0,
+        "total_discharges": 9
+      },
+      {
+        "ward_type": "Pediatric",
+        "avg_los_days": 2.06,
+        "median_los_days": 2.0,
+        "std_los_days": 0.81,
+        "min_los_days": 1.0,
+        "max_los_days": 3.0,
+        "total_discharges": 429
+      },
+      {
+        "ward_type": "Surgery",
+        "avg_los_days": 1.94,
+        "median_los_days": 2.0,
+        "std_los_days": 0.83,
+        "min_los_days": 1.0,
+        "max_los_days": 3.0,
+        "total_discharges": 258
+      }
+    ],
+    "overall_statistics": {
+      "overall_avg_los": 1.9972727272727273,
+      "overall_median_los": 2.0,
+      "overall_std_los": 0.8211223250995583,
+      "total_completed_stays": 1100,
+      "analysis_period_days": 367
+    },
+    "analysis_timestamp": "2025-06-10T02:40:58.344994"
+  }
+}

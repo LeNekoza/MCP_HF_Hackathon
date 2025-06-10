@@ -1,0 +1,33 @@
+{
+  "analysis_id": "tool_utilisation",
+  "timestamp": "20250610_024100",
+  "generated_at": "2025-06-10T02:41:00.263274",
+  "model_data": {
+    "analysis_type": "tool_utilisation",
+    "calculation_method": "total_minus_available",
+    "top_n_analyzed": 10,
+    "utilisation_formula": "(quantity_total - quantity_available) / quantity_total * 100",
+    "status_thresholds": {
+      "critical": "90-100%",
+      "high": "80-90%",
+      "medium": "40-80%",
+      "low": "0-40%"
+    },
+    "data_quality": {
+      "total_tools_analyzed": 500,
+      "has_quantity_in_use": false,
+      "has_quantity_total": true,
+      "calculation_reliability": "medium"
+    },
+    "summary_insights": {
+      "total_tools": 500,
+      "avg_utilisation": 0.0,
+      "median_utilisation": 0.0,
+      "max_utilisation": 0.0,
+      "min_utilisation": 0.0,
+      "high_util_tools": 0,
+      "medium_util_tools": 0,
+      "low_util_tools": 500
+    }
+  }
+}

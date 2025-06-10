@@ -1,0 +1,919 @@
+{
+  "analysis_id": "burn_rate",
+  "timestamp": "20250610_024048",
+  "generated_at": "2025-06-10T02:40:48.108506",
+  "data": {
+    "forecast_period_days": 7,
+    "forecast_date": "2025-06-09",
+    "items": [
+      {
+        "item_name": "Blood Type O- 1",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.06,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 57,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 2",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 285,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 3",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 4",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 283,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 5",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 69,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 6",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 195,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 7",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.05,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 8",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 160,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 9",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 179,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 10",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 11",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 12",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.02,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 13",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 14",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 64,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 15",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.06,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 16",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 73,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 17",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 18",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 19",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 37,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 20",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.02,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 189,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 21",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.05,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 316,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 22",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 205,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 23",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 24",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 359,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 25",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.05,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 195,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 26",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.05,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 27",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 215,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 28",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 29",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 259,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 30",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 31",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.05,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 32",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 304,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 33",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 34",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 35",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.05,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 246,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 36",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 37",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 38",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 39",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 40",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 49,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 41",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 42",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 43",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 109,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 44",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 45",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 46",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 157,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 47",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 118,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 48",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.05,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 49",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 50",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 51",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.02,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 52",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 53",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 332,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 54",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 55",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 56",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 57",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 58",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 59",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 353,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 60",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 354,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 61",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 35,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 62",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 63",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 356,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 64",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 65",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 317,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 66",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 67",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 299,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 68",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 69",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 339,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 70",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 71",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 72",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 73",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.05,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 27,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 74",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 75",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 76",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 77",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 32,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 78",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 79",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 183,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 80",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 81",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 124,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 82",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 123,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 83",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 84",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 151,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 85",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 224,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 86",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 87",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 88",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 48,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 89",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 90",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 289,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 91",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.02,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 92",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 93",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 94",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 126,
+        "status": "normal"
+      },
+      {
+        "item_name": "Oxygen Tank 95",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type A+ 96",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 251,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 97",
+        "current_stock": 1,
+        "daily_usage_rate": 0.01,
+        "forecasted_usage": 0.04,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 338,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 98",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.02,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      },
+      {
+        "item_name": "Blood Type O- 99",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": 83,
+        "status": "normal"
+      },
+      {
+        "item_name": "Medical Supplies 100",
+        "current_stock": 1,
+        "daily_usage_rate": 0.0,
+        "forecasted_usage": 0.03,
+        "remaining_after_forecast": 1,
+        "days_to_expiry": null,
+        "status": "normal"
+      }
+    ],
+    "summary": {
+      "total_items": 100,
+      "critical_items": 0,
+      "expiring_items": 0,
+      "low_stock_items": 0,
+      "items_needing_attention": 0
+    },
+    "alerts": []
+  }
+}

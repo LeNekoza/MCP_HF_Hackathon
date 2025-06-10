@@ -117,16 +117,11 @@ class GradioReloader(FileSystemEventHandler):
         try:
             for line in iter(self.process.stdout.readline, ""):
                 if line.strip():
-                    # Filter out excessive Gradio logs
-                    if not any(
-                        noise in line.lower()
-                        for noise in ["running on", "to create a public link"]
-                    ):
-                        print(f"📱 {line.strip()}")
+                    print(f"📱 {line.strip()}")
 
-                        # Check for server ready message
-                        if "running on local url" in line.lower():
-                            print("🌐 Server is ready!")
+                    # Check for server ready message
+                    if "running on local url" in line.lower():
+                        print("🌐 Server is ready!")
 
         except Exception as e:
             print(f"⚠️  Output monitoring error: {e}")

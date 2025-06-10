@@ -8,391 +8,296 @@ sdk_version: 5.33.0
 app_file: app.py
 pinned: false
 license: mit
+tags:
+  - mcp-server-track
+  - agent-demo-track
 ---
 
-# MCP HF Hackathon - Hospital AI Helper Aid
+# Hospital AI Helper Aid (H.A.H.A)
 
-## 🚀 Model Context Protocol Integration with Hugging Face
 
-This project is part of the MCP (Model Context Protocol) Hugging Face Hackathon, showcasing innovative AI model interactions through a modern Gradio-based web interface.
+## 🌟 Inspiration
 
-## 🎯 Project Overview
+The inspiration for H.A.H.A. stems from the COVID-19 pandemic, a time when hospitals across the globe faced overwhelming pressure and resource mismanagement. We remember vividly how many medical institutions struggled to allocate and monitor critical supplies like oxygen bags, beds, and staff in real time. This project is our response to that crisis — aiming to empower hospitals with intelligent, data-driven tools to streamline operations, enhance patient care, and ensure that vital resources are used efficiently during both everyday operations and emergencies.
 
-Our application leverages the Model Context Protocol to create seamless interactions between different AI models from Hugging Face, providing users with an intuitive interface for model experimentation and comparison.
+## 🚀 Overview
+
+The Hospital AI Helper Aid (H.A.H.A) is an advanced AI-powered application designed to assist medical professionals and patients within a hospital environment. It features a sophisticated chat interface for medical consultations, real-time access to hospital data through database integration, and an interactive dashboard for visualizing key hospital metrics and forecast data. The system leverages the Model Context Protocol (MCP) for intelligent data handling and integrates with powerful large language models like Nebius Llama 3.3 70B.
+
+The main interface and application logic are orchestrated within [`src/components/interface.py`](src/components/interface.py).
 
 ## ✨ Features
 
-- **Multi-Model Support**: Integration with various Hugging Face models
-- **Interactive Web Interface**: Built with Gradio for ease of use
-- **Model Context Protocol**: Advanced context management capabilities
-- **Real-time Processing**: Streaming responses and live updates
-- **Configurable Settings**: Customizable model parameters
-- **Comprehensive Logging**: Detailed application monitoring
+- **AI-Powered Medical Consultations:** Provides medical information, guidance, and advice through an intelligent chat interface.
+- **Real-time Database Integration:** Connects to a hospital database (Neon PostgreSQL) to fetch and display live data on patients, rooms, staff, and inventory. This is primarily handled by `src/services/advanced_database_mcp.py` and integrated into the chat flow in [`src/components/interface.py`](src/components/interface.py).
+- **Interactive Dashboard:** A modern, responsive dashboard built with Gradio, designed to showcase key hospital statistics and predictive analytics. Users can inquire about the dashboard content by tagging @analysis when asking questions.
+- **Natural Language Queries:** Users can query the database using plain English; the system fetches relevant data which is then analyzed by the AI.
+- **AI-Enhanced Data Analysis:** Database results are processed by the AI to provide contextual insights, summaries, and professional formatting, as seen in the `stream_response` function within [`src/components/interface.py`](src/components/interface.py).
+- **LaTeX Formatting:** Medical values (e.g., blood pressure, BMI, dosages) are rendered using LaTeX for clarity and professionalism, facilitated by [`src/utils/latex_formatter.py`](src/utils/latex_formatter.py).
+- **Streaming Responses & Loading Indicators:** Enhanced user experience with real-time streaming of AI responses and dynamic loading indicators (e.g., "🤔 Thinking...", "🗄️ Querying the database...") during processing, implemented in the `stream_response` function in [`src/components/interface.py`](src/components/interface.py).
+- **Contextual Chat History:** Maintains conversation context for seamless interactions, managed within the Gradio interface logic.
+- **Secure Configuration:** Manages sensitive credentials securely using environment variables (`.env`).
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Gradio (Python-based web interface)
-- **Backend**: Python with MCP integration
-- **AI Models**: Hugging Face Transformers
-- **Configuration**: JSON-based configuration management
-- **Testing**: Pytest framework
-- **Logging**: Python logging with file and console output
+- **Backend:** Python
+- **Web Interface:** Gradio
+- **AI Model Provider:** Nebius (specifically `meta-llama/Llama-3.3-70B-Instruct`)
+- **Database:** PostgreSQL (Neon)
+- **Core Logic:** Model Context Protocol (MCP) integration, custom AI model handlers.
+- **Styling:** Custom CSS for a modern hospital theme.
 
-## 📦 Installation
+## 📦 MCP Tools/Servers
 
-1. **Clone the repository**:
+**🏷️ Track 1: MCP Server / Tool**
 
-   ```powershell
-   git clone <repository-url>
-   cd MCP_HF_Hackathon
-   ```
+This project implements a **Model Context Protocol (MCP) Database Integration** to enable the AI assistant to interact with a live hospital database.
 
-2. **Create virtual environment**:
+- **Core Engine:** The integration involves components like [`src/models/mcp_handler.py`](src/models/mcp_handler.py) and `src/services/advanced_database_mcp.py`.
+  - **Intent Recognition:** The system parses user queries to determine if they relate to database information (e.g., patient lookup, room status).
+  - **Data Retrieval & AI Analysis:** Instead of directly generating SQL and returning raw data, the system fetches data based on the user's intent. This data is then passed to the AI model along with the original user query. The AI analyzes the data, provides insights, and formats the response professionally. This flow is implemented in the `stream_response` and [`handle_ai_response`](src/components/interface.py) functions within [`src/components/interface.py`](src/components/interface.py).
+- **Seamless Chatbot Integration:** The main interface in [`src/components/interface.py`](src/components/interface.py) automatically detects if a user's query should involve database interaction, fetches data, and then uses the AI to present a comprehensive, analyzed response.
 
-   ```powershell
-   python -m venv venv
-   .\venv\Scripts\Activate.ps1
-   ```
+## 📡 MCP Server Configuration
 
-3. **Install dependencies**:
+This project provides a Model Context Protocol (MCP) server configured for seamless integration and communication with clients supporting Server-Sent Events (SSE) and standard input/output (stdio).
 
-   ```powershell
-   pip install -r requirements.txt
-   ```
+### 🔗 MCP Server URL
 
-4. **Set up configuration**:
+```
+https://agents-mcp-hackathon-health-ai-hospital-aid.hf.space/gradio_api/mcp/sse
+```
 
-   - Review and modify `config/app_config.json` as needed
-   - **Set up database credentials** (see Database Setup section below)
-   - Set environment variables if required (see Configuration section)
+Visit below link on how to use MCP tools
+```
+https://agents-mcp-hackathon-health-ai-hospital-aid.hf.space/?view=api
+```
 
-5. **Configure database access**:
+### 🧰 Available MCP Tools
 
-   ```powershell
-   # Option 1: Environment variables (recommended)
-   Copy-Item .env.template .env
-   # Edit .env with your Neon database credentials
+- **health_ai_hospital_aid_stream_response_with_state**
+  Stream response and update appropriate chat state
 
-   # Option 2: Configuration file (development)
-   Copy-Item neon_config.template.json neon_config.json
-   # Edit neon_config.json with your credentials
-   ```
+  - message (string)
+  - history (array)
 
-## 🚀 Quick Start
+- **health_ai_hospital_aid_stream_response_with_state\_**
+  Stream response and update appropriate chat state
 
-1. **Run the application**:
+  - message (string)
+  - history (array)
 
-   ```powershell
-   python app.py
-   ```
+- **health_ai_hospital_aid_handle_helpline_with_state**
+  Handle helpline with state management
 
-2. **Open your browser** and navigate to:
+  - Takes no input parameters
 
-   ```
-   http://localhost:7860
-   ```
+- **health_ai_hospital_aid_handle_tool_selection**
+  Handle tool selection from dropdown with separate chat flows
 
-3. **Start interacting** with the AI models through the web interface!
+  - tool_name (string, default: "Main Chat")
+  - current_chat (array)
 
-## ⚙️ Configuration
+- **health_ai_hospital_aid_patients_next_page**
+  Go to next page for patients
 
-The application can be configured through:
+  - Takes no input parameters
 
-### Configuration File
+- **health_ai_hospital_aid_patients_prev_page**
+  Go to previous page for patients
 
-Edit `config/app_config.json` to customize:
+  - Takes no input parameters
 
-- Server settings (host, port)
-- Default model selection
-- Model parameters (temperature, max tokens)
-- MCP protocol settings
+- **health_ai_hospital_aid_refresh_patients**
+  Refresh patients table with latest data for given page
 
-### Environment Variables
+  - Takes no input parameters
 
-- `PORT`: Override server port
-- `DEBUG`: Enable/disable debug mode
-- `SHARE`: Enable/disable Gradio sharing
+- **health_ai_hospital_aid_staff_next_page**
+  Go to next page for staff
 
-## 🏗️ Project Structure
+  - Takes no input parameters
+
+- **health_ai_hospital_aid_staff_prev_page**
+  Go to previous page for staff
+
+  - Takes no input parameters
+
+- **health_ai_hospital_aid_refresh_staff**
+  Refresh staff table with latest data for given page
+
+  - Takes no input parameters
+
+- **health_ai_hospital_aid_rooms_next_page**
+  Go to next page for rooms
+
+  - Takes no input parameters
+
+- **health_ai_hospital_aid_rooms_prev_page**
+  Go to previous page for rooms
+
+  - Takes no input parameters
+
+- **health_ai_hospital_aid_refresh_rooms**
+  Refresh rooms table with latest data for given page
+
+  - Takes no input parameters
+
+- **health_ai_hospital_aid_equipment_next_page**
+  Go to next page for equipment
+
+  - Takes no input parameters
+
+- **health_ai_hospital_aid_equipment_prev_page**
+  Go to previous page for equipment
+
+  - Takes no input parameters
+
+- **health_ai_hospital_aid_refresh_equipment**
+  Refresh equipment table with latest data for given page
+
+  - Takes no input parameters
+
+- **health_ai_hospital_aid_\<lambda>**
+  ⚠︎ No description provided in function docstring
+  - Takes no input parameters
+
+### 🎥 MCP Server Demo Video
+
+[Link to MCP Server Demo Video - Coming Soon]
+
+> Video demonstration showing the MCP server integration using gradio_client showcasing real-time hospital data queries and AI-powered medical consultations.
+
+
+## 🤖 AI Agent
+
+The primary AI agent powering the medical assistant is the **`meta-llama/Llama-3.3-70B-Instruct`** model, accessed via the Nebius API.
+
+- **Integration:** Managed through the [`NebiusModel`](src/models/nebius_model.py) class, which is initialized and used in [`src/components/interface.py`](src/components/interface.py).
+- **Capabilities:**
+  - **Medical Consultation:** Answers health-related questions and provides medical information.
+  - **Chat Completion:** Engages in natural conversations, maintaining context.
+  - **Data Analysis & Presentation:** When provided with data from the hospital database (via the `stream_response` logic in [`src/components/interface.py`](src/components/interface.py)), the AI analyzes this information in conjunction with the user's query. It then generates a comprehensive response including structured data, medical analysis, LaTeX formatting, and recommendations. This process is outlined in the `enhanced_prompt` logic within `stream_response` and [`handle_ai_response`](src/components/interface.py).
+  - **Streaming Responses:** Supports streaming of responses for an interactive user experience.
+- **Configuration:** Model parameters like temperature and max tokens are handled within the AI interaction functions in [`src/components/interface.py`](src/components/interface.py).
+
+## 🤖 Agentic Demo
+
+**🏷️ Track 3: Agentic Demo**
+
+H.A.H.A represents a complete agentic application that showcases the power of AI agents in healthcare environments. The system demonstrates:
+
+- **Intelligent Medical Consultation Agent**: Provides contextual medical advice and information
+- **Database Query Agent**: Translates natural language queries into structured database operations
+- **Data Analysis Agent**: Processes hospital data to provide insights and recommendations
+- **Statistics and Prediction**: A modern, responsive dashboard built with Gradio, designed to showcase key hospital statistics and predictive analytics. Users can inquire about the dashboard content by tagging @analysis when asking questions.
+- **Multi-modal Interaction**: Seamlessly integrates chat, dashboard visualization, and real-time data
+
+### 🎥 Application Demo Video
+
+[Link to Application Overview Video - Coming Soon]
+
+> Comprehensive video walkthrough demonstrating the hospital AI assistant's capabilities, including medical consultations, database queries, dashboard interactions, and real-time data analysis.
+
+### 🏥 Use Cases Demonstrated
+
+1. **Patient Information Lookup**: Natural language queries for patient records and medical history
+2. **Room Management**: Real-time room occupancy and availability tracking
+3. **Staff Coordination**: Staff scheduling and availability management
+4. **Medical Consultation**: AI-powered medical guidance and information
+5. **Emergency Response**: Quick access to critical hospital information during emergencies
+
+## 📁 Project Structure
+
+A brief overview of the project structure:
 
 ```
 MCP_HF_Hackathon/
-├── app.py                        # Main application entry point
-├── requirements.txt              # Python dependencies
-├── README.md                     # This file
-├── SECURITY.md                   # Database security guidelines
-├── IMPORT_SUCCESS_REPORT.md      # Hospital data import documentation
-├── secure_config.py              # Secure database configuration loader
-├── .env.template                 # Environment variables template
-├── neon_config.template.json     # Database config template
-├── create_schema_only.py         # Database schema creation utility
-├── generate_sql.py               # SQL generation utility
-├── config/                       # Configuration files
-│   └── app_config.json          # Main app configuration
-├── hospital_data_final/          # Hospital CSV data (8,010+ records)
-│   ├── users.csv                # User accounts (3,210 rows)
-│   ├── patient_records.csv      # Patient records (3,000 rows)
-│   ├── occupancy.csv            # Room occupancy (1,100 rows)
-│   ├── tools.csv                # Medical tools (500 rows)
-│   ├── rooms.csv                # Hospital rooms (150 rows)
-│   ├── hospital_inventory.csv   # Inventory (100 rows)
-│   └── storage_rooms.csv        # Storage rooms (50 rows)
+├── [`app.py`](app.py )                          # Main application entry point
+├── [`dev_server.py`](dev_server.py )            # Development server
+├── [`requirements.txt`](requirements.txt )      # Python dependencies
+├── [`README.md`](README.md )                    # Readme file
 ├── src/                          # Source code
-│   ├── components/              # UI components
-│   │   └── interface.py         # Main Gradio interface
-│   ├── models/                  # Model handlers
-│   │   └── mcp_handler.py       # MCP protocol handler
-│   ├── utils/                   # Utility functions
-│   │   ├── config.py            # Configuration utilities
-│   │   ├── helpers.py           # Helper functions
-│   │   └── logger.py            # Logging setup
-│   └── api/                     # API endpoints (future)
-├── static/                       # Static assets
-│   ├── css/                     # Custom stylesheets
-│   ├── js/                      # JavaScript files
-│   └── images/                  # Image assets
-├── templates/                    # HTML templates (if needed)
-├── tests/                        # Test files
-│   ├── unit/                    # Unit tests
-│   └── integration/             # Integration tests
-├── data/                         # Data storage
-├── docs/                         # Documentation
-└── logs/                         # Application logs (created at runtime)
+│   ├── components/               # UI components
+│   │   └── [`src/components/interface.py`](src/components/interface.py )          # Main Gradio interface
+│   ├── models/                   # AI Model handlers
+│   │   ├── mcp_handler.py        # MCP protocol handler
+│   │   └── nebius_model.py       # Nebius AI model wrapper
+│   ├── services/                 # Business logic services
+│   └── utils/                    # Utility functions
+├── static/                       # Static assets (CSS, JS)
+├── docs/                         # Project documentation
+└── tests/                        # Test files
 ```
 
-## 🧪 Testing
-
-Run the test suite:
-
-```powershell
-# Run all tests
-pytest
-
-# Run specific test categories
-pytest tests/unit/
-pytest tests/integration/
-
-# Run with coverage
-pytest --cov=src tests/
-```
-
-## 🔧 Development
-
-### Adding New Models
-
-1. Update the model list in `config/app_config.json`
-2. Modify the `MCPHandler` class in `src/models/mcp_handler.py`
-3. Add model-specific configurations as needed
-
-### Customizing the Interface
-
-1. Edit `src/components/interface.py` to modify the Gradio interface
-2. Add custom CSS in the `load_custom_css()` function
-3. Update static assets in the `static/` directory
-
-### Adding New Features
-
-1. Create new modules in the appropriate `src/` subdirectories
-2. Update the main `app.py` file to integrate new features
-3. Add corresponding tests in the `tests/` directory
-
-## 📊 Monitoring and Logs
-
-- Application logs are stored in the `logs/` directory
-- Log level can be configured in the application settings
-- Real-time status updates are available in the web interface
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Make your changes and add tests
-4. Commit your changes: `git commit -am 'Add feature'`
-5. Push to the branch: `git push origin feature-name`
-6. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🏆 Hackathon Information
-
-This project was developed for the MCP Hugging Face Hackathon 2025, demonstrating innovative applications of the Model Context Protocol with Hugging Face's ecosystem.
-
-## 🆘 Support
-
-If you encounter any issues or have questions:
-
-1. Check the logs in the `logs/` directory
-2. Review the configuration in `config/app_config.json`
-3. Ensure all dependencies are properly installed
-4. Create an issue in the repository for persistent problems
-
-## 🔮 Future Enhancements
-
-- [ ] Add more model providers (OpenAI, Anthropic, etc.)
-- [ ] Implement conversation history and context management
-- [ ] Add model comparison features
-- [ ] Enhance the UI with more customization options
-- [ ] Add API endpoints for external integrations
-- [ ] Implement user authentication and sessions
-- [ ] Add model fine-tuning capabilities
-- [ ] Integrate with more MCP features
-
-## 🗄️ Database Setup & Configuration
-
-This project includes a complete hospital management database with 8,010+ records across 7 tables, successfully imported into Neon PostgreSQL.
-
-### 📊 Database Overview
-
-The database contains the following tables with real hospital data:
-
-| Table Name         | Records   | Description                             |
-| ------------------ | --------- | --------------------------------------- |
-| users              | 3,210     | User accounts (patients, staff, admins) |
-| patient_records    | 3,000     | Patient medical records                 |
-| occupancy          | 1,100     | Room occupancy records                  |
-| tools              | 500       | Medical tools and equipment             |
-| rooms              | 150       | Hospital room details                   |
-| hospital_inventory | 100       | Hospital inventory items                |
-| storage_rooms      | 50        | Hospital storage room information       |
-| **TOTAL**          | **8,010** | **Complete hospital management data**   |
-
-### 🔒 Secure Database Configuration
-
-#### For Team Members - Initial Setup
-
-**Option 1: Environment Variables (Recommended)**
-
-1. Copy the environment template:
-
-   ```powershell
-   Copy-Item .env.template .env
-   ```
-
-2. Edit `.env` with your actual Neon database credentials:
-
-   ```env
-   NEON_HOST=your-neon-host.aws.neon.tech
-   NEON_DATABASE=maindb
-   NEON_USER=your-username
-   NEON_PASSWORD=your-actual-password
-   NEON_PORT=5432
-   NEON_SSLMODE=require
-   ```
-
-3. Load environment variables in PowerShell:
-   ```powershell
-   Get-Content .env | ForEach-Object {
-       if ($_ -match '^([^=]+)=(.*)$') {
-           [Environment]::SetEnvironmentVariable($matches[1], $matches[2], 'Process')
-       }
-   }
-   ```
-
-**Option 2: Configuration File (Development Only)**
-
-1. Copy the configuration template:
-
-   ```powershell
-   Copy-Item neon_config.template.json neon_config.json
-   ```
-
-2. Edit `neon_config.json` with your actual credentials:
-   ```json
-   {
-     "database": {
-       "host": "your-actual-host.aws.neon.tech",
-       "database": "maindb",
-       "user": "your-username",
-       "password": "your-actual-password",
-       "port": 5432,
-       "sslmode": "require"
-     }
-   }
-   ```
-
-#### 🔧 Using Database Configuration in Code
-
-```python
-from secure_config import load_database_config, get_connection_string
-
-# Load configuration securely
-config = load_database_config()
-
-# Get connection string for SQLAlchemy/psycopg2
-conn_string = get_connection_string()
-
-# Example usage with psycopg2
-import psycopg2
-conn = psycopg2.connect(conn_string)
-```
-
-#### 🛡️ Security Best Practices
-
-- **Never commit** `.env` or `neon_config.json` files (they're in `.gitignore`)
-- **Use environment variables** in production environments
-- **Rotate credentials** regularly in Neon console
-- **Review** `SECURITY.md` for comprehensive security guidelines
-
-#### 🔍 Verify Configuration
-
-Test your database setup:
-
-```powershell
-python secure_config.py
-```
-
-This will verify your configuration without exposing sensitive credentials.
-
-#### 📋 Database Schema & Relationships
-
-The database includes proper foreign key relationships:
-
-```
-users (3,210 rows)
-├── patient_records (3,000 rows) [FK: user_id → users.id]
-└── occupancy (1,100 rows) [FK: patient_id → patient_records.id]
-
-storage_rooms (50 rows)
-├── tools (500 rows) [FK: location_storage_id → storage_rooms.id]
-└── hospital_inventory (100 rows) [FK: location_storage_id → storage_rooms.id]
-
-rooms (150 rows)
-└── occupancy (1,100 rows) [FK: room_id → rooms.id]
-```
-
-#### 🚀 Quick Database Queries
-
-Example queries to get started:
-
-```sql
--- Get all active patients
-SELECT u.full_name, pr.medical_history->'conditions' as conditions
-FROM users u
-JOIN patient_records pr ON u.id = pr.user_id
-WHERE u.role = 'patient';
-
--- Check room occupancy
-SELECT r.room_number, r.room_type, o.check_in_date
-FROM rooms r
-LEFT JOIN occupancy o ON r.id = o.room_id
-WHERE o.check_out_date IS NULL;
-
--- View medical equipment by location
-SELECT sr.room_name, t.tool_name, t.status
-FROM storage_rooms sr
-JOIN tools t ON sr.id = t.location_storage_id
-ORDER BY sr.room_name;
-```
-
-#### 📚 Additional Resources
-
-- **`IMPORT_SUCCESS_REPORT.md`** - Complete import documentation
-- **`SECURITY.md`** - Detailed security guidelines
-- **`secure_config.py`** - Configuration utilities
-- **Neon Console** - [https://console.neon.tech](https://console.neon.tech)
+## ⚙️ Setup and Installation
+
+1.  **Clone the repository.**
+2.  **Create and activate a Python virtual environment:**
+    ```bash
+    python -m venv venv
+    # On Windows
+    .\venv\Scripts\Activate.ps1
+    # On macOS/Linux
+    source venv/bin/activate
+    ```
+3.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+4.  **Configure Environment Variables:**
+    - Copy `.env.template` to `.env`.
+    - Fill in your `NEBIUS_API_KEY` and Neon database credentials (e.g., `NEON_HOST`, `NEON_DATABASE`, `NEON_USER`, `NEON_PASSWORD`) in the `.env` file.
+
+## ▶️ Running the Application
+
+- **Development Server (with auto-reload):**
+  ```bash
+  python dev_server.py
+  ```
+- **Main Application:**
+  ```bash
+  python app.py
+  ```
+  Access the application by navigating to `http://localhost:7860` (or the port configured in [`.env`](.env)).
+
+## 🗄️ Database
+
+The application integrates with a Neon PostgreSQL database containing hospital data across tables like `users`, `patient_records`, `rooms`, `occupancy`, etc. This enables the AI to provide responses based on real-time information. Secure database configuration is handled via [`.env`](.env).
+
+
+
+## ⚙️ Future Enhancements
+
+As we continue to evolve H.A.H.A, here are some of the key areas identified for improvement and expansion:
+
+1. **Chat History Access:** Currently, there is no way to retrieve or access previous chat conversations. Adding persistent chat history for each session will enhance continuity and usability.
+2. **CRUD Operations on Data Tables:** While users can view hospital data, the application does not yet support Create, Update, or Delete operations. Future updates will allow authorized users to directly modify hospital data.
+3. **Improved Prediction Accuracy:** The prediction models used in the current version were optimized for performance due to time constraints. In future releases, we plan to enhance the models for better accuracy and robustness.
+4. **Speech-to-Text Integration:** To improve accessibility and ease of use, especially for medical professionals in fast-paced environments, we plan to add voice command and speech-to-text capabilities.
+
+
+
+## 📚 References & Tools Used
+
+The development of Hospital AI Helper Aid (H.A.H.A) was made possible through the integration of several powerful tools, libraries, and services:
+
+* **Gradio SDK v5.33.0**: For building the interactive front-end and dashboard components.
+* **Python**: Core backend logic, AI orchestration, and server-side functionality.
+* **Nebius API**: Used to access the `meta-llama/Llama-3.3-70B-Instruct` model for natural language processing and data analysis.
+* **PostgreSQL (Neon)**: Cloud-based relational database system used to store and retrieve real-time hospital data.
+* **Model Context Protocol (MCP)**: Enables intelligent integration of AI with structured data through contextual workflows.
+* **.env Configuration**: Environment-based secure credential handling.
+* **LaTeX Rendering**: For displaying medical metrics like BMI and dosages clearly.
+* **Git & GitHub**: Version control and project collaboration.
+* **Speech-to-Text Tools (Planned)**: Future plans include integrating solutions like Mozilla DeepSpeech, Whisper, or Web Speech API.
 
 ---
+
+🙏 Thank You
+
+We sincerely thank the organizers, mentors, and fellow participants of the hackathon for creating this platform of innovation and collaboration. It has been a rewarding experience to ideate, develop, and present our project — Hospital AI Helper Aid (H.A.H.A) — as part of this event.
+
+We look forward to your feedback and hope this solution contributes meaningfully to the healthcare technology landscape.
 
 **Happy Hacking! 🚀**

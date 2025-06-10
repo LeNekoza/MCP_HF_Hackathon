@@ -1,0 +1,7 @@
+ward_type,avg_los_days,median_los_days,std_los_days,min_los_days,max_los_days,total_discharges,analysis_id,generated_at
+Emergency,1.99,2.0,0.85,1.0,3.0,236,average_los,2025-06-10T02:41:06.476696
+General Ward,1.95,2.0,0.81,1.0,3.0,112,average_los,2025-06-10T02:41:06.476696
+ICU,1.93,2.0,0.76,1.0,3.0,56,average_los,2025-06-10T02:41:06.476696
+Maternity,2.0,2.0,0.87,1.0,3.0,9,average_los,2025-06-10T02:41:06.476696
+Pediatric,2.06,2.0,0.81,1.0,3.0,429,average_los,2025-06-10T02:41:06.476696
+Surgery,1.94,2.0,0.83,1.0,3.0,258,average_los,2025-06-10T02:41:06.476696
