@@ -75,90 +75,90 @@ https://agents-mcp-hackathon-health-ai-hospital-aid.hf.space/?view=api
 
 ### 🧰 Available MCP Tools
 
-- **stream_response_with_state**
+- **health_ai_hospital_aid_stream_response_with_state**
   Stream response and update appropriate chat state
 
   - message (string)
   - history (array)
 
-- **stream_response_with_state\_**
+- **health_ai_hospital_aid_stream_response_with_state\_**
   Stream response and update appropriate chat state
 
   - message (string)
   - history (array)
 
-- **handle_helpline_with_state**
+- **health_ai_hospital_aid_handle_helpline_with_state**
   Handle helpline with state management
 
   - Takes no input parameters
 
-- **handle_tool_selection**
+- **health_ai_hospital_aid_handle_tool_selection**
   Handle tool selection from dropdown with separate chat flows
 
   - tool_name (string, default: "Main Chat")
   - current_chat (array)
 
-- **patients_next_page**
+- **health_ai_hospital_aid_patients_next_page**
   Go to next page for patients
 
   - Takes no input parameters
 
-- **patients_prev_page**
+- **health_ai_hospital_aid_patients_prev_page**
   Go to previous page for patients
 
   - Takes no input parameters
 
-- **refresh_patients**
+- **health_ai_hospital_aid_refresh_patients**
   Refresh patients table with latest data for given page
 
   - Takes no input parameters
 
-- **staff_next_page**
+- **health_ai_hospital_aid_staff_next_page**
   Go to next page for staff
 
   - Takes no input parameters
 
-- **staff_prev_page**
+- **health_ai_hospital_aid_staff_prev_page**
   Go to previous page for staff
 
   - Takes no input parameters
 
-- **refresh_staff**
+- **health_ai_hospital_aid_refresh_staff**
   Refresh staff table with latest data for given page
 
   - Takes no input parameters
 
-- **rooms_next_page**
+- **health_ai_hospital_aid_rooms_next_page**
   Go to next page for rooms
 
   - Takes no input parameters
 
-- **rooms_prev_page**
+- **health_ai_hospital_aid_rooms_prev_page**
   Go to previous page for rooms
 
   - Takes no input parameters
 
-- **refresh_rooms**
+- **health_ai_hospital_aid_refresh_rooms**
   Refresh rooms table with latest data for given page
 
   - Takes no input parameters
 
-- **equipment_next_page**
+- **health_ai_hospital_aid_equipment_next_page**
   Go to next page for equipment
 
   - Takes no input parameters
 
-- **equipment_prev_page**
+- **health_ai_hospital_aid_equipment_prev_page**
   Go to previous page for equipment
 
   - Takes no input parameters
 
-- **refresh_equipment**
+- **health_ai_hospital_aid_refresh_equipment**
   Refresh equipment table with latest data for given page
 
   - Takes no input parameters
 
-- **\<lambda>**
+- **health_ai_hospital_aid_\<lambda>**
   ⚠︎ No description provided in function docstring
   - Takes no input parameters
 
