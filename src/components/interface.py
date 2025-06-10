@@ -9,7 +9,367 @@ from ..models.nebius_model import NebiusModel
 from ..utils.helpers import process_user_input
 from ..utils.latex_formatter import format_medical_response
 from ..utils.json_data_loader import get_json_data_loader
+from ..services.database_service import db_service
 import os
+
+
+def generate_patients_table(page: int = 1, page_size: int = 10) -> tuple[str, str]:
+    """Generate patients table HTML with real data from database and pagination info"""
+    try:
+        offset = (page - 1) * page_size
+        patients = db_service.get_patients(limit=page_size, offset=offset)
+        total_count = db_service.get_patients_count()
+        total_pages = (total_count + page_size - 1) // page_size  # Ceiling division
+
+        if not patients:
+            return (
+                """
+            <div class="data-table" data-table="patients">
+                <div class="table-header">
+                    <span>ID</span>
+                    <span>Name</span>
+                    <span>DOB</span>
+                    <span>Blood Group</span>
+                    <span>Room</span>
+                    <span>Status</span>
+                </div>
+                <div class="table-row">
+                    <span colspan="6" style="text-align: center; color: #666;">No patients found or database connection failed</span>
+                </div>
+            </div>
+            """,
+                f"Page {page} of {max(1, total_pages)} (0 records)",
+            )
+
+        table_rows = ""
+        for patient in patients:
+            dob = patient.get("date_of_birth", "N/A")
+            if dob and dob != "N/A":
+                try:
+                    if hasattr(dob, "strftime"):
+                        dob = dob.strftime("%Y-%m-%d")
+                    else:
+                        dob = str(dob)
+                except:
+                    dob = "N/A"
+
+            status_class = (
+                "status-active"
+                if patient.get("status") == "Active"
+                else "status-discharged"
+            )
+            table_rows += f"""
+                <div class="table-row" data-patient-id="{patient.get('id', '')}">
+                    <span>{patient.get('id', 'N/A')}</span>
+                    <span>{patient.get('full_name', 'N/A')}</span>
+                    <span>{dob}</span>
+                    <span>{patient.get('blood_group', 'N/A')}</span>
+                    <span>{patient.get('room_number', 'Unassigned')}</span>
+                    <span class="{status_class}">{patient.get('status', 'Unknown')}</span>
+                </div>
+            """
+
+        table_html = f"""
+        <div class="data-table" data-table="patients">
+            <div class="table-header">
+                <span>ID</span>
+                <span>Name</span>
+                <span>DOB</span>
+                <span>Blood Group</span>
+                <span>Room</span>
+                <span>Status</span>
+            </div>
+            {table_rows}
+        </div>
+        """
+
+        start_record = offset + 1
+        end_record = min(offset + page_size, total_count)
+        pagination_info = f"Page {page} of {max(1, total_pages)} (Showing {start_record}-{end_record} of {total_count} records)"
+
+        return table_html, pagination_info
+
+    except Exception as e:
+        error_html = f"""
+        <div class="data-table" data-table="patients">
+            <div class="table-header">
+                <span>ID</span>
+                <span>Name</span>
+                <span>DOB</span>
+                <span>Blood Group</span>
+                <span>Room</span>
+                <span>Status</span>
+            </div>
+            <div class="table-row">
+                <span colspan="6" style="text-align: center; color: #e74c3c;">Database error: {str(e)}</span>
+            </div>
+        </div>
+        """
+        return error_html, "Error loading data"
+
+
+def generate_staff_table(page: int = 1, page_size: int = 10) -> tuple[str, str]:
+    """Generate staff table HTML with real data from database and pagination info"""
+    try:
+        offset = (page - 1) * page_size
+        staff = db_service.get_staff(limit=page_size, offset=offset)
+        total_count = db_service.get_staff_count()
+        total_pages = (total_count + page_size - 1) // page_size  # Ceiling division
+
+        if not staff:
+            return (
+                """
+            <div class="data-table" data-table="staff">
+                <div class="table-header">
+                    <span>ID</span>
+                    <span>Name</span>
+                    <span>Role</span>
+                    <span>Type</span>
+                    <span>Email</span>
+                    <span>Phone</span>
+                </div>
+                <div class="table-row">
+                    <span colspan="6" style="text-align: center; color: #666;">No staff found or database connection failed</span>
+                </div>
+            </div>
+            """,
+                f"Page {page} of {max(1, total_pages)} (0 records)",
+            )
+
+        table_rows = ""
+        for member in staff:
+            phone = member.get("phone_number", "N/A")
+            if isinstance(phone, dict):
+                phone = phone.get("primary", "N/A")
+
+            table_rows += f"""
+                <div class="table-row" data-staff-id="{member.get('id', '')}">
+                    <span>{member.get('id', 'N/A')}</span>
+                    <span>{member.get('full_name', 'N/A')}</span>
+                    <span>{member.get('role', 'N/A').title()}</span>
+                    <span>{member.get('staff_type', 'N/A')}</span>
+                    <span>{member.get('email', 'N/A')}</span>
+                    <span>{phone}</span>
+                </div>
+            """
+
+        table_html = f"""
+        <div class="data-table" data-table="staff">
+            <div class="table-header">
+                <span>ID</span>
+                <span>Name</span>
+                <span>Role</span>
+                <span>Type</span>
+                <span>Email</span>
+                <span>Phone</span>
+            </div>
+            {table_rows}
+        </div>
+        """
+
+        start_record = offset + 1
+        end_record = min(offset + page_size, total_count)
+        pagination_info = f"Page {page} of {max(1, total_pages)} (Showing {start_record}-{end_record} of {total_count} records)"
+
+        return table_html, pagination_info
+
+    except Exception as e:
+        error_html = f"""
+        <div class="data-table" data-table="staff">
+            <div class="table-header">
+                <span>ID</span>
+                <span>Name</span>
+                <span>Role</span>
+                <span>Type</span>
+                <span>Email</span>
+                <span>Phone</span>
+            </div>
+            <div class="table-row">
+                <span colspan="6" style="text-align: center; color: #e74c3c;">Database error: {str(e)}</span>
+            </div>
+        </div>
+        """
+        return error_html, "Error loading data"
+
+
+def generate_rooms_table(page: int = 1, page_size: int = 10) -> tuple[str, str]:
+    """Generate rooms table HTML with real data from database and pagination info"""
+    try:
+        offset = (page - 1) * page_size
+        rooms = db_service.get_rooms(limit=page_size, offset=offset)
+        total_count = db_service.get_rooms_count()
+        total_pages = (total_count + page_size - 1) // page_size  # Ceiling division
+
+        if not rooms:
+            return (
+                """
+            <div class="data-table" data-table="rooms">
+                <div class="table-header">
+                    <span>Room</span>
+                    <span>Type</span>
+                    <span>Floor</span>
+                    <span>Capacity</span>
+                    <span>Occupancy</span>
+                    <span>Status</span>
+                </div>
+                <div class="table-row">
+                    <span colspan="6" style="text-align: center; color: #666;">No rooms found or database connection failed</span>
+                </div>
+            </div>
+            """,
+                f"Page {page} of {max(1, total_pages)} (0 records)",
+            )
+
+        table_rows = ""
+        for room in rooms:
+            status_class = {
+                "Full": "status-full",
+                "Empty": "status-empty",
+                "Available": "status-available",
+            }.get(room.get("status", "Unknown"), "status-active")
+
+            occupancy_text = (
+                f"{room.get('current_occupancy', 0)}/{room.get('bed_capacity', 0)}"
+            )
+
+            table_rows += f"""
+                <div class="table-row" data-room-id="{room.get('id', '')}">
+                    <span>{room.get('room_number', 'N/A')}</span>
+                    <span>{room.get('room_type', 'N/A')}</span>
+                    <span>{room.get('floor_number', 'N/A')}</span>
+                    <span>{room.get('bed_capacity', 'N/A')}</span>
+                    <span>{occupancy_text}</span>
+                    <span class="{status_class}">{room.get('status', 'Unknown')}</span>
+                </div>
+            """
+
+        table_html = f"""
+        <div class="data-table" data-table="rooms">
+            <div class="table-header">
+                <span>Room</span>
+                <span>Type</span>
+                <span>Floor</span>
+                <span>Capacity</span>
+                <span>Occupancy</span>
+                <span>Status</span>
+            </div>
+            {table_rows}
+        </div>
+        """
+
+        start_record = offset + 1
+        end_record = min(offset + page_size, total_count)
+        pagination_info = f"Page {page} of {max(1, total_pages)} (Showing {start_record}-{end_record} of {total_count} records)"
+
+        return table_html, pagination_info
+
+    except Exception as e:
+        error_html = f"""
+        <div class="data-table" data-table="rooms">
+            <div class="table-header">
+                <span>Room</span>
+                <span>Type</span>
+                <span>Floor</span>
+                <span>Capacity</span>
+                <span>Occupancy</span>
+                <span>Status</span>
+            </div>
+            <div class="table-row">
+                <span colspan="6" style="text-align: center; color: #e74c3c;">Database error: {str(e)}</span>
+            </div>
+        </div>
+        """
+        return error_html, "Error loading data"
+
+
+def generate_equipment_table(page: int = 1, page_size: int = 10) -> tuple[str, str]:
+    """Generate equipment table HTML with real data from database and pagination info"""
+    try:
+        offset = (page - 1) * page_size
+        equipment = db_service.get_equipment(limit=page_size, offset=offset)
+        total_count = db_service.get_equipment_count()
+        total_pages = (total_count + page_size - 1) // page_size  # Ceiling division
+
+        if not equipment:
+            return (
+                """
+            <div class="data-table" data-table="equipment">
+                <div class="table-header">
+                    <span>ID</span>
+                    <span>Equipment</span>
+                    <span>Category</span>
+                    <span>Available</span>
+                    <span>Total</span>
+                    <span>Location</span>
+                    <span>Status</span>
+                </div>
+                <div class="table-row">
+                    <span colspan="7" style="text-align: center; color: #666;">No equipment found or database connection failed</span>
+                </div>
+            </div>
+            """,
+                f"Page {page} of {max(1, total_pages)} (0 records)",
+            )
+
+        table_rows = ""
+        for item in equipment:
+            status_class = (
+                "status-active"
+                if item.get("status") == "Available"
+                else "status-discharged"
+            )
+
+            table_rows += f"""
+                <div class="table-row" data-equipment-id="{item.get('id', '')}">
+                    <span>{item.get('id', 'N/A')}</span>
+                    <span>{item.get('equipment', 'N/A')}</span>
+                    <span>{item.get('category', 'N/A')}</span>
+                    <span>{item.get('quantity_available', 0)}</span>
+                    <span>{item.get('quantity_total', 0)}</span>
+                    <span>{item.get('location', 'N/A')}</span>
+                    <span class="{status_class}">{item.get('status', 'Unknown')}</span>
+                </div>
+            """
+
+        table_html = f"""
+        <div class="data-table" data-table="equipment">
+            <div class="table-header">
+                <span>ID</span>
+                <span>Equipment</span>
+                <span>Category</span>
+                <span>Available</span>
+                <span>Total</span>
+                <span>Location</span>
+                <span>Status</span>
+            </div>
+            {table_rows}
+        </div>
+        """
+
+        start_record = offset + 1
+        end_record = min(offset + page_size, total_count)
+        pagination_info = f"Page {page} of {max(1, total_pages)} (Showing {start_record}-{end_record} of {total_count} records)"
+
+        return table_html, pagination_info
+
+    except Exception as e:
+        error_html = f"""
+        <div class="data-table" data-table="equipment">
+            <div class="table-header">
+                <span>ID</span>
+                <span>Equipment</span>
+                <span>Category</span>
+                <span>Available</span>
+                <span>Total</span>
+                <span>Location</span>
+                <span>Status</span>
+            </div>
+            <div class="table-row">
+                <span colspan="7" style="text-align: center; color: #e74c3c;">Database error: {str(e)}</span>
+            </div>
+        </div>
+        """
+        return error_html, "Error loading data"
 
 
 def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
@@ -244,139 +604,187 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                         """
                     )
 
-                    # Data Section (separate component without charts)
-                    gr.HTML(
-                        """
-                        <div id="data-section" class="data-section" style="display: none;">
-                            <div class="data-component">
-                                <div class="data-header">
-                                    <h2>Data Management</h2>
-                                    <p>Manage and view hospital data records</p>
-                                </div>
-                                
-                                <div class="data-content">  
-                                    <div class="data-tabs">
-                                        <button class="data-tab active" data-tab="patients">Patients</button>
-                                        <button class="data-tab" data-tab="staff">Staff</button>
-                                        <button class="data-tab" data-tab="rooms">Rooms</button>
-                                        <button class="data-tab" data-tab="equipment">Equipment</button>
-                                    </div>
-                                    
-                                    <div class="data-table-container">
-                                        <div id="patients-data" class="data-table-section active">
-                                            <h3>Patient Records</h3>
-                                            <div class="data-table">
-                                                <div class="table-header">
-                                                    <span>ID</span>
-                                                    <span>Name</span>
-                                                    <span>Age</span>
-                                                    <span>Room</span>
-                                                    <span>Status</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>P001</span>
-                                                    <span>John Smith</span>
-                                                    <span>45</span>
-                                                    <span>101</span>
-                                                    <span class="status-active">Active</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>P002</span>
-                                                    <span>Emma Johnson</span>
-                                                    <span>32</span>
-                                                    <span>205</span>
-                                                    <span class="status-discharged">Discharged</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>P003</span>
-                                                    <span>Michael Brown</span>
-                                                    <span>67</span>
-                                                    <span>150</span>
-                                                    <span class="status-active">Active</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div id="staff-data" class="data-table-section" style="display: none;">
-                                            <h3>Staff Records</h3>
-                                            <div class="data-table">
-                                                <div class="table-header">
-                                                    <span>ID</span>
-                                                    <span>Name</span>
-                                                    <span>Role</span>
-                                                    <span>Department</span>
-                                                    <span>Status</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>S001</span>
-                                                    <span>Dr. Sarah Wilson</span>
-                                                    <span>Doctor</span>
-                                                    <span>Cardiology</span>
-                                                    <span class="status-active">On Duty</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>S002</span>
-                                                    <span>Nurse Linda Davis</span>
-                                                    <span>Nurse</span>
-                                                    <span>Emergency</span>
-                                                    <span class="status-active">On Duty</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div id="rooms-data" class="data-table-section" style="display: none;">
-                                            <h3>Room Management</h3>
-                                            <div class="data-table">
-                                                <div class="table-header">
-                                                    <span>Room</span>
-                                                    <span>Type</span>
-                                                    <span>Occupancy</span>
-                                                    <span>Status</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>101</span>
-                                                    <span>General</span>
-                                                    <span>1/2</span>
-                                                    <span class="status-active">Available</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>205</span>
-                                                    <span>Private</span>
-                                                    <span>0/1</span>
-                                                    <span class="status-discharged">Empty</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div id="equipment-data" class="data-table-section" style="display: none;">
-                                            <h3>Equipment Status</h3>
-                                            <div class="data-table">
-                                                <div class="table-header">
-                                                    <span>ID</span>
-                                                    <span>Equipment</span>
-                                                    <span>Location</span>
-                                                    <span>Status</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>E001</span>
-                                                    <span>MRI Scanner</span>
-                                                    <span>Radiology</span>
-                                                    <span class="status-active">Operational</span>
-                                                </div>
-                                                <div class="table-row">
-                                                    <span>E002</span>
-                                                    <span>X-Ray Machine</span>
-                                                    <span>Emergency</span>
-                                                    <span class="status-active">Operational</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                    # Data Section (with dynamic database-driven tables)
+                    with gr.Column(
+                        elem_id="data-section",
+                        elem_classes="data-section",
+                        visible=False,
+                    ):
+                        gr.HTML(
+                            """
+                        <div class="data-component">
+                            <div class="data-header">
+                                <h2>Data Management</h2>
+                                <p>Manage and view hospital data records</p>
+                            </div>
+                            
+                            <div class="data-content">  
+                                <div class="data-tabs">
+                                    <button class="data-tab active" data-tab="patients">Patients</button>
+                                    <button class="data-tab" data-tab="staff">Staff</button>
+                                    <button class="data-tab" data-tab="rooms">Rooms</button>
+                                    <button class="data-tab" data-tab="equipment">Equipment</button>
                                 </div>
                             </div>
                         </div>
                         """
-                    )
+                        )
+
+                        # Dynamic table containers with pagination
+
+                        # Pagination state variables
+                        patients_page = gr.State(value=1)
+                        staff_page = gr.State(value=1)
+                        rooms_page = gr.State(value=1)
+                        equipment_page = gr.State(value=1)
+
+                        with gr.Column(
+                            elem_id="patients-data",
+                            elem_classes="data-table-section active",
+                            visible=True,
+                        ):
+                            gr.HTML("<h3>Patient Records</h3>")
+                            table_html, pagination_info = generate_patients_table(
+                                page=1, page_size=10
+                            )
+                            patients_table = gr.HTML(value=table_html)
+                            patients_pagination_info = gr.HTML(
+                                value=f'<div class="pagination-info">{pagination_info}</div>'
+                            )
+                            with gr.Row(elem_classes="pagination-controls"):
+                                patients_prev_btn = gr.Button(
+                                    "◀ Previous",
+                                    size="sm",
+                                    interactive=False,
+                                    elem_classes="pagination-btn",
+                                )
+                                # Check if there are multiple pages for initial state
+                                try:
+                                    total_count = db_service.get_patients_count()
+                                    total_pages = (total_count + 10 - 1) // 10
+                                    initial_next_interactive = total_pages > 1
+                                except:
+                                    initial_next_interactive = True
+
+                                patients_next_btn = gr.Button(
+                                    "Next ▶",
+                                    size="sm",
+                                    elem_classes="pagination-btn",
+                                    interactive=initial_next_interactive,
+                                )
+                                refresh_patients_btn = gr.Button(
+                                    "🔄 Refresh", size="sm"
+                                )
+
+                        with gr.Column(
+                            elem_id="staff-data",
+                            elem_classes="data-table-section",
+                            visible=False,
+                        ):
+                            gr.HTML("<h3>Staff Records</h3>")
+                            table_html, pagination_info = generate_staff_table(
+                                page=1, page_size=10
+                            )
+                            staff_table = gr.HTML(value=table_html)
+                            staff_pagination_info = gr.HTML(
+                                value=f'<div class="pagination-info">{pagination_info}</div>'
+                            )
+                            with gr.Row(elem_classes="pagination-controls"):
+                                staff_prev_btn = gr.Button(
+                                    "◀ Previous",
+                                    size="sm",
+                                    interactive=False,
+                                    elem_classes="pagination-btn",
+                                )
+                                # Check if there are multiple pages for initial state
+                                try:
+                                    total_count = db_service.get_staff_count()
+                                    total_pages = (total_count + 10 - 1) // 10
+                                    initial_next_interactive = total_pages > 1
+                                except:
+                                    initial_next_interactive = True
+
+                                staff_next_btn = gr.Button(
+                                    "Next ▶",
+                                    size="sm",
+                                    elem_classes="pagination-btn",
+                                    interactive=initial_next_interactive,
+                                )
+                                refresh_staff_btn = gr.Button("🔄 Refresh", size="sm")
+
+                        with gr.Column(
+                            elem_id="rooms-data",
+                            elem_classes="data-table-section",
+                            visible=False,
+                        ):
+                            gr.HTML("<h3>Room Management</h3>")
+                            table_html, pagination_info = generate_rooms_table(
+                                page=1, page_size=10
+                            )
+                            rooms_table = gr.HTML(value=table_html)
+                            rooms_pagination_info = gr.HTML(
+                                value=f'<div class="pagination-info">{pagination_info}</div>'
+                            )
+                            with gr.Row(elem_classes="pagination-controls"):
+                                rooms_prev_btn = gr.Button(
+                                    "◀ Previous",
+                                    size="sm",
+                                    interactive=False,
+                                    elem_classes="pagination-btn",
+                                )
+                                # Check if there are multiple pages for initial state
+                                try:
+                                    total_count = db_service.get_rooms_count()
+                                    total_pages = (total_count + 10 - 1) // 10
+                                    initial_next_interactive = total_pages > 1
+                                except:
+                                    initial_next_interactive = True
+
+                                rooms_next_btn = gr.Button(
+                                    "Next ▶",
+                                    size="sm",
+                                    elem_classes="pagination-btn",
+                                    interactive=initial_next_interactive,
+                                )
+                                refresh_rooms_btn = gr.Button("🔄 Refresh", size="sm")
+
+                        with gr.Column(
+                            elem_id="equipment-data",
+                            elem_classes="data-table-section",
+                            visible=False,
+                        ):
+                            gr.HTML("<h3>Equipment Status</h3>")
+                            table_html, pagination_info = generate_equipment_table(
+                                page=1, page_size=10
+                            )
+                            equipment_table = gr.HTML(value=table_html)
+                            equipment_pagination_info = gr.HTML(
+                                value=f'<div class="pagination-info">{pagination_info}</div>'
+                            )
+                            with gr.Row(elem_classes="pagination-controls"):
+                                equipment_prev_btn = gr.Button(
+                                    "◀ Previous",
+                                    size="sm",
+                                    interactive=False,
+                                    elem_classes="pagination-btn",
+                                )
+                                # Check if there are multiple pages for initial state
+                                try:
+                                    total_count = db_service.get_equipment_count()
+                                    total_pages = (total_count + 10 - 1) // 10
+                                    initial_next_interactive = total_pages > 1
+                                except:
+                                    initial_next_interactive = True
+
+                                equipment_next_btn = gr.Button(
+                                    "Next ▶",
+                                    size="sm",
+                                    elem_classes="pagination-btn",
+                                    interactive=initial_next_interactive,
+                                )
+                                refresh_equipment_btn = gr.Button(
+                                    "🔄 Refresh", size="sm"
+                                )
         # Hidden status indicator
         status = gr.Textbox(visible=False)
 
@@ -908,7 +1316,449 @@ Make sure the user gets both the complete information they requested AND your pr
                 visualize_chat_state,
                 current_mode_state,
             ],
-        )  # Load welcome message
+        )
+
+        # Database table refresh and pagination handlers
+        def refresh_patients(page):
+            """Refresh patients table with latest data for given page"""
+            try:
+                # Establish database connection if needed
+                if not db_service.connection:
+                    db_service.connect()
+                table_html, pagination_info = generate_patients_table(
+                    page=page, page_size=10
+                )
+                return (
+                    table_html,
+                    f'<div class="pagination-info">{pagination_info}</div>',
+                )
+            except Exception as e:
+                error_msg = f'<div style="color: red; padding: 20px;">Error refreshing patients: {str(e)}</div>'
+                return (
+                    error_msg,
+                    '<div class="pagination-info">Error loading data</div>',
+                )
+
+        def refresh_staff(page):
+            """Refresh staff table with latest data for given page"""
+            try:
+                if not db_service.connection:
+                    db_service.connect()
+                table_html, pagination_info = generate_staff_table(
+                    page=page, page_size=10
+                )
+                return (
+                    table_html,
+                    f'<div class="pagination-info">{pagination_info}</div>',
+                )
+            except Exception as e:
+                error_msg = f'<div style="color: red; padding: 20px;">Error refreshing staff: {str(e)}</div>'
+                return (
+                    error_msg,
+                    '<div class="pagination-info">Error loading data</div>',
+                )
+
+        def refresh_rooms(page):
+            """Refresh rooms table with latest data for given page"""
+            try:
+                if not db_service.connection:
+                    db_service.connect()
+                table_html, pagination_info = generate_rooms_table(
+                    page=page, page_size=10
+                )
+                return (
+                    table_html,
+                    f'<div class="pagination-info">{pagination_info}</div>',
+                )
+            except Exception as e:
+                error_msg = f'<div style="color: red; padding: 20px;">Error refreshing rooms: {str(e)}</div>'
+                return (
+                    error_msg,
+                    '<div class="pagination-info">Error loading data</div>',
+                )
+
+        def refresh_equipment(page):
+            """Refresh equipment table with latest data for given page"""
+            try:
+                if not db_service.connection:
+                    db_service.connect()
+                table_html, pagination_info = generate_equipment_table(
+                    page=page, page_size=10
+                )
+                return (
+                    table_html,
+                    f'<div class="pagination-info">{pagination_info}</div>',
+                )
+            except Exception as e:
+                error_msg = f'<div style="color: red; padding: 20px;">Error refreshing equipment: {str(e)}</div>'
+                return (
+                    error_msg,
+                    '<div class="pagination-info">Error loading data</div>',
+                )
+
+        # Pagination handlers for patients
+        def patients_next_page(current_page):
+            """Go to next page for patients"""
+            try:
+                total_count = db_service.get_patients_count()
+                total_pages = (total_count + 10 - 1) // 10  # page_size = 10
+                next_page = min(current_page + 1, total_pages)
+                table_html, pagination_info = generate_patients_table(
+                    page=next_page, page_size=10
+                )
+
+                # Update button states
+                prev_interactive = next_page > 1
+                next_interactive = next_page < total_pages
+
+                return (
+                    next_page,
+                    table_html,
+                    f'<div class="pagination-info">{pagination_info}</div>',
+                    gr.update(interactive=prev_interactive),
+                    gr.update(interactive=next_interactive),
+                )
+            except Exception as e:
+                return (
+                    current_page,
+                    f'<div style="color: red;">Error: {str(e)}</div>',
+                    '<div class="pagination-info">Error</div>',
+                    gr.update(),
+                    gr.update(),
+                )
+
+        def patients_prev_page(current_page):
+            """Go to previous page for patients"""
+            try:
+                total_count = db_service.get_patients_count()
+                total_pages = (total_count + 10 - 1) // 10  # page_size = 10
+                prev_page = max(current_page - 1, 1)
+                table_html, pagination_info = generate_patients_table(
+                    page=prev_page, page_size=10
+                )
+
+                # Update button states
+                prev_interactive = prev_page > 1
+                next_interactive = prev_page < total_pages
+
+                return (
+                    prev_page,
+                    table_html,
+                    f'<div class="pagination-info">{pagination_info}</div>',
+                    gr.update(interactive=prev_interactive),
+                    gr.update(interactive=next_interactive),
+                )
+            except Exception as e:
+                return (
+                    current_page,
+                    f'<div style="color: red;">Error: {str(e)}</div>',
+                    '<div class="pagination-info">Error</div>',
+                    gr.update(),
+                    gr.update(),
+                )
+
+        # Pagination handlers for staff
+        def staff_next_page(current_page):
+            """Go to next page for staff"""
+            try:
+                total_count = db_service.get_staff_count()
+                total_pages = (total_count + 10 - 1) // 10  # page_size = 10
+                next_page = min(current_page + 1, total_pages)
+                table_html, pagination_info = generate_staff_table(
+                    page=next_page, page_size=10
+                )
+
+                # Update button states
+                prev_interactive = next_page > 1
+                next_interactive = next_page < total_pages
+
+                return (
+                    next_page,
+                    table_html,
+                    f'<div class="pagination-info">{pagination_info}</div>',
+                    gr.update(interactive=prev_interactive),
+                    gr.update(interactive=next_interactive),
+                )
+            except Exception as e:
+                return (
+                    current_page,
+                    f'<div style="color: red;">Error: {str(e)}</div>',
+                    '<div class="pagination-info">Error</div>',
+                    gr.update(),
+                    gr.update(),
+                )
+
+        def staff_prev_page(current_page):
+            """Go to previous page for staff"""
+            try:
+                total_count = db_service.get_staff_count()
+                total_pages = (total_count + 10 - 1) // 10  # page_size = 10
+                prev_page = max(current_page - 1, 1)
+                table_html, pagination_info = generate_staff_table(
+                    page=prev_page, page_size=10
+                )
+
+                # Update button states
+                prev_interactive = prev_page > 1
+                next_interactive = prev_page < total_pages
+
+                return (
+                    prev_page,
+                    table_html,
+                    f'<div class="pagination-info">{pagination_info}</div>',
+                    gr.update(interactive=prev_interactive),
+                    gr.update(interactive=next_interactive),
+                )
+            except Exception as e:
+                return (
+                    current_page,
+                    f'<div style="color: red;">Error: {str(e)}</div>',
+                    '<div class="pagination-info">Error</div>',
+                    gr.update(),
+                    gr.update(),
+                )
+
+        # Pagination handlers for rooms
+        def rooms_next_page(current_page):
+            """Go to next page for rooms"""
+            try:
+                total_count = db_service.get_rooms_count()
+                total_pages = (total_count + 10 - 1) // 10  # page_size = 10
+                next_page = min(current_page + 1, total_pages)
+                table_html, pagination_info = generate_rooms_table(
+                    page=next_page, page_size=10
+                )
+
+                # Update button states
+                prev_interactive = next_page > 1
+                next_interactive = next_page < total_pages
+
+                return (
+                    next_page,
+                    table_html,
+                    f'<div class="pagination-info">{pagination_info}</div>',
+                    gr.update(interactive=prev_interactive),
+                    gr.update(interactive=next_interactive),
+                )
+            except Exception as e:
+                return (
+                    current_page,
+                    f'<div style="color: red;">Error: {str(e)}</div>',
+                    '<div class="pagination-info">Error</div>',
+                    gr.update(),
+                    gr.update(),
+                )
+
+        def rooms_prev_page(current_page):
+            """Go to previous page for rooms"""
+            try:
+                total_count = db_service.get_rooms_count()
+                total_pages = (total_count + 10 - 1) // 10  # page_size = 10
+                prev_page = max(current_page - 1, 1)
+                table_html, pagination_info = generate_rooms_table(
+                    page=prev_page, page_size=10
+                )
+
+                # Update button states
+                prev_interactive = prev_page > 1
+                next_interactive = prev_page < total_pages
+
+                return (
+                    prev_page,
+                    table_html,
+                    f'<div class="pagination-info">{pagination_info}</div>',
+                    gr.update(interactive=prev_interactive),
+                    gr.update(interactive=next_interactive),
+                )
+            except Exception as e:
+                return (
+                    current_page,
+                    f'<div style="color: red;">Error: {str(e)}</div>',
+                    '<div class="pagination-info">Error</div>',
+                    gr.update(),
+                    gr.update(),
+                )
+
+        # Pagination handlers for equipment
+        def equipment_next_page(current_page):
+            """Go to next page for equipment"""
+            try:
+                total_count = db_service.get_equipment_count()
+                total_pages = (total_count + 10 - 1) // 10  # page_size = 10
+                next_page = min(current_page + 1, total_pages)
+                table_html, pagination_info = generate_equipment_table(
+                    page=next_page, page_size=10
+                )
+
+                # Update button states
+                prev_interactive = next_page > 1
+                next_interactive = next_page < total_pages
+
+                return (
+                    next_page,
+                    table_html,
+                    f'<div class="pagination-info">{pagination_info}</div>',
+                    gr.update(interactive=prev_interactive),
+                    gr.update(interactive=next_interactive),
+                )
+            except Exception as e:
+                return (
+                    current_page,
+                    f'<div style="color: red;">Error: {str(e)}</div>',
+                    '<div class="pagination-info">Error</div>',
+                    gr.update(),
+                    gr.update(),
+                )
+
+        def equipment_prev_page(current_page):
+            """Go to previous page for equipment"""
+            try:
+                total_count = db_service.get_equipment_count()
+                total_pages = (total_count + 10 - 1) // 10  # page_size = 10
+                prev_page = max(current_page - 1, 1)
+                table_html, pagination_info = generate_equipment_table(
+                    page=prev_page, page_size=10
+                )
+
+                # Update button states
+                prev_interactive = prev_page > 1
+                next_interactive = prev_page < total_pages
+
+                return (
+                    prev_page,
+                    table_html,
+                    f'<div class="pagination-info">{pagination_info}</div>',
+                    gr.update(interactive=prev_interactive),
+                    gr.update(interactive=next_interactive),
+                )
+            except Exception as e:
+                return (
+                    current_page,
+                    f'<div style="color: red;">Error: {str(e)}</div>',
+                    '<div class="pagination-info">Error</div>',
+                    gr.update(),
+                    gr.update(),
+                )
+
+        # Connect pagination and refresh button events
+
+        # Patients pagination
+        patients_next_btn.click(
+            fn=patients_next_page,
+            inputs=[patients_page],
+            outputs=[
+                patients_page,
+                patients_table,
+                patients_pagination_info,
+                patients_prev_btn,
+                patients_next_btn,
+            ],
+        )
+        patients_prev_btn.click(
+            fn=patients_prev_page,
+            inputs=[patients_page],
+            outputs=[
+                patients_page,
+                patients_table,
+                patients_pagination_info,
+                patients_prev_btn,
+                patients_next_btn,
+            ],
+        )
+        refresh_patients_btn.click(
+            fn=refresh_patients,
+            inputs=[patients_page],
+            outputs=[patients_table, patients_pagination_info],
+        )
+
+        # Staff pagination
+        staff_next_btn.click(
+            fn=staff_next_page,
+            inputs=[staff_page],
+            outputs=[
+                staff_page,
+                staff_table,
+                staff_pagination_info,
+                staff_prev_btn,
+                staff_next_btn,
+            ],
+        )
+        staff_prev_btn.click(
+            fn=staff_prev_page,
+            inputs=[staff_page],
+            outputs=[
+                staff_page,
+                staff_table,
+                staff_pagination_info,
+                staff_prev_btn,
+                staff_next_btn,
+            ],
+        )
+        refresh_staff_btn.click(
+            fn=refresh_staff,
+            inputs=[staff_page],
+            outputs=[staff_table, staff_pagination_info],
+        )
+
+        # Rooms pagination
+        rooms_next_btn.click(
+            fn=rooms_next_page,
+            inputs=[rooms_page],
+            outputs=[
+                rooms_page,
+                rooms_table,
+                rooms_pagination_info,
+                rooms_prev_btn,
+                rooms_next_btn,
+            ],
+        )
+        rooms_prev_btn.click(
+            fn=rooms_prev_page,
+            inputs=[rooms_page],
+            outputs=[
+                rooms_page,
+                rooms_table,
+                rooms_pagination_info,
+                rooms_prev_btn,
+                rooms_next_btn,
+            ],
+        )
+        refresh_rooms_btn.click(
+            fn=refresh_rooms,
+            inputs=[rooms_page],
+            outputs=[rooms_table, rooms_pagination_info],
+        )
+
+        # Equipment pagination
+        equipment_next_btn.click(
+            fn=equipment_next_page,
+            inputs=[equipment_page],
+            outputs=[
+                equipment_page,
+                equipment_table,
+                equipment_pagination_info,
+                equipment_prev_btn,
+                equipment_next_btn,
+            ],
+        )
+        equipment_prev_btn.click(
+            fn=equipment_prev_page,
+            inputs=[equipment_page],
+            outputs=[
+                equipment_page,
+                equipment_table,
+                equipment_pagination_info,
+                equipment_prev_btn,
+                equipment_next_btn,
+            ],
+        )
+        refresh_equipment_btn.click(
+            fn=refresh_equipment,
+            inputs=[equipment_page],
+            outputs=[equipment_table, equipment_pagination_info],
+        )
+
+        # Load welcome message
         demo.load(
             fn=lambda: [
                 {
@@ -964,7 +1814,7 @@ def handle_ai_response(
                 enhanced_prompt = f"""
 User Question: {user_message}
 
-Database Results: 
+Database Results:  
 {db_response}
 
 IMPORTANT: The user specifically requested details/information. Please provide:
@@ -3665,6 +4515,39 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
     // Initialize dashboard with cache busting
     console.log('Loading dashboard with timestamp:', new Date().getTime());
     window.hospitalDashboard = new HospitalDashboard();
+
+    // Action button handlers for table operations
+    window.editPatient = function(patientId) {
+        alert(`Edit patient functionality not yet implemented. Patient ID: ${patientId}`);
+        console.log('Edit patient:', patientId);
+        // TODO: Implement patient editing modal/form
+    };
+
+    window.deletePatient = function(patientId) {
+        if (confirm(`Are you sure you want to discharge patient ID: ${patientId}?`)) {
+            alert(`Discharge patient functionality not yet implemented. Patient ID: ${patientId}`);
+            console.log('Discharge patient:', patientId);
+            // TODO: Implement patient discharge functionality
+        }
+    };
+
+    window.editStaff = function(staffId) {
+        alert(`Edit staff functionality not yet implemented. Staff ID: ${staffId}`);
+        console.log('Edit staff:', staffId);
+        // TODO: Implement staff editing modal/form
+    };
+
+    window.editRoom = function(roomId) {
+        alert(`Edit room functionality not yet implemented. Room ID: ${roomId}`);
+        console.log('Edit room:', roomId);
+        // TODO: Implement room editing modal/form
+    };
+
+    window.editEquipment = function(equipmentId) {
+        alert(`Edit equipment functionality not yet implemented. Equipment ID: ${equipmentId}`);
+        console.log('Edit equipment:', equipmentId);
+        // TODO: Implement equipment editing modal/form
+    };
 
     // Global function to update chart data
     window.updateChartData = function(newData) {

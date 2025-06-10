@@ -27,8 +27,8 @@
 /* Left Sidebar - FIXED AND VISIBLE */
 .sidebar-container {
     width: 350px !important;
-    min-width: 350px !important;
-    max-width: 350px !important;
+    min-width: 450px !important;
+    max-width: 450px !important;
     height: 100vh !important;
     background: white !important;
     border-right: 1px solid #e2e8f0 !important;
@@ -2175,11 +2175,36 @@ body {
 
 .table-header {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
     gap: 0;
     background: #f8fafc;
     padding: 0;
     border-bottom: 2px solid #e2e8f0;
+}
+
+/* Specific table layouts */
+.data-table[data-table="patients"] .table-header,
+.data-table[data-table="patients"] .table-row {
+    grid-template-columns: 80px 1.5fr 1fr 1fr 1fr 1fr 120px;
+}
+
+.data-table[data-table="staff"] .table-header,
+.data-table[data-table="staff"] .table-row {
+    grid-template-columns: 80px 1.5fr 1fr 1fr 1.5fr 1fr 100px;
+}
+
+.data-table[data-table="rooms"] .table-header,
+.data-table[data-table="rooms"] .table-row {
+    grid-template-columns: 1fr 1fr 80px 100px 120px 1fr 100px;
+}
+
+.data-table[data-table="equipment"] .table-header,
+.data-table[data-table="equipment"] .table-row {
+    grid-template-columns: 80px 1.5fr 1fr 100px 100px 1.5fr 1fr 100px;
+}
+
+/* Fallback for tables without specific data-table attribute */
+.table-header:not([data-table]) {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 }
 
 .table-header span {
@@ -2196,10 +2221,14 @@ body {
 
 .table-row {
     display: grid;
-    grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
     gap: 0;
     border-bottom: 1px solid #f1f5f9;
     transition: background-color 0.2s ease;
+}
+
+/* Fallback for table rows without specific data-table attribute */
+.table-row:not([data-table]) {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 }
 
 .table-row:hover {
@@ -2247,6 +2276,207 @@ body {
     align-items: center !important;
     justify-content: center !important;
     max-width: fit-content !important;
+}
+
+/* Action Button Styles */
+.edit-btn, .delete-btn {
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    border: none !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    margin: 0 4px !important;
+}
+
+.edit-btn {
+    background: #3b82f6 !important;
+    color: white !important;
+}
+
+.edit-btn:hover {
+    background: #2563eb !important;
+    transform: translateY(-1px) !important;
+}
+
+.delete-btn {
+    background: #ef4444 !important;
+    color: white !important;
+}
+
+.delete-btn:hover {
+    background: #dc2626 !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Refresh Button Improvements */
+.gradio-button {
+    transition: all 0.3s ease !important;
+}
+
+.gradio-button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Loading States for Tables */
+.table-loading {
+    opacity: 0.7 !important;
+    pointer-events: none !important;
+}
+
+.table-loading::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin: -10px 0 0 -10px !important;
+    border: 2px solid #3b82f6 !important;
+    border-radius: 50% !important;
+    border-top-color: transparent !important;
+    animation: spin 1s linear infinite !important;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Pagination Styles */
+.pagination-info {
+    text-align: center;
+    padding: 8px 16px;
+    background: #f8fafc;
+    border-radius: 6px;
+    margin: 8px 0;
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+    border: 1px solid #e2e8f0;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.pagination-btn {
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    border: 1px solid #e2e8f0 !important;
+    background: white !important;
+    color: #64748b !important;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #475569 !important;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+/* Additional Status Styles */
+.status-full {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    max-width: fit-content !important;
+}
+
+.status-available {
+    background: #dcfce7 !important;
+    color: #166534 !important;
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    max-width: fit-content !important;
+}
+
+.status-empty {
+    background: #f3f4f6 !important;
+    color: #6b7280 !important;
+    padding: 6px 12px !important;
+    border-radius: 20px !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    max-width: fit-content !important;
+}
+
+/* Tab Navigation for Data Section */
+.data-tab {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.data-tab::before {
+    content: '' !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    width: 0 !important;
+    height: 2px !important;
+    background: #3b82f6 !important;
+    transition: all 0.3s ease !important;
+    transform: translateX(-50%) !important;
+}
+
+.data-tab.active::before {
+    width: 100% !important;
+}
+
+.data-tab:hover::before {
+    width: 60% !important;
+}
+
+/* Responsive Table Improvements */
+@media (max-width: 1200px) {
+    .data-table[data-table="patients"] .table-header,
+    .data-table[data-table="patients"] .table-row {
+        grid-template-columns: 60px 1.2fr 0.8fr 0.8fr 0.8fr 0.8fr 100px;
+    }
+    
+    .data-table[data-table="equipment"] .table-header,
+    .data-table[data-table="equipment"] .table-row {
+        grid-template-columns: 60px 1.2fr 0.8fr 80px 80px 1.2fr 0.8fr 80px;
+    }
+}
+
+@media (max-width: 768px) {
+    .table-header span,
+    .table-row span {
+        padding: 12px 8px !important;
+        font-size: 12px !important;
+    }
+    
+    .edit-btn, .delete-btn {
+        padding: 4px 8px !important;
+        font-size: 10px !important;
+    }
 }
 
 /* Dashboard Section Styles */
@@ -2352,4 +2582,8 @@ main{
 
 .tools-section{
     display: none !important;
+}
+
+.gradio-container.gradio-container-5-32-1 .contain .table-row span{
+    padding: 10px 5px !important;
 }
