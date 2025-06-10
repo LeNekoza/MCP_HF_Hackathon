@@ -118,7 +118,7 @@ class DatabaseService:
             staff_type,
             phone_number
         FROM users
-        WHERE role IN ('doctor', 'nurse', 'admin', 'technician')
+        WHERE role IN ('admin', 'staff')
         ORDER BY full_name
         LIMIT %s OFFSET %s
         """
@@ -126,7 +126,7 @@ class DatabaseService:
 
     def get_staff_count(self) -> int:
         """Get total count of staff"""
-        query = "SELECT COUNT(*) as count FROM users WHERE role IN ('doctor', 'nurse', 'admin', 'technician')"
+        query = "SELECT COUNT(*) as count FROM users WHERE role IN ('admin', 'staff')"
         result = self.execute_query(query)
         return result[0]["count"] if result else 0
 
