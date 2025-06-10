@@ -57,7 +57,7 @@
     height: 50px !important;
     border-radius: 50% !important;
     /* background: linear-gradient(135deg, #3b82f6, #1d4ed8) !important; */
-    background-color: rgb(194, 255, 254) !important; 
+    background-color: rgb(255, 255, 255) !important; 
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -893,7 +893,7 @@ body {
     color: #475569 !important;
 }
 
-/* CHART CONTAINER STYLING */
+/* CHART CONTAINER STYLING - INCREASED SIZE */
 .chart-container {
     background: white !important;
     border: 1px solid #e2e8f0 !important;
@@ -901,8 +901,8 @@ body {
     padding: 16px !important;
     width: 100% !important;
     max-width: 100% !important;
-    height: 400px !important;
-    max-height: 400px !important;
+    height: 600px !important;
+    max-height: 600px !important;
     overflow: hidden !important;
     box-sizing: border-box !important;
 }
@@ -933,7 +933,7 @@ body {
 
 .line-chart {
     width: 100% !important;
-    height: 320px !important;
+    height: 520px !important;
     max-width: 100% !important;
     overflow: hidden !important;
     display: block !important;
@@ -959,30 +959,30 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Chart interactive elements */
+/* Chart interactive elements - animations removed */
 .line-chart svg circle {
-    transition: r 0.2s ease, opacity 0.2s ease !important;
     cursor: pointer !important;
+    /* Removed transitions for r and opacity */
 }
 
 .line-chart svg circle:hover {
-    r: 6 !important;
+    /* Removed r: 6 animation - keep original size */
     opacity: 0.8 !important;
 }
 
 .line-chart svg rect {
-    transition: opacity 0.2s ease, transform 0.2s ease !important;
     cursor: pointer !important;
+    /* Removed transitions for opacity and transform */
 }
 
 .line-chart svg rect:hover {
     opacity: 0.8 !important;
-    transform: scale(1.05) !important;
+    /* Removed transform: scale(1.05) animation */
 }
 
 .line-chart svg path[fill*="#"] {
-    transition: opacity 0.2s ease !important;
     cursor: pointer !important;
+    /* Removed transition for opacity */
 }    .line-chart svg path[fill*="#"]:hover {
     opacity: 0.8 !important;
 }
@@ -2327,6 +2327,7 @@ body {
 
 #component-2{
     flex-wrap: nowrap !important;
+    justify-content: space-around !important;
 }
 
 #component-12{
@@ -2347,4 +2348,8 @@ body {
 
 main{
     max-width: 100% !important;
+}
+
+.tools-section{
+    display: none !important;
 }

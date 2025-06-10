@@ -64,8 +64,9 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                 # Assistant Header - Compact
                 gr.HTML(
                     """
-                <div class="assistant-header">
-                    <div class="avatar-circle">🩺</div>
+                <div class="assistant-header"> 
+                    <div class="avatar-circle">
+                    <a href="https://imgbb.com/"><img src="https://i.ibb.co/cXXMbVTz/logo.png" alt="logo" border="0"></a></div>
                     <div class="assistant-text">
                         <h3>Medical Assistant</h3>
                         <p>How can I help you?</p>  
@@ -105,17 +106,6 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                             elem_classes="custom-test-dropdown",
                             show_label=False,
                         )
-
-                # Guidance text from image
-                """ gr.HTML( """
-                """
-                <div class="guidance-text">
-                    <p>I'll assist you with health information and guidance. If you have any health-related questions or concerns, feel free to ask, and I'll do my best to assist you. Remember, I'm not a replacement for professional medical advice, and it's always best to consult with a healthcare professional for serious concerns.</p>
-                    <br>
-                    <p>What's on your mind today? Do you have a specific health topic you'd like to discuss or any questions about general medicine?</p>
-                </div>
-                """
-            """     ) """
 
             # Right Side - Dashboard (increased scale for full-width charts)
             with gr.Column(scale=3, elem_classes="dashboard-container"):
@@ -160,7 +150,6 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                             <h2 class="analysis-title">Dashboard Analytics</h2>
                             <div class="analysis-selector-container">
                                 <select class="analysis-selector" name="analysis-selector" id="analysis-selector">
-                                    <option value="bed-occupancy">Real-time bed occupancy by ward & ICU</option>
                                     <option value="alos">Average Length-of-Stay (ALOS) by procedure / ward</option>
                                     <option value="staff-workload">Staff workload dashboard</option>
                                     <option value="tool-utilisation">Tool utilisation & idle time</option>
@@ -1131,12 +1120,13 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
     <script src="static/js/app.js"></script>
     
     <style>
-    /* Full-width chart styles */
+    /* Full-width chart styles - increased height */
     .full-width-chart {
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 !important;
         padding: 20px !important;
+        min-height: 650px !important;
     }
     
     .full-width-chart-svg {
@@ -1147,6 +1137,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
         border: 1px solid #e2e8f0;
         border-radius: 8px;
         background: white;
+        min-height: 580px !important;
     }
     
     .full-width-chart-svg svg {
@@ -1285,7 +1276,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
     
     /* Scroll indicator for horizontally scrollable charts */
     .full-width-chart-svg.many-data-points::after,
-    .full-width-chart-svg.extra-wide::after {
+    /* .full-width-chart-svg.extra-wide::after {
         content: "← Scroll horizontally to see all data →";
         position: absolute;
         bottom: 15px;
@@ -1299,7 +1290,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
         z-index: 10;
         animation: pulse 2s infinite;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
+    } */
     
     /* No scroll indicator for compact inventory charts */
     .full-width-chart-svg.inventory-compact::after {
@@ -1309,6 +1300,85 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
     @keyframes pulse {
         0%, 100% { opacity: 0.7; }
         50% { opacity: 1; }
+    }
+    
+    /* Chart tooltip styles */
+    .chart-tooltip {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 500;
+        pointer-events: none;
+        z-index: 1000;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(8px);
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: all 0.2s ease-in-out;
+        white-space: nowrap;
+        max-width: 350px;
+        min-width: 150px;
+        line-height: 1.5;
+    }
+    
+    /* Enhanced styles for grouped tooltips */
+    .chart-tooltip strong {
+        color: #fbbf24;
+        font-weight: 600;
+    }
+    
+    .chart-tooltip br + strong {
+        margin-top: 8px;
+        display: inline-block;
+    }
+    
+    /* Special styling for grouped tooltip indicators */
+    .chart-tooltip:has(br) {
+        border-left: 3px solid #3b82f6;
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(30, 30, 50, 0.95) 100%);
+    }
+    
+    /* Bullet points in grouped tooltips */
+    .chart-tooltip:contains('•') {
+        padding-left: 20px;
+    }
+    
+    .chart-tooltip.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+  /*.chart-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+    } */
+    
+    /* Chart interactive elements - animations removed */
+    .chart-point:hover,
+    .chart-bar:hover,
+    .chart-pie-slice:hover,
+    .chart-scatter-point:hover {
+        opacity: 0.8 !important;
+        filter: brightness(1.1) !important;
+        /* Removed transform: scale(1.05) and transition */
+    }
+    
+    /* Removed all transition animations for chart elements */
+    .chart-point,
+    .chart-bar,
+    .chart-pie-slice,
+    .chart-scatter-point {
+        /* No transitions - static elements */
     }
     
     .legend-item {
@@ -1365,6 +1435,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
             this.setupNavigation();
             this.createSectionContainers();
             this.initializeInteractiveChart();
+            this.setupTooltips();
             this.showWelcomeMessage();
         }
 
@@ -1620,8 +1691,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
         // Data parsing functions for real JSON data
         parseJsonDataForChart(analysisType, jsonData) {
             switch(analysisType) {
-                case 'bed-occupancy':
-                    return this.parseBedOccupancyData(jsonData);
+
                 case 'alos':
                     return this.parseALOSData(jsonData);
                 case 'staff-workload':
@@ -1764,16 +1834,13 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
             }
             
             const forecast = data.data.forecast.slice(0, 7);
-            const historical = data.data.historical_data.slice(-7);
             
             return forecast.map((item, index) => {
                 const date = new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                const historical_item = historical[index] || {};
                 
                 return {
                     date: date,
                     predicted: item.predicted_occupied_beds || 0,
-                    actual: historical_item.occupied_beds || null,
                     utilization: Math.round(item.utilisation_pct || 0)
                 };
             });
@@ -1901,6 +1968,20 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
             chartContainer.style.transform = 'scale(0.95)';
             
             setTimeout(() => {
+                // Hide pie and scatter charts for bed-census analysis
+                if (this.currentAnalysisType === 'bed-census' && (chartType === 'pie' || chartType === 'scatter')) {
+                    chartContainer.innerHTML = '<div style="padding: 40px; text-align: center; color: #64748b; font-size: 16px; background: #f8fafc; border-radius: 8px; border: 2px dashed #cbd5e1;">' +
+                        '<div style="font-size: 48px; margin-bottom: 16px;">📊</div>' +
+                        '<h3 style="margin: 0 0 8px 0; color: #475569;">Chart Not Available</h3>' +
+                        '<p style="margin: 0;">' + chartType.charAt(0).toUpperCase() + chartType.slice(1) + ' chart is not supported for Short-horizon bed census analysis.</p>' +
+                        '<p style="margin: 8px 0 0 0; font-size: 14px;">Please use Line or Bar charts to view predicted beds and utilization data.</p>' +
+                        '</div>';
+                    
+                    chartContainer.style.opacity = '1';
+                    chartContainer.style.transform = 'scale(1)';
+                    return;
+                }
+                
                 switch(chartType) {
                     case 'line':
                         console.log('Generating dynamic line chart');
@@ -1935,6 +2016,12 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                 
                 chartContainer.style.opacity = '1';
                 chartContainer.style.transform = 'scale(1)';
+                
+                // Reattach tooltip listeners after chart update
+                setTimeout(() => {
+                    this.attachTooltipListeners();
+                }, 100);
+                
                 console.log('Chart updated successfully to', chartType);
             }, 150);
         }
@@ -1959,7 +2046,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
             }
             
             // Create new scroll indicator
-            const indicator = document.createElement('div');
+          /*  const indicator = document.createElement('div');
             indicator.className = 'scroll-indicator';
             indicator.innerHTML = '← Scroll horizontally to see all data →';
             indicator.style.cssText = `
@@ -1977,7 +2064,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
             `;
             
             container.parentElement.style.position = 'relative';
-            container.parentElement.appendChild(indicator);
+            container.parentElement.appendChild(indicator); */
             
             // Hide indicator after scroll
             let scrollTimeout;
@@ -2013,6 +2100,17 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                     xField: 'item_name',
                     yFields: ['days_to_expiry'],
                     colors: ['#ef4444', '#f59e0b', '#22d3ee', '#10b981', '#8b5cf6', '#06b6d4', '#84cc16', '#f97316', '#ec4899', '#6366f1', '#14b8a6', '#3b82f6']
+                };
+            }
+            
+            // Special handling for bed census data
+            if (this.currentAnalysisType === 'bed-census') {
+                console.log('Using bed census data structure');
+                const xField = firstItem.hasOwnProperty('date') ? 'date' : 'timeframe';
+                return {
+                    xField: xField,
+                    yFields: ['predicted', 'utilization'],
+                    colors: ['#3b82f6', '#22d3ee', '#10b981']
                 };
             }
             
@@ -2052,8 +2150,8 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
             }
 
             const allValues = data.flatMap(d => yFields.map(field => d[field] || 0));
-            const minValue = Math.min(...allValues);
-            const maxValue = Math.max(...allValues);
+            const minValue = 0; // Start y-axis from 0
+            const maxValue = Math.max(...allValues) + 3; // Extend max value by 3
             const valueRange = maxValue - minValue || 1;
             
             // Optimized dynamic width calculation based on data length and analysis type
@@ -2071,9 +2169,9 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                 chartWidth = dynamicWidth - 200;
             }
             
-            // Calculate responsive dimensions
-            const svgHeight = this.currentAnalysisType === 'inventory-expiry' ? 500 : 450;
-            const viewBoxHeight = this.currentAnalysisType === 'inventory-expiry' ? 450 : 400;
+            // Calculate responsive dimensions - increased chart size
+            const svgHeight = this.currentAnalysisType === 'inventory-expiry' ? 600 : 550;
+            const viewBoxHeight = this.currentAnalysisType === 'inventory-expiry' ? 550 : 500;
             const chartHeight = viewBoxHeight - 120; // Leave space for labels and margins
             const bottomMargin = this.currentAnalysisType === 'inventory-expiry' ? 80 : 50;
             
@@ -2105,11 +2203,32 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                 }
             }).join('');
             
-            // Generate lines and points
+            // Generate lines and points with hover tooltips
             const linesAndPoints = yFields.map((field, fieldIndex) => {
                 const lineColor = colors[fieldIndex];
                 const pathData = data.map((d, i) => scaleX(i) + ' ' + scaleY(d[field] || 0)).join(' L ');
-                const circles = data.map((d, i) => '<circle cx="' + scaleX(i) + '" cy="' + scaleY(d[field] || 0) + '" r="4" fill="' + lineColor + '"/>').join('');
+                const circles = data.map((d, i) => {
+                    const xValue = d[xField];
+                    const yValue = d[field] || 0;
+                    let tooltipText = `${xValue}: ${field} = ${yValue}`;
+                    
+                    // Enhanced tooltip for different analysis types
+                    if (this.currentAnalysisType === 'inventory-expiry') {
+                        tooltipText = `${xValue}\\nDays to Expiry: ${yValue}\\nUrgency: ${d.urgency || 'Normal'}\\nQuantity: ${d.quantity_available || 'N/A'}`;
+                    } else if (this.currentAnalysisType === 'bed-occupancy') {
+                        tooltipText = `${xValue}\\nOccupied: ${d.current || yValue}\\nCapacity: ${d.capacity || 'N/A'}\\nUtilization: ${d.occupancy || Math.round((d.current/d.capacity)*100) || 'N/A'}%`;
+                    } else if (this.currentAnalysisType === 'staff-workload') {
+                        tooltipText = `${xValue}\\nAssignments: ${yValue}\\nWorkload Level: ${d.workload_level || 'Normal'}`;
+                    } else if (this.currentAnalysisType === 'bed-census') {
+                        if (field === 'predicted') {
+                            tooltipText = `${xValue}\\nPredicted Beds: ${yValue}\\nUtilization: ${d.utilization || 'N/A'}%`;
+                        } else if (field === 'utilization') {
+                            tooltipText = `${xValue}\\nUtilization: ${yValue}%\\nPredicted Beds: ${d.predicted || 'N/A'}`;
+                        }
+                    }
+                    
+                    return '<circle cx="' + scaleX(i) + '" cy="' + scaleY(d[field] || 0) + '" r="4" fill="' + lineColor + '" class="chart-point" data-tooltip="' + tooltipText + '" style="cursor: pointer;"/>';
+                }).join('');
                 return '<path d="M ' + pathData + '" stroke="' + lineColor + '" stroke-width="3" fill="none" stroke-linecap="round"/>' + circles;
             }).join('');
 
@@ -2128,8 +2247,8 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
             }
 
             const allValues = data.flatMap(d => yFields.map(field => d[field] || 0));
-            const minValue = Math.max(0, Math.min(...allValues));
-            const maxValue = Math.max(...allValues);
+            const minValue = 0; // Start y-axis from 0
+            const maxValue = Math.max(...allValues) + 3; // Extend max value by 3
             const valueRange = maxValue - minValue || 1;
             
             // Optimized dynamic width calculation for bar chart
@@ -2147,9 +2266,9 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                 chartWidth = dynamicWidth - 200;
             }
             
-            // Calculate responsive dimensions for bar chart
-            const svgHeight = this.currentAnalysisType === 'inventory-expiry' ? 500 : 450;
-            const viewBoxHeight = this.currentAnalysisType === 'inventory-expiry' ? 450 : 400;
+            // Calculate responsive dimensions for bar chart - increased size
+            const svgHeight = this.currentAnalysisType === 'inventory-expiry' ? 600 : 550;
+            const viewBoxHeight = this.currentAnalysisType === 'inventory-expiry' ? 550 : 500;
             const chartHeight = viewBoxHeight - 120; // Leave space for labels and margins
             const bottomMargin = this.currentAnalysisType === 'inventory-expiry' ? 80 : 50;
             
@@ -2184,7 +2303,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                 }
             }).join('');
             
-            // Generate bars
+            // Generate bars with hover tooltips
             const bars = data.map((d, dataIndex) => {
                 const baseX = 100 + dataIndex * categoryWidth;
                 const startX = baseX + (categoryWidth - (yFields.length * barWidth + (yFields.length - 1) * 3)) / 2;
@@ -2195,8 +2314,27 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                     const barHeight = scaleHeight(value);
                     const barY = scaleY(value);
                     const barX = startX + fieldIndex * (barWidth + 3);
+                    const xValue = d[xField];
+                    let tooltipText = `${xValue}: ${field} = ${value}`;
                     
-                    return '<rect x="' + barX + '" y="' + barY + '" width="' + barWidth + '" height="' + barHeight + '" fill="' + barColor + '" rx="2" opacity="0.9"/>' +
+                    // Enhanced tooltip for different analysis types
+                    if (this.currentAnalysisType === 'inventory-expiry') {
+                        tooltipText = `${xValue}\\nDays to Expiry: ${value}\\nUrgency: ${d.urgency || 'Normal'}\\nQuantity: ${d.quantity_available || 'N/A'}`;
+                    } else if (this.currentAnalysisType === 'bed-occupancy') {
+                        tooltipText = `${xValue}\\n${field}: ${value}\\nCapacity: ${d.capacity || 'N/A'}\\nUtilization: ${d.occupancy || Math.round((d.current/d.capacity)*100) || 'N/A'}%`;
+                    } else if (this.currentAnalysisType === 'staff-workload') {
+                        tooltipText = `${xValue}\\nAssignments: ${value}\\nWorkload Level: ${d.workload_level || 'Normal'}`;
+                    } else if (this.currentAnalysisType === 'tool-utilisation') {
+                        tooltipText = `${xValue}\\n${field}: ${value}%\\nCategory: ${d.category || 'N/A'}\\nAvailable Units: ${d.available || 'N/A'}`;
+                    } else if (this.currentAnalysisType === 'bed-census') {
+                        if (field === 'predicted') {
+                            tooltipText = `${xValue}\\nPredicted Beds: ${value}\\nUtilization: ${d.utilization || 'N/A'}%`;
+                        } else if (field === 'utilization') {
+                            tooltipText = `${xValue}\\nUtilization: ${value}%\\nPredicted Beds: ${d.predicted || 'N/A'}`;
+                        }
+                    }
+                    
+                    return '<rect x="' + barX + '" y="' + barY + '" width="' + barWidth + '" height="' + barHeight + '" fill="' + barColor + '" rx="2" opacity="0.9" class="chart-bar" data-tooltip="' + tooltipText + '" style="cursor: pointer;"/>' +
                            '<text x="' + (barX + barWidth/2) + '" y="' + (barY - 5) + '" fill="#64748b" font-size="10" text-anchor="middle">' + value + '</text>';
                 }).join('');
             }).join('');
@@ -2313,21 +2451,21 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
             }
 
             let currentAngle = 0;
-            // Optimize pie chart size based on analysis type and data count
+            // Optimize pie chart size based on analysis type and data count - increased sizes
             let radius, centerX, centerY, svgWidth;
             
             if (this.currentAnalysisType === 'inventory-expiry') {
                 // Larger pie chart for inventory expiry with better legend spacing
-                radius = 140;
-                centerX = 350;
-                centerY = 200;
-                svgWidth = 1100;
+                radius = 170;
+                centerX = 380;
+                centerY = 250;
+                svgWidth = 1200;
             } else {
-                // Standard size for other charts
-                radius = 120;
-                centerX = 400;
-                centerY = 180;
-                svgWidth = 1000;
+                // Standard size for other charts - increased
+                radius = 150;
+                centerX = 430;
+                centerY = 230;
+                svgWidth = 1100;
             }
 
             const slices = pieData.map(d => {
@@ -2352,13 +2490,29 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                 };
             });
 
-            // Calculate responsive dimensions for pie chart
-            const svgHeight = this.currentAnalysisType === 'inventory-expiry' ? 500 : 450;
-            const viewBoxHeight = this.currentAnalysisType === 'inventory-expiry' ? 450 : 400;
+            // Calculate responsive dimensions for pie chart - increased size
+            const svgHeight = this.currentAnalysisType === 'inventory-expiry' ? 600 : 550;
+            const viewBoxHeight = this.currentAnalysisType === 'inventory-expiry' ? 550 : 500;
             
-            // Generate pie slices
+            // Generate pie slices with hover tooltips
             const pieSlices = slices.map(slice => {
-                const pathElement = '<path d="' + slice.path + '" fill="' + slice.color + '" stroke="white" stroke-width="3"/>';
+                let tooltipText = `${slice.label}: ${slice.value} (${slice.percentage}%)`;
+                
+                // Enhanced tooltip for different analysis types
+                if (this.currentAnalysisType === 'staff-workload') {
+                    tooltipText = `${slice.label}\\nAssignments: ${slice.value}\\nPercentage: ${slice.percentage}%`;
+                } else if (this.currentAnalysisType === 'inventory-expiry') {
+                    tooltipText = `${slice.label} Items\\nCount: ${slice.value}\\nPercentage: ${slice.percentage}%`;
+                } else if (this.currentAnalysisType === 'tool-utilisation') {
+                    const pieDataItem = pieData.find(d => d.label === slice.label);
+                    const equipmentCount = pieDataItem ? pieDataItem.equipmentCount : 'N/A';
+                    const availableRatio = pieDataItem ? pieDataItem.availableRatio : 'N/A';
+                    tooltipText = `${slice.label}\\nTotal Units: ${slice.value}\\nEquipment Types: ${equipmentCount}\\nAvailable Ratio: ${availableRatio}%`;
+                } else if (this.currentAnalysisType === 'alos') {
+                    tooltipText = `${slice.label}\\nAverage LOS: ${slice.value} days\\nPercentage: ${slice.percentage}%`;
+                }
+                
+                const pathElement = '<path d="' + slice.path + '" fill="' + slice.color + '" stroke="white" stroke-width="3" class="chart-pie-slice" data-tooltip="' + tooltipText + '" style="cursor: pointer;"/>';
                 const labelElement = slice.percentage > 5 ? '<text x="' + slice.labelX + '" y="' + slice.labelY + '" fill="white" font-size="14" text-anchor="middle" font-weight="600">' + slice.percentage + '%</text>' : '';
                 return pathElement + labelElement;
             }).join('');
@@ -2543,9 +2697,9 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                 });
             }
 
-            // Calculate responsive dimensions for scatter chart
-            const svgHeight = 500;
-            const viewBoxHeight = 450;
+            // Calculate responsive dimensions for scatter chart - increased size
+            const svgHeight = 600;
+            const viewBoxHeight = 550;
             
             // Generate axis labels
             const xAxisLabelsHTML = xAxisLabels.map(label => '<text x="' + label.x + '" y="370" fill="#64748b" font-size="12" text-anchor="middle">' + label.value + '</text>').join('');
@@ -2610,7 +2764,16 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                     const shortLabel = label.length > 8 ? label.substring(0, 8) + '...' : label;
                     const title = isWorkloadChart ? label + ': ' + d[xAxisField] + ' assignments, ' + d[yAxisField] + ' workload' : label + ': Avg LOS ' + d[xAxisField] + 'd, Median LOS ' + d[yAxisField] + 'd';
                     
-                    let result = '<circle cx="' + x + '" cy="' + y + '" r="' + size + '" fill="' + color + '" opacity="0.7" stroke="' + color + '" stroke-width="2" title="' + title + '"/>';
+                    let tooltipText = `${label}: ${d[xAxisField] || 0} vs ${d[yAxisField] || 0}`;
+                    
+                    // Enhanced tooltip for different analysis types
+                    if (isWorkloadChart) {
+                        tooltipText = `${label}\\nAssignments: ${d[xAxisField] || 0}\\nWorkload Level: ${d[yAxisField] || 'Normal'}`;
+                    } else if (this.currentAnalysisType === 'alos') {
+                        tooltipText = `${label}\\nAverage LOS: ${d[xAxisField] || 0} days\\nMedian LOS: ${d[yAxisField] || 0} days`;
+                    }
+                    
+                    let result = '<circle cx="' + x + '" cy="' + y + '" r="' + size + '" fill="' + color + '" opacity="0.7" stroke="' + color + '" stroke-width="2" class="chart-scatter-point" data-tooltip="' + tooltipText + '" style="cursor: pointer;" title="' + title + '"/>';
                     result += '<rect x="' + (labelX - shortLabel.length * 3.5) + '" y="' + (labelY - 10) + '" width="' + (shortLabel.length * 7) + '" height="14" fill="rgba(255, 255, 255, 0.9)" stroke="#e2e8f0" stroke-width="1" rx="3" opacity="0.95"/>';
                     result += '<text x="' + labelX + '" y="' + labelY + '" fill="#334155" font-size="11" font-weight="500" text-anchor="middle">' + shortLabel + '</text>';
                     
@@ -2965,6 +3128,329 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
             this.initializeAnalysisSelector();
         }
 
+        setupTooltips() {
+            console.log('Setting up tooltips...');
+            
+            // Create tooltip element
+            if (!document.querySelector('.chart-tooltip')) {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'chart-tooltip';
+                document.body.appendChild(tooltip);
+            }
+            
+            // Set up mutation observer to handle dynamically added chart elements
+            const observer = new MutationObserver(() => {
+                this.attachTooltipListeners();
+            });
+            
+            observer.observe(document.body, { 
+                childList: true, 
+                subtree: true 
+            });
+            
+            // Initial setup
+            this.attachTooltipListeners();
+        }
+
+        attachTooltipListeners() {
+            const chartElements = document.querySelectorAll('.chart-point, .chart-bar, .chart-pie-slice, .chart-scatter-point');
+            const tooltip = document.querySelector('.chart-tooltip');
+            
+            if (!tooltip) return;
+            
+            chartElements.forEach(element => {
+                if (!element.hasAttribute('data-tooltip-listener')) {
+                    element.addEventListener('mouseenter', (e) => {
+                        const overlappingElements = this.findOverlappingElements(e.target);
+                        if (overlappingElements.length > 1) {
+                            const groupedTooltipText = this.createGroupedTooltip(overlappingElements);
+                            this.showTooltip(e, groupedTooltipText);
+                        } else {
+                            const tooltipText = e.target.getAttribute('data-tooltip');
+                            if (tooltipText) {
+                                this.showTooltip(e, tooltipText);
+                            }
+                        }
+                    });
+                    
+                    element.addEventListener('mouseleave', () => {
+                        this.hideTooltip();
+                    });
+                    
+                    element.addEventListener('mousemove', (e) => {
+                        this.updateTooltipPosition(e);
+                    });
+                    
+                    element.setAttribute('data-tooltip-listener', 'true');
+                }
+            });
+        }
+
+        showTooltip(event, text) {
+            const tooltip = document.querySelector('.chart-tooltip');
+            if (!tooltip) return;
+            
+            // Handle multiline text and HTML content for grouped tooltips
+            if (text.includes('\\n') || text.includes('<strong>')) {
+                const lines = text.split('\\n');
+                tooltip.innerHTML = lines.join('<br>');
+                // Allow wrapping for grouped tooltips
+                tooltip.style.whiteSpace = 'normal';
+                tooltip.style.maxWidth = '400px';
+            } else {
+                tooltip.textContent = text;
+                // Single line tooltips don't wrap
+                tooltip.style.whiteSpace = 'nowrap';
+                tooltip.style.maxWidth = '350px';
+            }
+            
+            tooltip.classList.add('show');
+            this.updateTooltipPosition(event);
+        }
+
+        hideTooltip() {
+            const tooltip = document.querySelector('.chart-tooltip');
+            if (!tooltip) return;
+            
+            tooltip.classList.remove('show');
+        }
+
+        updateTooltipPosition(event) {
+            const tooltip = document.querySelector('.chart-tooltip');
+            if (!tooltip || !tooltip.classList.contains('show')) return;
+            
+            const rect = tooltip.getBoundingClientRect();
+            const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+            
+            let x = event.clientX + scrollX + 10;
+            let y = event.clientY + scrollY - rect.height - 10;
+            
+            // Adjust position if tooltip goes off screen
+            if (x + rect.width > window.innerWidth + scrollX) {
+                x = event.clientX + scrollX - rect.width - 10;
+            }
+            
+            if (y < scrollY) {
+                y = event.clientY + scrollY + 10;
+            }
+            
+            tooltip.style.left = x + 'px';
+            tooltip.style.top = y + 'px';
+        }
+
+        findOverlappingElements(targetElement) {
+            const allChartElements = document.querySelectorAll('.chart-point, .chart-bar, .chart-pie-slice, .chart-scatter-point');
+            const overlappingElements = [targetElement];
+            const targetRect = this.getElementPosition(targetElement);
+            
+            if (!targetRect) return overlappingElements;
+            
+            allChartElements.forEach(element => {
+                if (element === targetElement) return;
+                
+                const elementRect = this.getElementPosition(element);
+                if (!elementRect) return;
+                
+                // Check if elements are overlapping or very close
+                const isOverlapping = this.areElementsOverlapping(targetRect, elementRect, targetElement, element);
+                
+                if (isOverlapping) {
+                    overlappingElements.push(element);
+                }
+            });
+            
+            return overlappingElements;
+        }
+
+        getElementPosition(element) {
+            try {
+                if (element.tagName === 'circle') {
+                    return {
+                        x: parseFloat(element.getAttribute('cx')),
+                        y: parseFloat(element.getAttribute('cy')),
+                        r: parseFloat(element.getAttribute('r')) || 4,
+                        type: 'circle'
+                    };
+                } else if (element.tagName === 'rect') {
+                    return {
+                        x: parseFloat(element.getAttribute('x')),
+                        y: parseFloat(element.getAttribute('y')),
+                        width: parseFloat(element.getAttribute('width')),
+                        height: parseFloat(element.getAttribute('height')),
+                        type: 'rect'
+                    };
+                } else if (element.tagName === 'path') {
+                    // For pie slices, use bounding box
+                    const bbox = element.getBBox();
+                    return {
+                        x: bbox.x + bbox.width / 2,
+                        y: bbox.y + bbox.height / 2,
+                        width: bbox.width,
+                        height: bbox.height,
+                        type: 'path'
+                    };
+                }
+            } catch (e) {
+                console.warn('Error getting element position:', e);
+            }
+            return null;
+        }
+
+        areElementsOverlapping(rect1, rect2, element1, element2) {
+            let tolerance = 15; // Base pixels tolerance for considering elements as overlapping
+            
+            // Adjust tolerance based on chart type and element type
+            if (rect1.type === 'circle' && rect2.type === 'circle') {
+                // For line chart points (circles), use smaller tolerance if they're on the same x-coordinate
+                if (Math.abs(rect1.x - rect2.x) < 5) {
+                    tolerance = 25; // Increase tolerance for vertical overlap (same x position)
+                }
+                
+                // Circle to circle distance
+                const distance = Math.sqrt(Math.pow(rect1.x - rect2.x, 2) + Math.pow(rect1.y - rect2.y, 2));
+                return distance <= (rect1.r + rect2.r + tolerance);
+            } else if (rect1.type === 'rect' && rect2.type === 'rect') {
+                // For bar charts, consider bars overlapping if they're in the same category (same x-range)
+                const rect1Right = rect1.x + rect1.width;
+                const rect1Bottom = rect1.y + rect1.height;
+                const rect2Right = rect2.x + rect2.width;
+                const rect2Bottom = rect2.y + rect2.height;
+                
+                // Check if bars are in the same x position (same category) - increase tolerance for x-axis
+                const xTolerance = Math.abs(rect1.x - rect2.x) < rect1.width ? tolerance * 2 : tolerance;
+                
+                return !(rect1Right < rect2.x - xTolerance || 
+                        rect2Right < rect1.x - xTolerance || 
+                        rect1Bottom < rect2.y - tolerance || 
+                        rect2Bottom < rect1.y - tolerance);
+            } else if (rect1.type === 'circle' && rect2.type === 'rect') {
+                // Circle to rectangle overlap
+                const closestX = Math.max(rect2.x, Math.min(rect1.x, rect2.x + rect2.width));
+                const closestY = Math.max(rect2.y, Math.min(rect1.y, rect2.y + rect2.height));
+                const distance = Math.sqrt(Math.pow(rect1.x - closestX, 2) + Math.pow(rect1.y - closestY, 2));
+                return distance <= (rect1.r + tolerance);
+            } else if (rect1.type === 'rect' && rect2.type === 'circle') {
+                // Rectangle to circle overlap (reverse of above)
+                const closestX = Math.max(rect1.x, Math.min(rect2.x, rect1.x + rect1.width));
+                const closestY = Math.max(rect1.y, Math.min(rect2.y, rect1.y + rect1.height));
+                const distance = Math.sqrt(Math.pow(rect2.x - closestX, 2) + Math.pow(rect2.y - closestY, 2));
+                return distance <= (rect2.r + tolerance);
+            } else {
+                // General case: use center point distance
+                const distance = Math.sqrt(Math.pow(rect1.x - rect2.x, 2) + Math.pow(rect1.y - rect2.y, 2));
+                return distance <= tolerance;
+            }
+        }
+
+        createGroupedTooltip(elements) {
+            const tooltipData = [];
+            const uniqueData = new Set();
+            
+            elements.forEach(element => {
+                const tooltipText = element.getAttribute('data-tooltip');
+                if (tooltipText && !uniqueData.has(tooltipText)) {
+                    uniqueData.add(tooltipText);
+                    tooltipData.push({
+                        text: tooltipText,
+                        element: element
+                    });
+                }
+            });
+            
+            if (tooltipData.length <= 1) {
+                return tooltipData[0]?.text || '';
+            }
+            
+            // Sort tooltip data for better organization
+            tooltipData.sort((a, b) => {
+                // Try to extract numeric values for sorting
+                const aMatch = a.text.match(/(\d+\.?\d*)/);
+                const bMatch = b.text.match(/(\d+\.?\d*)/);
+                if (aMatch && bMatch) {
+                    return parseFloat(aMatch[1]) - parseFloat(bMatch[1]);
+                }
+                return a.text.localeCompare(b.text);
+            });
+            
+            // Create grouped tooltip with enhanced formatting
+            let groupedTooltip = `<strong>📊 Overlapping Data (${tooltipData.length} points):</strong>\\n\\n`;
+            
+            // Group by category if possible
+            const categorizedData = this.categorizeTooltipData(tooltipData);
+            
+            if (categorizedData.categories.length > 1) {
+                // Multiple categories found
+                categorizedData.categories.forEach((category, catIndex) => {
+                    groupedTooltip += `<strong>${category.name}:</strong>\\n`;
+                    category.items.forEach((item, itemIndex) => {
+                        groupedTooltip += `  • ${item.text.replace(/^[^:]*:\\s*/, '')}`;
+                        if (itemIndex < category.items.length - 1) {
+                            groupedTooltip += '\\n';
+                        }
+                    });
+                    if (catIndex < categorizedData.categories.length - 1) {
+                        groupedTooltip += '\\n\\n';
+                    }
+                });
+            } else {
+                // Single category or mixed data
+                tooltipData.forEach((data, index) => {
+                    groupedTooltip += `<strong>${index + 1}.</strong> ${data.text}`;
+                    if (index < tooltipData.length - 1) {
+                        groupedTooltip += '\\n\\n';
+                    }
+                });
+            }
+            
+            return groupedTooltip;
+        }
+
+        categorizeTooltipData(tooltipData) {
+            const categories = {};
+            const uncategorized = [];
+            
+            tooltipData.forEach(data => {
+                const text = data.text;
+                
+                // Try to extract category from tooltip text
+                let category = 'Data';
+                
+                if (text.includes('Assignments:')) {
+                    category = 'Staff Workload';
+                } else if (text.includes('Days to Expiry:')) {
+                    category = 'Inventory';
+                } else if (text.includes('Occupied:') || text.includes('Capacity:')) {
+                    category = 'Bed Occupancy';
+                } else if (text.includes('LOS:')) {
+                    category = 'Length of Stay';
+                } else if (text.includes('Utilization:') || text.includes('Available Units:')) {
+                    category = 'Tool Utilization';
+                } else {
+                    // Extract first part before colon as category
+                    const colonIndex = text.indexOf(':');
+                    if (colonIndex > 0 && colonIndex < 30) {
+                        category = text.substring(0, colonIndex);
+                    }
+                }
+                
+                if (!categories[category]) {
+                    categories[category] = [];
+                }
+                categories[category].push(data);
+            });
+            
+            const categoryList = Object.keys(categories).map(name => ({
+                name: name,
+                items: categories[name]
+            }));
+            
+            return {
+                categories: categoryList,
+                uncategorized: uncategorized
+            };
+        }
+
         initializeAnalysisSelector() {
             const analysisSelector = document.querySelector('#analysis-selector');
             
@@ -2972,7 +3458,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                 console.log('Initializing analysis selector...');
                 
                 // Set default selection
-                analysisSelector.value = 'bed-occupancy';
+                analysisSelector.value = 'alos';
                 
                 analysisSelector.addEventListener('change', (e) => {
                     this.handleAnalysisSelection(e.target.value, e.target.selectedOptions[0].text);
@@ -2982,7 +3468,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                 console.log('Analysis selector initialized with default value:', analysisSelector.value);
                 
                 // Load initial data for default selection
-                this.handleAnalysisSelection('bed-occupancy', 'Real-time bed occupancy by ward & ICU');
+                this.handleAnalysisSelection('alos', 'Average Length-of-Stay (ALOS) by procedure / ward');
             }
         }
 
@@ -3091,13 +3577,13 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                     { item_name: 'Blood Type O- 1', days_to_expiry: 56, urgency: 'watch', quantity_available: 1, category: 'Blood Products' }
                 ],
                 'bed-census': [
-                    { timeframe: '6 Hours', predicted: 245, actual: 238, confidence: 95 },
-                    { timeframe: '12 Hours', predicted: 252, actual: 248, confidence: 92 },
-                    { timeframe: '24 Hours', predicted: 268, actual: null, confidence: 88 },
-                    { timeframe: '48 Hours', predicted: 275, actual: null, confidence: 82 },
-                    { timeframe: '72 Hours', predicted: 282, actual: null, confidence: 78 },
-                    { timeframe: '1 Week', predicted: 295, actual: null, confidence: 72 },
-                    { timeframe: '2 Weeks', predicted: 285, actual: null, confidence: 65 }
+                    { timeframe: '6 Hours', predicted: 245, utilization: 95 },
+                    { timeframe: '12 Hours', predicted: 252, utilization: 92 },
+                    { timeframe: '24 Hours', predicted: 268, utilization: 88 },
+                    { timeframe: '48 Hours', predicted: 275, utilization: 82 },
+                    { timeframe: '72 Hours', predicted: 282, utilization: 78 },
+                    { timeframe: '1 Week', predicted: 295, utilization: 72 },
+                    { timeframe: '2 Weeks', predicted: 285, utilization: 65 }
                 ],
                 'elective-emergency': [
                     { category: 'Elective Surgery', count: 125, revenue: 450, satisfaction: 92 },
@@ -3149,7 +3635,7 @@ def load_latex_scripts(analysis_data: Dict[str, Any] = None):
                 'staff-workload': ['Patient Assignments'],
                 'tool-utilisation': ['Available Ratio', 'Equipment Category', 'Total Units'],
                 'inventory-expiry': ['Item Name', 'Days to Expiry', 'Urgency Level'],
-                'bed-census': ['Predicted Beds', 'Actual Beds', 'Utilization %'],
+                'bed-census': ['Predicted Beds', 'Utilization %'],
                 'elective-emergency': ['Patient Count', 'Revenue ($K)', 'Satisfaction %'],
                 'los-prediction': ['Predicted LOS', 'Actual LOS', 'Accuracy %']
             };
@@ -3275,6 +3761,69 @@ def load_modern_hospital_css():
         flex-wrap: nowrap !important;
         align-items: stretch !important;
         overflow: hidden !important;
+    }
+    
+    /* Sidebar container - sticky chat layout */
+    .sidebar-container {
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100vh !important;
+        overflow: hidden !important;
+        background: white !important;
+        border-right: 1px solid #e2e8f0 !important;
+    }
+    
+    /* Assistant header - allow it to scroll away */
+    .assistant-header {
+        flex-shrink: 0 !important;
+        padding: 15px !important;
+        background: white !important;
+        border-bottom: 1px solid #f1f5f9 !important;
+    }
+    
+    /* Chat interface - sticky to top after header scrolls */
+    .sidebar-container .gradio-chatbot {
+        position: sticky !important;
+        top: 0 !important;
+        height: calc(100vh - 160px) !important;
+        flex-shrink: 0 !important;
+        background: white !important;
+        z-index: 10 !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+    
+    /* Chat input area - stick to bottom of sidebar */
+    .sidebar-container .gradio-row:has(.gradio-textbox) {
+        position: sticky !important;
+        bottom: 60px !important;
+        background: white !important;
+        padding: 10px 15px !important;
+        border-top: 1px solid #e2e8f0 !important;
+        z-index: 10 !important;
+        flex-shrink: 0 !important;
+    }
+    
+    /* Tools section - stick to bottom */
+    .tools-section {
+        position: sticky !important;
+        bottom: 0 !important;
+        background: white !important;
+        padding: 10px 15px !important;
+        border-top: 1px solid #e2e8f0 !important;
+        z-index: 10 !important;
+        flex-shrink: 0 !important;
+    }
+    
+    /* Ensure chatbot takes available space */
+    .chatbot-gr-chatbot {
+        height: 100% !important;
+        max-height: calc(100vh - 160px) !important;
+        overflow-y: auto !important;
+    }
+    
+    /* Remove guidance text to save space - optional */
+    .guidance-text {
+        display: none !important;
     }
     """
 
