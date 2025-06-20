@@ -1,0 +1,35 @@
+name: Deploy to Hugging Face Space
+
+on:
+  push:
+    branches:
+      - main  # Change if your main branch is different
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Git
+        run: |
+          git config --global user.email "hennybeerseeker@gmail.com"
+          git config --global user.name "LeNekoza"
+
+      - name: Set up Git credentials for LFS
+        run: git config --global url."https://${{ secrets.GH_TOKEN }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+
+      - name: Push to Hugging Face Space
+        run: |
+          git clone https://$HF_USERNAME:$HF_TOKEN@huggingface.co/spaces/$HF_SPACE_PATH hf-space
+          rsync -av --exclude='.git' ./ hf-space/
+          cd hf-space
+          git add .
+          git commit -m "Auto-deploy from GitHub" || echo "Nothing to commit"
+          git push origin main
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_USERNAME: LeNekoza  # <- Replace with the Hugging Face username
+          HF_SPACE_PATH: Agents-MCP-Hackathon/health-ai-hospital-aid  # <- Replace with full path
