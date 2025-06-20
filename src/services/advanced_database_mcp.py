@@ -41,6 +41,7 @@ except ImportError:
     logging.warning("Vertex AI SDK not available. Advanced SQL generation disabled.")
 
 from config.secure_config import load_database_config, get_connection_string
+from .db_pool import get_db_connection
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +76,6 @@ class AdvancedDatabaseMCP:
     def __init__(self):
         """Initialize the advanced database service"""
         self.db_config = None
-        self.connection = None
         self.schema_info = self._get_database_schema()
         self.model = None
         self._initialize_connection()
@@ -326,26 +326,9 @@ class AdvancedDatabaseMCP:
         }
 
         return DatabaseSchema(
-            tables=tables,
-            relationships=relationships,
+            tables=tables,            relationships=relationships,
             table_descriptions=table_descriptions,
         )
-
-    def _get_connection(self):
-        """Get database connection with automatic retry"""
-        if not DB_AVAILABLE or not self.db_config:
-            raise RuntimeError("Database not available")
-
-        try:
-            if self.connection and not self.connection.closed:
-                return self.connection
-
-            db_config = self.db_config["database"]
-            self.connection = psycopg2.connect(**db_config)
-            return self.connection
-        except Exception as e:
-            logger.error(f"Database connection failed: {e}")
-            raise
 
     def generate_advanced_sql(self, user_query: str) -> str:
         """
@@ -846,9 +829,7 @@ class AdvancedDatabaseMCP:
                 SUM(quantity_total) as value,
                 'items' as unit
             FROM tools
-            """
-
-        # Default comprehensive query
+            """        # Default comprehensive query
         else:
             return """
             SELECT 
@@ -859,32 +840,32 @@ class AdvancedDatabaseMCP:
     def execute_query(self, sql_query: str) -> QueryResult:
         """Execute SQL query and return structured results"""
         try:
-            conn = self._get_connection()
-            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            with get_db_connection() as connection:
+                cursor = connection.cursor(cursor_factory=RealDictCursor)
 
-            # Clean and validate query
-            sql_query = sql_query.strip()
-            if not sql_query.upper().startswith("SELECT"):
-                raise ValueError("Only SELECT queries are allowed")
+                # Clean and validate query
+                sql_query = sql_query.strip()
+                if not sql_query.upper().startswith("SELECT"):
+                    raise ValueError("Only SELECT queries are allowed")
 
-            # Extract table names
-            tables_used = self._extract_table_names(sql_query)
+                # Extract table names
+                tables_used = self._extract_table_names(sql_query)
 
-            cursor.execute(sql_query)
-            results = cursor.fetchall()
+                cursor.execute(sql_query)
+                results = cursor.fetchall()
 
-            # Convert to list of dictionaries
-            data = [dict(row) for row in results]
+                # Convert to list of dictionaries
+                data = [dict(row) for row in results]
 
-            cursor.close()
+                cursor.close()
 
-            return QueryResult(
-                success=True,
-                data=data,
-                query=sql_query,
-                row_count=len(data),
-                tables_used=tables_used,
-            )
+                return QueryResult(
+                    success=True,
+                    data=data,
+                    query=sql_query,
+                    row_count=len(data),
+                    tables_used=tables_used,
+                )
 
         except Exception as e:
             logger.error(f"Query execution failed: {e}")

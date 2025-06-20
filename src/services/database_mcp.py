@@ -25,6 +25,7 @@ except ImportError:
     logging.warning("psycopg2 not available. Database integration disabled.")
 
 from config.secure_config import load_database_config, get_connection_string
+from .db_pool import get_db_connection
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +60,6 @@ class DatabaseMCP:
     def __init__(self):
         """Initialize the MCP database service"""
         self.db_config = None
-        self.connection = None
         self.schema_info = {}
         self._initialize_connection()
 
@@ -74,22 +74,6 @@ class DatabaseMCP:
             logger.info("Database configuration loaded successfully")
         except Exception as e:
             logger.error(f"Failed to load database configuration: {e}")
-
-    def _get_connection(self):
-        """Get database connection with automatic retry"""
-        if not DB_AVAILABLE or not self.db_config:
-            raise RuntimeError("Database not available")
-
-        try:
-            if self.connection and not self.connection.closed:
-                return self.connection
-
-            db_config = self.db_config["database"]
-            self.connection = psycopg2.connect(**db_config)
-            return self.connection
-        except Exception as e:
-            logger.error(f"Database connection failed: {e}")
-            raise
 
     def parse_user_intent(self, user_query: str) -> QueryIntent:
         """
@@ -272,9 +256,7 @@ class DatabaseMCP:
                 FROM users
                 WHERE role IN ('staff', 'admin')
                 LIMIT 10
-                """
-
-        # Default general query
+                """        # Default general query
         return """
         SELECT 'Hospital Overview' as info,
                'Use more specific queries like: patient John, room R001, available equipment, hospital stats' as suggestion
@@ -285,25 +267,25 @@ class DatabaseMCP:
         Execute SQL query and return structured results
         """
         try:
-            conn = self._get_connection()
-            cursor = conn.cursor(cursor_factory=RealDictCursor)
+            with get_db_connection() as connection:
+                cursor = connection.cursor(cursor_factory=RealDictCursor)
 
-            # Clean and validate query
-            sql_query = sql_query.strip()
-            if not sql_query.upper().startswith("SELECT"):
-                raise ValueError("Only SELECT queries are allowed")
+                # Clean and validate query
+                sql_query = sql_query.strip()
+                if not sql_query.upper().startswith("SELECT"):
+                    raise ValueError("Only SELECT queries are allowed")
 
-            cursor.execute(sql_query)
-            results = cursor.fetchall()
+                cursor.execute(sql_query)
+                results = cursor.fetchall()
 
-            # Convert to list of dictionaries
-            data = [dict(row) for row in results]
+                # Convert to list of dictionaries
+                data = [dict(row) for row in results]
 
-            cursor.close()
+                cursor.close()
 
-            return QueryResult(
-                success=True, data=data, query=sql_query, row_count=len(data)
-            )
+                return QueryResult(
+                    success=True, data=data, query=sql_query, row_count=len(data)
+                )
 
         except Exception as e:
             logger.error(f"Query execution failed: {e}")

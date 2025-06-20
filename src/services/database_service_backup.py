@@ -12,9 +12,7 @@ class DatabaseService:
     """Database service for hospital management system using PostgreSQL"""
 
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
-
-    def connect(self) -> bool:
+        self.logger = logging.getLogger(__name__)    def connect(self) -> bool:
         """Establish connection to PostgreSQL database - deprecated with pool"""
         self.logger.info("Using connection pool - individual connections not needed")
         return True
