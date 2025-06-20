@@ -1394,15 +1394,13 @@ Make sure the user gets both the complete information they requested AND your pr
                 visualize_chat_state,
                 current_mode_state,
             ],
-        )
-
-        # Database table refresh and pagination handlers
+        )        # Database table refresh and pagination handlers
+        
         def refresh_patients(page):
             """Refresh patients table with latest data for given page"""
             try:
                 # Establish database connection if needed
-                if not db_service.connection:
-                    db_service.connect()
+                db_service.connect()
                 table_html, pagination_info = generate_patients_table(
                     page=page, page_size=10
                 )
@@ -1420,8 +1418,7 @@ Make sure the user gets both the complete information they requested AND your pr
         def refresh_staff(page):
             """Refresh staff table with latest data for given page"""
             try:
-                if not db_service.connection:
-                    db_service.connect()
+                db_service.connect()
                 table_html, pagination_info = generate_staff_table(
                     page=page, page_size=10
                 )
@@ -1439,8 +1436,7 @@ Make sure the user gets both the complete information they requested AND your pr
         def refresh_rooms(page):
             """Refresh rooms table with latest data for given page"""
             try:
-                if not db_service.connection:
-                    db_service.connect()
+                db_service.connect()
                 table_html, pagination_info = generate_rooms_table(
                     page=page, page_size=10
                 )
@@ -1450,16 +1446,14 @@ Make sure the user gets both the complete information they requested AND your pr
                 )
             except Exception as e:
                 error_msg = f'<div style="color: red; padding: 20px;">Error refreshing rooms: {str(e)}</div>'
-                return (
-                    error_msg,
+                return (                    error_msg,
                     '<div class="pagination-info">Error loading data</div>',
                 )
 
         def refresh_equipment(page):
             """Refresh equipment table with latest data for given page"""
             try:
-                if not db_service.connection:
-                    db_service.connect()
+                db_service.connect()
                 table_html, pagination_info = generate_equipment_table(
                     page=page, page_size=10
                 )

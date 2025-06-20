@@ -33,18 +33,16 @@ def test_db_pool():
             result = cursor.fetchone()
             logger.info(f"✅ Connection test successful: {result}")
             cursor.close()
-        
-        # Test database service
+          # Test database service
         db_service = DatabaseService()
         result = db_service.execute_query("SELECT 1 as test")
         logger.info(f"✅ Database service test successful: {result}")
         
         logger.info("🎉 All tests passed!")
-        return True
         
     except Exception as e:
         logger.error(f"❌ Test failed: {e}")
-        return False
+        assert False, f"Database pool test failed: {e}"
     
     finally:
         # Clean up pool
