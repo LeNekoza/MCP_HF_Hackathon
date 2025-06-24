@@ -451,19 +451,17 @@ def create_main_interface(config: Dict[str, Any]) -> gr.Blocks:
                         lines=1,
                         max_lines=3,
                         container=False,
-                        scale=4,
-                    )
+                        scale=4,                    )
                     send_btn = gr.Button(
                         "→", size="sm", scale=0, min_width=40
                     )  # Test Section with Dropdown
                 with gr.Row(elem_classes="tools-section"):
-
                     with gr.Column(scale=1):
                         test_dropdown = gr.Dropdown(
-                            choices=["Main Chat", "Visualize"],
+                            choices=["Main Chat"],
                             label="",
                             value="Main Chat",
-                            interactive=True,
+                            interactive=False,
                             container=True,
                             elem_classes="custom-test-dropdown",
                             show_label=False,
@@ -1180,16 +1178,8 @@ Make sure the user gets both the complete information they requested AND your pr
                     "role": "assistant",
                     "content": "📞 The helpline number of the hospital is **555-HELP (555-4357)**.\n\nOur helpline is available 24/7 for urgent assistance. Please call immediately if you have any medical emergencies or need immediate support.",
                 },
-            ]
-
-        # Chat state management
-        original_chat_state = gr.State([])  # Store original chat history
-        visualize_chat_state = gr.State([])  # Store visualize chat history
-        current_mode_state = gr.State(
-            "original"
-        )  # Track current mode: "original" or "visualize"
-
-        # Wrapper function to handle state management for streaming
+            ]        # Chat state management
+        chat_state = gr.State([])  # Store chat history        # Wrapper function to handle state management for streaming
         def stream_response_with_state(
             message: str,
             history: List[Dict],
@@ -1198,26 +1188,14 @@ Make sure the user gets both the complete information they requested AND your pr
             max_tok: int,
             specialty: str,
             context: str,
-            original_chat,
-            visualize_chat,
-            current_mode,
+            chat_history,
         ):
-            """Stream response and update appropriate chat state"""
+            """Stream response and update chat state"""
             # Use the existing stream_response function
             for updated_history, cleared_input in stream_response(
                 message, history, model, temp, max_tok, specialty, context
             ):
-                # Update the appropriate chat state based on current mode
-                if current_mode == "visualize":
-                    new_visualize_chat = updated_history
-                    new_original_chat = original_chat
-                else:
-                    new_original_chat = updated_history
-                    new_visualize_chat = visualize_chat
-
-                yield updated_history, cleared_input, new_original_chat, new_visualize_chat, current_mode
-
-        # Connect events for sidebar chat with state management
+                yield updated_history, cleared_input, updated_history        # Connect events for sidebar chat with state management
         msg.submit(
             fn=stream_response_with_state,
             inputs=[
@@ -1228,16 +1206,12 @@ Make sure the user gets both the complete information they requested AND your pr
                 gr.State(1000),  # max_tokens
                 gr.State("General Medicine"),  # medical_specialty
                 gr.State(""),  # context_input
-                original_chat_state,
-                visualize_chat_state,
-                current_mode_state,
+                chat_state,
             ],
             outputs=[
                 chatbot,
                 msg,
-                original_chat_state,
-                visualize_chat_state,
-                current_mode_state,
+                chat_state,
             ],
             show_progress="hidden",
         )
@@ -1252,21 +1226,16 @@ Make sure the user gets both the complete information they requested AND your pr
                 gr.State(1000),  # max_tokens
                 gr.State("General Medicine"),  # medical_specialty
                 gr.State(""),  # context_input
-                original_chat_state,
-                visualize_chat_state,
-                current_mode_state,
+                chat_state,
             ],
             outputs=[
                 chatbot,
                 msg,
-                original_chat_state,
-                visualize_chat_state,
-                current_mode_state,
+                chat_state,
             ],
             show_progress="hidden",
-        )  # Update helpline handler to work with state management
-
-        def handle_helpline_with_state(original_chat, visualize_chat, current_mode):
+        )        # Update helpline handler to work with simplified state management
+        def handle_helpline_with_state(chat_history):
             """Handle helpline with state management"""
             helpline_response = [
                 {
@@ -1279,122 +1248,18 @@ Make sure the user gets both the complete information they requested AND your pr
                 },
             ]
 
-            # Update the appropriate chat state
-            if current_mode == "visualize":
-                new_visualize_chat = visualize_chat + helpline_response
-                new_original_chat = original_chat
-                new_chat_display = new_visualize_chat
-            else:
-                new_original_chat = original_chat + helpline_response
-                new_visualize_chat = visualize_chat
-                new_chat_display = new_original_chat
-
-            return (
-                "",
-                new_chat_display,
-                new_original_chat,
-                new_visualize_chat,
-                current_mode,
-            )
+            new_chat_history = chat_history + helpline_response
+            return "", new_chat_history, new_chat_history
 
         helpline_btn.click(
             fn=handle_helpline_with_state,
-            inputs=[original_chat_state, visualize_chat_state, current_mode_state],
+            inputs=[chat_state],
             outputs=[
                 msg,
                 chatbot,
-                original_chat_state,
-                visualize_chat_state,
-                current_mode_state,
+                chat_state,
             ],
-        )
-
-        # Test dropdown handler
-        def handle_tool_selection(
-            tool_name, current_chat, original_chat, visualize_chat, current_mode
-        ):
-            """Handle tool selection from dropdown with separate chat flows"""
-            if not tool_name:
-                return "", current_chat, original_chat, visualize_chat, current_mode
-
-            if tool_name == "Main Chat":
-                # Return to original chat with full history intact
-                # Show welcome back message only if there's existing chat history
-                if original_chat:
-                    display_chat = original_chat + [
-                        {
-                            "role": "assistant",
-                            "content": "--- 🔄 **Welcome back to the main chat!**\n\n📋 I can see our previous conversation history above and I remember our conversation context. Feel free to continue where we left off or ask me anything new!\n\nHow can I assist you today?",
-                        }
-                    ]
-                    stored_original_chat = (
-                        original_chat  # Keep original history without welcome message
-                    )
-                else:
-                    display_chat = original_chat
-                    stored_original_chat = original_chat
-                return (
-                    "",
-                    display_chat,
-                    stored_original_chat,
-                    visualize_chat,
-                    "original",
-                )
-
-            elif tool_name == "Visualize":
-                # Switch to visualize mode
-                if not visualize_chat:  # If visualize chat is empty, initialize it
-                    new_visualize_chat = [
-                        {
-                            "role": "assistant",
-                            "content": "📊 **Visualization Mode Activated**\n\nI'm now in visualization mode! I can help you:\n\n• Create charts and graphs from hospital data\n• Analyze patient statistics and trends\n• Generate visual reports and dashboards\n• Visualize medical data patterns\n\nWhat would you like to visualize or analyze?",
-                        }
-                    ]
-                    display_chat = new_visualize_chat
-                    stored_visualize_chat = new_visualize_chat
-                else:
-                    # Return to existing visualize chat with welcome back message for display only
-                    display_chat = visualize_chat + [
-                        {
-                            "role": "assistant",
-                            "content": "--- 📊 **Welcome back to Visualization Mode!**\n\n📋 I can see our previous visualization conversation history above and I remember our conversation context. Feel free to continue where we left off or ask me anything new!\n\nWhat would you like to visualize or analyze today?",
-                        }
-                    ]
-                    stored_visualize_chat = (
-                        visualize_chat  # Keep original history without welcome message
-                    )
-
-                # Store current chat as original if we're switching from original mode
-                if current_mode == "original":
-                    original_chat = current_chat
-
-                return (
-                    "",
-                    display_chat,
-                    original_chat,
-                    stored_visualize_chat,
-                    "visualize",
-                )
-            # For any other tools (shouldn't happen with current setup)
-            return "", current_chat, original_chat, visualize_chat, current_mode
-
-        test_dropdown.change(
-            fn=handle_tool_selection,
-            inputs=[
-                test_dropdown,
-                chatbot,
-                original_chat_state,
-                visualize_chat_state,
-                current_mode_state,
-            ],
-            outputs=[
-                msg,
-                chatbot,
-                original_chat_state,
-                visualize_chat_state,
-                current_mode_state,
-            ],
-        )        # Database table refresh and pagination handlers
+        )        # Remove test dropdown handler since visualization mode is removed# Database table refresh and pagination handlers
         
         def refresh_patients(page):
             """Refresh patients table with latest data for given page"""
